@@ -1,6 +1,7 @@
 # Dougs Bank Validation System
 
-[![CI](https://github.com/YOUR_USERNAME/YOUR_REPO_NAME/workflows/CI/badge.svg)](https://github.com/YOUR_USERNAME/YOUR_REPO_NAME/actions)
+[![CI](https://github.com/gobwah/dougs-test-app/workflows/CI/badge.svg)](https://github.com/YOUR_USERNAME/YOUR_REPO_NAME/actions)
+[![codecov](https://codecov.io/gh/gobwah/dougs-test-app/branch/main/graph/badge.svg)](https://codecov.io/gh/gobwah/dougs-test-app)
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D20.x-brightgreen)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.1-blue)](https://www.typescriptlang.org/)
 [![NestJS](https://img.shields.io/badge/NestJS-10.0-red)](https://nestjs.com/)
@@ -37,173 +38,29 @@ npm run start:prod
 
 L'application sera accessible sur `http://localhost:3000`
 
-## Documentation API
+## Documentation
 
-### Documentation interactive (Swagger UI)
+📚 **Documentation complète disponible dans le dossier [`documentation/`](./documentation/)**
 
-La documentation interactive de l'API est disponible via Swagger UI à l'adresse :
-
-- **Swagger UI** : `http://localhost:3000/api`
-
-Vous pouvez tester les endpoints directement depuis l'interface Swagger.
-
-### Documentation OpenAPI
-
-La documentation OpenAPI est générée automatiquement et disponible dans le dossier `documentation/` :
-
-- **`documentation/openapi.json`** : Format JSON
-- **`documentation/openapi.yaml`** : Format YAML
-- **`documentation/api-documentation.html`** : Documentation statique HTML (Redoc)
-
-#### Génération automatique
-
-La documentation est générée automatiquement **avant chaque commit** via un hook Git pre-commit (Husky) si des fichiers API ont été modifiés. Les fichiers générés sont automatiquement ajoutés au commit.
-
-**Fichiers déclencheurs** :
-
-- `src/**/*.ts` (fichiers TypeScript)
-- `src/**/*.dto.ts` (DTOs)
-- `src/**/*.controller.ts` (controllers)
-- `src/**/*.service.ts` (services)
-- `src/**/*.module.ts` (modules)
-- `package.json` (dépendances)
-
-Un workflow GitHub Actions est également configuré comme backup pour les cas où des commits sont faits directement sur GitHub.
-
-#### Génération manuelle
-
-Pour générer la documentation manuellement :
-
-```bash
-npm run generate:api-docs
-```
-
-#### Visualiser la documentation statique
-
-La documentation HTML statique peut être ouverte directement dans votre navigateur :
-
-```bash
-# Sur macOS
-open documentation/api-documentation.html
-
-# Sur Linux
-xdg-open documentation/api-documentation.html
-
-# Sur Windows
-start documentation/api-documentation.html
-```
-
-Ou simplement double-cliquez sur le fichier `documentation/api-documentation.html` dans votre explorateur de fichiers.
+- **[Documentation API](./documentation/README.md#-documentation-api-openapi)** : Documentation OpenAPI (JSON, YAML, HTML)
+- **[Analyse détaillée](./documentation/ANALYSE.md)** : Approche méthodique, algorithmes, diagrammes
+- **Swagger UI** : `http://localhost:3000/api` (quand l'application est démarrée)
 
 ## API
 
-### GET /health
+### Endpoints
 
-Endpoint de santé pour vérifier que l'application est en cours d'exécution.
+- **GET /health** : Vérification de santé de l'application
+- **POST /movements/validation** : Validation d'opérations bancaires contre des points de contrôle
 
-#### Response (200)
+Pour la documentation complète de l'API (schémas, exemples, types d'erreurs), consultez :
 
-```json
-{
-  "status": "ok",
-  "timestamp": "2024-01-15T10:30:00.000Z",
-  "uptime": 123.456
-}
-```
-
-### POST /movements/validation
-
-Valide une liste d'opérations bancaires contre des points de contrôle.
-
-#### Request Body
-
-```json
-{
-  "movements": [
-    {
-      "id": 1,
-      "date": "2024-01-15",
-      "label": "PAYMENT REF 12345",
-      "amount": 100.5
-    },
-    {
-      "id": 2,
-      "date": "2024-01-20",
-      "label": "WITHDRAWAL",
-      "amount": -50.0
-    }
-  ],
-  "balances": [
-    {
-      "date": "2024-01-31",
-      "balance": 50.5
-    }
-  ]
-}
-```
-
-#### Response Success (200)
-
-```json
-{
-  "message": "Accepted"
-}
-```
-
-#### Response Error (400)
-
-```json
-{
-  "message": "Validation failed",
-  "reasons": [
-    {
-      "type": "BALANCE_MISMATCH",
-      "message": "Balance mismatch at control point 2024-01-31T00:00:00.000Z",
-      "details": {
-        "balanceDate": "2024-01-31T00:00:00.000Z",
-        "expectedBalance": 50.5,
-        "actualBalance": 100.5,
-        "difference": 50.0
-      }
-    },
-    {
-      "type": "DUPLICATE_TRANSACTION",
-      "message": "Found 2 duplicate transaction(s)",
-      "details": {
-        "duplicateMovements": [
-          {
-            "id": 1,
-            "date": "2024-01-15T00:00:00.000Z",
-            "amount": 100.5,
-            "label": "PAYMENT REF 12345"
-          },
-          {
-            "id": 3,
-            "date": "2024-01-15T00:00:00.000Z",
-            "amount": 100.5,
-            "label": "PAYMENT REF 12345"
-          }
-        ]
-      }
-    }
-  ]
-}
-```
-
-### Types de raisons de validation
-
-- **BALANCE_MISMATCH** : Le solde calculé ne correspond pas au solde du point de contrôle
-- **DUPLICATE_TRANSACTION** : Transactions dupliquées détectées
-- **MISSING_TRANSACTION** : Opérations après le dernier point de contrôle ou incohérences suggérant des transactions manquantes
-- **INVALID_DATE_ORDER** : Les points de contrôle ne sont pas dans l'ordre chronologique
+- **Swagger UI** : `http://localhost:3000/api` (quand l'application est démarrée)
+- **Documentation OpenAPI** : Voir [documentation/README.md](./documentation/README.md#-documentation-api-openapi)
 
 ## Algorithme de validation
 
-1. **Tri chronologique** : Les opérations et points de contrôle sont triés par date
-2. **Inférence du solde initial** : Le solde initial est inféré à partir du premier point de contrôle
-3. **Validation des soldes** : Pour chaque point de contrôle, le solde est calculé et comparé avec le solde attendu
-4. **Détection de doublons** : Les transactions avec la même date, le même montant et des libellés similaires sont identifiées comme doublons potentiels
-5. **Vérification des périodes** : Les opérations avant le premier point de contrôle et après le dernier sont signalées
+Pour une description détaillée de l'algorithme avec diagrammes, consultez [documentation/ANALYSE.md](./documentation/ANALYSE.md#-étape-4--algorithme-de-validation).
 
 ## Tests
 
@@ -276,11 +133,8 @@ test/
 
 ## Notes d'implémentation
 
-- La détection de doublons utilise une comparaison de similarité des libellés basée sur la distance de Levenshtein (seuil de 80%)
-- Une tolérance de 0.01 est appliquée pour les comparaisons de soldes afin de gérer les erreurs d'arrondi en virgule flottante
-- Les dates sont comparées avec une précision au jour pour la détection de doublons
-- L'algorithme infère le solde initial à partir du premier point de contrôle
+Pour les détails sur les décisions de design et les choix techniques, consultez [documentation/ANALYSE.md](./documentation/ANALYSE.md#-étape-5--décisions-de-design).
 
 ## Exemples d'utilisation
 
-Voir le fichier `examples/` pour des exemples de requêtes.
+Voir le dossier `examples/` pour des exemples de requêtes, ou utilisez Swagger UI (`http://localhost:3000/api`) pour tester l'API interactivement.
