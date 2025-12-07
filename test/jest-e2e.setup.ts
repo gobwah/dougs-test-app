@@ -26,66 +26,84 @@ async function waitForServer(url: string, maxAttempts = 60): Promise<void> {
 
 async function startServer(): Promise<void> {
   return new Promise((resolve, reject) => {
-    // Build the project first
-    const buildProcess = spawn('npm', ['run', 'build'], {
-      cwd: PROJECT_ROOT,
-      stdio: 'inherit',
-      shell: false,
-    });
+    const mainPath = path.join(PROJECT_ROOT, 'dist', 'src', 'main.js');
+    const buildAlreadyExists = fs.existsSync(mainPath);
+    const shouldBuild =
+      !buildAlreadyExists || process.env.E2E_FORCE_BUILD === 'true';
 
-    buildProcess.on('close', (code) => {
-      if (code !== 0) {
-        reject(new Error(`Build failed with code ${code}`));
-        return;
-      }
-
-      // Verify the build output exists
-      const mainPath = path.join(PROJECT_ROOT, 'dist', 'src', 'main.js');
-      if (!fs.existsSync(mainPath)) {
-        reject(new Error(`Build output not found at ${mainPath}`));
-        return;
-      }
-
-      // Start the server
-      serverProcess = spawn('node', [mainPath], {
+    // Build the project only if needed
+    if (shouldBuild) {
+      const buildProcess = spawn('npm', ['run', 'build'], {
         cwd: PROJECT_ROOT,
-        stdio: 'pipe',
-        env: { ...process.env, PORT: SERVER_PORT },
+        stdio: 'inherit',
         shell: false,
       });
 
-      let serverOutput = '';
-      serverProcess.stdout?.on('data', (data) => {
-        const output = data.toString();
-        serverOutput += output;
-        // Only log if it's not the standard NestJS startup message
-        if (!output.includes('Nest application successfully started')) {
-          console.log(`[Server] ${output.trim()}`);
+      buildProcess.on('close', (code) => {
+        if (code !== 0) {
+          reject(new Error(`Build failed with code ${code}`));
+          return;
         }
+
+        // Verify the build output exists
+        if (!fs.existsSync(mainPath)) {
+          reject(new Error(`Build output not found at ${mainPath}`));
+          return;
+        }
+
+        startServerProcess(mainPath, resolve, reject);
       });
 
-      serverProcess.stderr?.on('data', (data) => {
-        console.error(`[Server Error] ${data.toString()}`);
-      });
-
-      serverProcess.on('error', (error) => {
-        reject(error);
-      });
-
-      // Wait for server to be ready
-      waitForServer(SERVER_URL)
-        .then(() => {
-          console.log(`[E2E Setup] Server started on ${SERVER_URL}`);
-          resolve();
-        })
-        .catch((error) => {
-          console.error('Server output:', serverOutput);
-          reject(error);
-        });
-    });
-
-    buildProcess.on('error', reject);
+      buildProcess.on('error', reject);
+    } else {
+      // Use existing build
+      console.log('[E2E Setup] Using existing build from dist/');
+      startServerProcess(mainPath, resolve, reject);
+    }
   });
+}
+
+function startServerProcess(
+  mainPath: string,
+  resolve: () => void,
+  reject: (error: Error) => void,
+): void {
+  // Start the server
+  serverProcess = spawn('node', [mainPath], {
+    cwd: PROJECT_ROOT,
+    stdio: 'pipe',
+    env: { ...process.env, PORT: SERVER_PORT },
+    shell: false,
+  });
+
+  let serverOutput = '';
+  serverProcess.stdout?.on('data', (data) => {
+    const output = data.toString();
+    serverOutput += output;
+    // Only log if it's not the standard NestJS startup message
+    if (!output.includes('Nest application successfully started')) {
+      console.log(`[Server] ${output.trim()}`);
+    }
+  });
+
+  serverProcess.stderr?.on('data', (data) => {
+    console.error(`[Server Error] ${data.toString()}`);
+  });
+
+  serverProcess.on('error', (error) => {
+    reject(error);
+  });
+
+  // Wait for server to be ready
+  waitForServer(SERVER_URL)
+    .then(() => {
+      console.log(`[E2E Setup] Server started on ${SERVER_URL}`);
+      resolve();
+    })
+    .catch((error) => {
+      console.error('Server output:', serverOutput);
+      reject(error);
+    });
 }
 
 async function stopServer(): Promise<void> {
