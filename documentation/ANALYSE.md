@@ -363,8 +363,8 @@ flowchart TD
 ```
 src/
 ├── movements/
-│   ├── movements.controller.ts    # Point d'entrée HTTP
-│   ├── movements.service.ts        # Orchestration de la logique métier
+│   ├── movementsController.ts    # Point d'entrée HTTP
+│   ├── movementsService.ts        # Orchestration de la logique métier
 │   ├── utils/                      # Fonctions utilitaires testables
 │   │   ├── movementParsing.ts      # Parsing et tri des données
 │   │   ├── duplicateDetection.ts   # Détection de doublons

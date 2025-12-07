@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { AppModule } from '../src/app.module';
+import { AppModule } from '../src/appModule';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 

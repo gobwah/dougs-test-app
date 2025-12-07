@@ -13,7 +13,7 @@ import {
   ApiBody,
   ApiBadRequestResponse,
 } from '@nestjs/swagger';
-import { MovementsService } from './movements.service';
+import { MovementsService } from './movementsService';
 import { ValidationRequestDto } from './dto/requestDto';
 import {
   ValidationFailureResponse,

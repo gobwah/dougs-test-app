@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { MovementsService } from '../../../src/movements/movements.service';
+import { MovementsService } from '../../../src/movements/movementsService';
 import { ValidationRequestDto } from '../../../src/movements/dto/requestDto';
 
 /**
