@@ -42,3 +42,8 @@ jobs:
           files: ./coverage/lcov.info
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: false
+
+      - name: Run e2e tests
+        run: npm run test:e2e
+        env:
+          E2E_PORT: 3001
