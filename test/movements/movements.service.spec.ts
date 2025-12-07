@@ -250,5 +250,289 @@ describe('MovementsService', () => {
       const result = service.validateMovements(request);
       expect(result.message).toBe('Accepted');
     });
+
+    it('should detect invalid date order in balances', () => {
+      const request: ValidationRequestDto = {
+        movements: [
+          {
+            id: 1,
+            date: '2024-01-15',
+            label: 'Transaction 1',
+            amount: 100,
+          },
+        ],
+        balances: [
+          {
+            date: '2024-01-31',
+            balance: 100,
+          },
+          {
+            date: '2024-01-31', // Invalid: same date as previous (<= condition)
+            balance: 50,
+          },
+        ],
+      };
+
+      const result = service.validateMovements(request);
+      expect(result.message).toBe('Validation failed');
+      if ('reasons' in result) {
+        const invalidOrderReason = result.reasons.find(
+          (r) => r.type === 'INVALID_DATE_ORDER',
+        );
+        expect(invalidOrderReason).toBeDefined();
+      }
+    });
+
+    it('should detect invalid date order with equal dates', () => {
+      const request: ValidationRequestDto = {
+        movements: [
+          {
+            id: 1,
+            date: '2024-01-15',
+            label: 'Transaction 1',
+            amount: 100,
+          },
+        ],
+        balances: [
+          {
+            date: '2024-01-31',
+            balance: 100,
+          },
+          {
+            date: '2024-01-31', // Invalid: same date as previous
+            balance: 100,
+          },
+        ],
+      };
+
+      const result = service.validateMovements(request);
+      expect(result.message).toBe('Validation failed');
+      if ('reasons' in result) {
+        const invalidOrderReason = result.reasons.find(
+          (r) => r.type === 'INVALID_DATE_ORDER',
+        );
+        expect(invalidOrderReason).toBeDefined();
+      }
+    });
+
+    it('should return error when no balances provided', () => {
+      const request: ValidationRequestDto = {
+        movements: [
+          {
+            id: 1,
+            date: '2024-01-15',
+            label: 'Transaction 1',
+            amount: 100,
+          },
+        ],
+        balances: [],
+      };
+
+      const result = service.validateMovements(request);
+      expect(result.message).toBe('Validation failed');
+      if ('reasons' in result) {
+        const noBalanceReason = result.reasons.find(
+          (r) =>
+            r.type === 'BALANCE_MISMATCH' && r.message.includes('No balance'),
+        );
+        expect(noBalanceReason).toBeDefined();
+      }
+    });
+
+    it('should detect duplicates with similar labels using Levenshtein', () => {
+      const request: ValidationRequestDto = {
+        movements: [
+          {
+            id: 1,
+            date: '2024-01-01',
+            label: 'PAYMENT ABC',
+            amount: 100,
+          },
+          {
+            id: 2,
+            date: '2024-01-01',
+            label: 'PAYMENT ABD', // Similar (1 char difference, >80% similarity)
+            amount: 100,
+          },
+        ],
+        balances: [
+          {
+            date: '2024-01-31',
+            balance: 200,
+          },
+        ],
+      };
+
+      const result = service.validateMovements(request);
+      expect(result.message).toBe('Validation failed');
+      if ('reasons' in result) {
+        const duplicateReason = result.reasons.find(
+          (r) => r.type === 'DUPLICATE_TRANSACTION',
+        );
+        expect(duplicateReason).toBeDefined();
+      }
+    });
+
+    it('should detect duplicates when one label contains the other', () => {
+      const request: ValidationRequestDto = {
+        movements: [
+          {
+            id: 1,
+            date: '2024-01-01',
+            label: 'PAYMENT',
+            amount: 100,
+          },
+          {
+            id: 2,
+            date: '2024-01-01',
+            label: 'PAYMENT REF 12345', // Contains "PAYMENT"
+            amount: 100,
+          },
+        ],
+        balances: [
+          {
+            date: '2024-01-31',
+            balance: 200,
+          },
+        ],
+      };
+
+      const result = service.validateMovements(request);
+      expect(result.message).toBe('Validation failed');
+      if ('reasons' in result) {
+        const duplicateReason = result.reasons.find(
+          (r) => r.type === 'DUPLICATE_TRANSACTION',
+        );
+        expect(duplicateReason).toBeDefined();
+      }
+    });
+
+    it('should not detect duplicates when labels are different enough', () => {
+      const request: ValidationRequestDto = {
+        movements: [
+          {
+            id: 1,
+            date: '2024-01-01',
+            label: 'PAYMENT ABC',
+            amount: 100,
+          },
+          {
+            id: 2,
+            date: '2024-01-01',
+            label: 'WITHDRAWAL XYZ', // Very different (<80% similarity)
+            amount: 100,
+          },
+        ],
+        balances: [
+          {
+            date: '2024-01-31',
+            balance: 200,
+          },
+        ],
+      };
+
+      const result = service.validateMovements(request);
+      // Should not detect duplicates, but might have other issues
+      if ('reasons' in result) {
+        const duplicateReason = result.reasons.find(
+          (r) => r.type === 'DUPLICATE_TRANSACTION',
+        );
+        expect(duplicateReason).toBeUndefined();
+      }
+    });
+
+    it('should handle empty movements array', () => {
+      const request: ValidationRequestDto = {
+        movements: [],
+        balances: [
+          {
+            date: '2024-01-31',
+            balance: 0,
+          },
+        ],
+      };
+
+      const result = service.validateMovements(request);
+      // Should accept if balance is 0 and no movements
+      expect(result.message).toBe('Accepted');
+    });
+
+    it('should handle movements with special characters in labels', () => {
+      const request: ValidationRequestDto = {
+        movements: [
+          {
+            id: 1,
+            date: '2024-01-01',
+            label: 'PAYMENT #123!@#$%',
+            amount: 100,
+          },
+          {
+            id: 2,
+            date: '2024-01-01',
+            label: 'PAYMENT 123', // Should match after normalization
+            amount: 100,
+          },
+        ],
+        balances: [
+          {
+            date: '2024-01-31',
+            balance: 200,
+          },
+        ],
+      };
+
+      const result = service.validateMovements(request);
+      expect(result.message).toBe('Validation failed');
+      if ('reasons' in result) {
+        const duplicateReason = result.reasons.find(
+          (r) => r.type === 'DUPLICATE_TRANSACTION',
+        );
+        expect(duplicateReason).toBeDefined();
+      }
+    });
+
+    it('should handle multiple balance points with correct validation', () => {
+      const request: ValidationRequestDto = {
+        movements: [
+          {
+            id: 1,
+            date: '2024-01-05',
+            label: 'SALARY',
+            amount: 3000,
+          },
+          {
+            id: 2,
+            date: '2024-01-10',
+            label: 'RENT',
+            amount: -800,
+          },
+          {
+            id: 3,
+            date: '2024-02-05',
+            label: 'SALARY',
+            amount: 3000,
+          },
+          {
+            id: 4,
+            date: '2024-02-10',
+            label: 'RENT',
+            amount: -800,
+          },
+        ],
+        balances: [
+          {
+            date: '2024-01-31',
+            balance: 2200, // 3000 - 800
+          },
+          {
+            date: '2024-02-28',
+            balance: 4400, // 2200 + 3000 - 800
+          },
+        ],
+      };
+
+      const result = service.validateMovements(request);
+      expect(result.message).toBe('Accepted');
+    });
   });
 });
