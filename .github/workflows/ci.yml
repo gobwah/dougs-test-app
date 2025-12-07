@@ -3,8 +3,6 @@ name: CI
 on:
   push:
     # Trigger on all branches
-  pull_request:
-    # Trigger on all pull requests
 
 jobs:
   lint:

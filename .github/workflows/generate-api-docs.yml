@@ -1,8 +1,12 @@
 name: Generate API Documentation
 
+# NOTE: This workflow is kept as a backup. Documentation is primarily
+# generated via pre-commit hook. This ensures documentation is updated
+# even if commits are made directly on GitHub or if the hook is bypassed.
+
 on:
   push:
-    branches: [main, master, develop]
+    branches: [main]
     paths:
       - 'src/**/*.ts'
       - 'src/**/*.dto.ts'

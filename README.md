@@ -54,7 +54,22 @@ La documentation OpenAPI est générée automatiquement et disponible dans le do
 - **`documentation/openapi.json`** : Format JSON
 - **`documentation/openapi.yaml`** : Format YAML
 
-Cette documentation est mise à jour automatiquement lors de chaque modification de l'API via un workflow GitHub Actions.
+#### Génération automatique
+
+La documentation est générée automatiquement **avant chaque commit** via un hook Git pre-commit (Husky) si des fichiers API ont été modifiés. Les fichiers générés sont automatiquement ajoutés au commit.
+
+**Fichiers déclencheurs** :
+
+- `src/**/*.ts` (fichiers TypeScript)
+- `src/**/*.dto.ts` (DTOs)
+- `src/**/*.controller.ts` (controllers)
+- `src/**/*.service.ts` (services)
+- `src/**/*.module.ts` (modules)
+- `package.json` (dépendances)
+
+Un workflow GitHub Actions est également configuré comme backup pour les cas où des commits sont faits directement sur GitHub.
+
+#### Génération manuelle
 
 Pour générer la documentation manuellement :
 
