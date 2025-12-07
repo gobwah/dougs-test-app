@@ -38,6 +38,14 @@ Ce document présente ma démarche de réflexion et les choix techniques effectu
   - [8.1 Fonctionnalités Implémentées](#81-fonctionnalités-implémentées)
   - [8.2 Qualité du Code](#82-qualité-du-code)
   - [8.3 Conformité aux Exigences](#83-conformité-aux-exigences)
+- [⚡ Étape 9 : Analyse de Complexité Algorithmique](#-étape-9--analyse-de-complexité-algorithmique)
+  - [9.1 Notations Utilisées](#91-notations-utilisées)
+  - [9.2 Vue d'Ensemble de la Complexité](#92-vue-densemble-de-la-complexité)
+  - [9.3 Détail par Fonction Utilitaire](#93-détail-par-fonction-utilitaire)
+  - [9.4 Analyse Globale](#94-analyse-globale)
+  - [9.5 Optimisations Possibles](#95-optimisations-possibles)
+  - [9.6 Résumé des Complexités](#96-résumé-des-complexités)
+  - [9.7 Recommandations](#97-recommandations)
 - [🎓 Conclusion](#-conclusion)
   - [Points Clés de l'Approche](#points-clés-de-lapproche)
   - [Apprentissages](#apprentissages)
@@ -356,7 +364,11 @@ flowchart TD
 src/
 ├── movements/
 │   ├── movements.controller.ts    # Point d'entrée HTTP
-│   ├── movements.service.ts        # Logique métier
+│   ├── movements.service.ts        # Orchestration de la logique métier
+│   ├── utils/                      # Fonctions utilitaires testables
+│   │   ├── movement-parsing.utils.ts      # Parsing et tri des données
+│   │   ├── duplicate-detection.utils.ts   # Détection de doublons
+│   │   └── balance-validation.utils.ts    # Validation des balances
 │   └── dto/
 │       ├── validation-request.dto.ts   # Validation des entrées
 │       └── validation-response.dto.ts  # Structure des réponses
@@ -365,7 +377,8 @@ src/
 **Justification** :
 
 - **Controller** : Gère uniquement les aspects HTTP (routing, codes de statut)
-- **Service** : Contient toute la logique métier, facilement testable
+- **Service** : Orchestre les utilitaires et coordonne la validation
+- **Utils** : Fonctions pures et testables unitairement, facilitant la maintenance
 - **DTOs** : Validation et typage des données d'entrée/sortie
 
 #### Architecture du Système
@@ -671,6 +684,7 @@ graph TD
 3. **Doublons** : Transactions dupliquées détectées
 4. **Mouvements après** : Transactions après le dernier point
 5. **Points multiples** : Validation de plusieurs points de contrôle
+6. **Erreurs multiples** : Collecte de plusieurs types d'erreurs simultanément
 
 ---
 
@@ -704,6 +718,10 @@ graph TD
    - Ajouter des métriques (nombre de mouvements, période couverte)
    - Aider à comprendre le contexte de la validation
 
+4. **Optimisation de la détection de doublons** :
+   - Indexation par hash pour réduire la complexité O(n² × l) à O(n × l)
+   - Parallélisation pour les gros volumes de données
+
 ---
 
 ## 📊 Étape 8 : Résultats et Validation
@@ -723,6 +741,7 @@ graph TD
 - **Tests** : Couverture des cas principaux
 - **Documentation** : README et exemples fournis
 - **TypeScript** : Typage fort pour la sécurité
+- **Maintenabilité** : Fonctions courtes et focalisées, facilitant la maintenance
 
 ### 8.3 Conformité aux Exigences
 
