@@ -1,7 +1,4 @@
-import {
-  ValidationReason,
-  ValidationReasonType,
-} from '../dto/validation-response.dto';
+import { ValidationReason, ValidationReasonType } from '../dto/responseDto';
 import { Movement, Balance } from './movementParsing';
 
 const BALANCE_TOLERANCE = 0.01; // Allow small floating point differences

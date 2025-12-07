@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MovementsService } from '../../../src/movements/movements.service';
-import { ValidationRequestDto } from '../../../src/movements/dto/validation-request.dto';
+import { ValidationRequestDto } from '../../../src/movements/dto/requestDto';
 
 /**
  * Tests d'intégration pour MovementsService

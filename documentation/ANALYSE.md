@@ -370,8 +370,8 @@ src/
 │   │   ├── duplicateDetection.ts   # Détection de doublons
 │   │   └── balanceValidation.ts    # Validation des balances
 │   └── dto/
-│       ├── validation-request.dto.ts   # Validation des entrées
-│       └── validation-response.dto.ts  # Structure des réponses
+│       ├── requestDto.ts   # Validation des entrées
+│       └── responseDto.ts  # Structure des réponses
 ```
 
 **Justification** :

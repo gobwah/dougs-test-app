@@ -10,7 +10,7 @@ import {
   Movement,
   Balance,
 } from '../../../src/movements/utils/movementParsing';
-import { ValidationReasonType } from '../../../src/movements/dto/validation-response.dto';
+import { ValidationReasonType } from '../../../src/movements/dto/responseDto';
 
 describe('BalanceValidationUtils', () => {
   describe('filterMovementsUpToDate', () => {

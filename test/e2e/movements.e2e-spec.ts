@@ -1,7 +1,7 @@
 import request from 'supertest';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { ValidationReasonType } from '../../src/movements/dto/validation-response.dto';
+import { ValidationReasonType } from '../../src/movements/dto/responseDto';
 
 // Get the server URL from the global setup
 const SERVER_URL =

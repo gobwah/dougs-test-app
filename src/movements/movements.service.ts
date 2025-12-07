@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { ValidationRequestDto } from './dto/validation-request.dto';
+import { ValidationRequestDto } from './dto/requestDto';
 import {
   ValidationFailureResponse,
   ValidationReason,
   ValidationReasonType,
   ValidationSuccessResponse,
-} from './dto/validation-response.dto';
+} from './dto/responseDto';
 import {
   parseAndSortMovements,
   parseAndSortBalances,

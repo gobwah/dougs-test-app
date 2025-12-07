@@ -3,10 +3,7 @@ import {
   parseAndSortBalances,
   validateBalanceDateOrder,
 } from '../../../src/movements/utils/movementParsing';
-import {
-  MovementDto,
-  BalanceDto,
-} from '../../../src/movements/dto/validation-request.dto';
+import { MovementDto, BalanceDto } from '../../../src/movements/dto/requestDto';
 
 describe('MovementParsingUtils', () => {
   describe('parseAndSortMovements', () => {
