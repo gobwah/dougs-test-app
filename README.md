@@ -58,10 +58,6 @@ Pour la documentation complète de l'API (schémas, exemples, types d'erreurs), 
 - **Swagger UI** : `http://localhost:3000/api` (quand l'application est démarrée)
 - **Documentation OpenAPI** : Voir [documentation/README.md](./documentation/README.md#-documentation-api-openapi)
 
-## Algorithme de validation
-
-Pour une description détaillée de l'algorithme avec diagrammes, consultez [documentation/ANALYSE.md](./documentation/ANALYSE.md#-étape-4--algorithme-de-validation).
-
 ## Tests
 
 ```bash
@@ -91,45 +87,6 @@ npm run test:watch
 - **Tests unitaires** : Tests rapides des composants isolés
 - **Tests d'intégration** : Tests de l'API en mémoire (utilisent les fichiers JSON d'exemples)
 - **Tests e2e** : Tests avec serveur HTTP réel (vérifient le build complet)
-
-## Structure du projet
-
-```
-src/
-├── main.ts                    # Point d'entrée de l'application
-├── app.module.ts             # Module principal
-├── health/
-│   └── health.controller.ts   # Contrôleur health check
-└── movements/
-    ├── movements.controller.ts    # Contrôleur API
-    ├── movements.service.ts        # Service de validation
-    └── dto/
-        ├── validation-request.dto.ts   # DTO de requête
-        └── validation-response.dto.ts  # DTO de réponse
-
-test/
-├── unit/                          # Tests unitaires (composants isolés)
-│   ├── controllers/
-│   │   ├── health.controller.spec.ts
-│   │   └── movements.controller.spec.ts
-│   └── services/
-│       └── movements.service.spec.ts
-├── integration/                   # Tests d'intégration (API en mémoire)
-│   └── movements.integration.spec.ts
-└── e2e/                           # Tests end-to-end (serveur réel)
-    ├── movements.e2e-spec.ts
-    ├── jest-e2e.json
-    ├── jest-e2e.global-setup.ts
-    ├── jest-e2e.setup.ts
-    └── jest-e2e.teardown.ts
-```
-
-## Technologies utilisées
-
-- **NestJS** : Framework Node.js pour applications serveur
-- **TypeScript** : Langage de programmation
-- **class-validator** : Validation des données
-- **Jest** : Framework de tests
 
 ## Notes d'implémentation
 
