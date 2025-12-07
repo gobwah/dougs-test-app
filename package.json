@@ -72,6 +72,7 @@
       "!src/**/*.module.ts"
     ],
     "coverageDirectory": "coverage",
+    "coverageReporters": ["text", "lcov", "json", "json-summary"],
     "coverageThreshold": {
       "global": {
         "lines": 80,

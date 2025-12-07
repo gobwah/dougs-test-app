@@ -79,13 +79,28 @@ jobs:
           node -e "
           const fs = require('fs');
           const coverage = JSON.parse(fs.readFileSync('coverage/coverage-summary.json', 'utf8'));
-          const linesCoverage = coverage.total.lines.pct;
           const threshold = 80;
-          if (linesCoverage < threshold) {
-            console.error(\`Coverage \${linesCoverage}% is below threshold \${threshold}%\`);
+          
+          const metrics = [
+            { name: 'Lines', value: coverage.total.lines.pct },
+            { name: 'Branches', value: coverage.total.branches.pct },
+            { name: 'Functions', value: coverage.total.functions.pct },
+            { name: 'Statements', value: coverage.total.statements.pct }
+          ];
+          
+          let failed = false;
+          for (const metric of metrics) {
+            if (metric.value < threshold) {
+              console.error(\`\${metric.name} coverage \${metric.value}% is below threshold \${threshold}%\`);
+              failed = true;
+            } else {
+              console.log(\`\${metric.name} coverage \${metric.value}% meets threshold \${threshold}%\`);
+            }
+          }
+          
+          if (failed) {
             process.exit(1);
           }
-          console.log(\`Coverage \${linesCoverage}% meets threshold \${threshold}%\`);
           "
 
       - name: Upload coverage reports to Codecov
