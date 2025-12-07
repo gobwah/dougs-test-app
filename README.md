@@ -150,8 +150,10 @@ Valide une liste d'opérations bancaires contre des points de contrôle.
 ## Tests
 
 ```bash
-# Exécuter tous les tests
+# Exécuter les tests unitaires (par défaut)
 npm test
+# ou
+npm run test:unit
 
 # Tests avec couverture (seuil minimum: 80%)
 npm run test:cov
@@ -162,7 +164,10 @@ npm run test:integration
 # Tests e2e (serveur réel)
 npm run test:e2e
 
-# Tests en mode watch
+# Tous les tests (unitaires + intégration)
+npm run test:all
+
+# Tests en mode watch (uniquement unitaires)
 npm run test:watch
 ```
 
@@ -188,11 +193,20 @@ src/
         └── validation-response.dto.ts  # DTO de réponse
 
 test/
-└── movements/
-    ├── movements.controller.spec.ts    # Tests unitaires contrôleur
-    ├── movements.service.spec.ts        # Tests unitaires service
-    ├── movements.integration.spec.ts    # Tests d'intégration
-    └── movements.e2e-spec.ts           # Tests e2e
+├── unit/                          # Tests unitaires (composants isolés)
+│   ├── controllers/
+│   │   ├── health.controller.spec.ts
+│   │   └── movements.controller.spec.ts
+│   └── services/
+│       └── movements.service.spec.ts
+├── integration/                   # Tests d'intégration (API en mémoire)
+│   └── movements.integration.spec.ts
+└── e2e/                           # Tests end-to-end (serveur réel)
+    ├── movements.e2e-spec.ts
+    ├── jest-e2e.json
+    ├── jest-e2e.global-setup.ts
+    ├── jest-e2e.setup.ts
+    └── jest-e2e.teardown.ts
 ```
 
 ## Technologies utilisées
