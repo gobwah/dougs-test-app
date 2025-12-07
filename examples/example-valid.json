@@ -1,0 +1,35 @@
+{
+  "movements": [
+    {
+      "id": 1,
+      "date": "2024-01-05",
+      "label": "SALARY PAYMENT",
+      "amount": 3000.00
+    },
+    {
+      "id": 2,
+      "date": "2024-01-10",
+      "label": "RENT PAYMENT",
+      "amount": -800.00
+    },
+    {
+      "id": 3,
+      "date": "2024-01-15",
+      "label": "UTILITIES",
+      "amount": -150.00
+    },
+    {
+      "id": 4,
+      "date": "2024-01-20",
+      "label": "GROCERY STORE",
+      "amount": -120.50
+    }
+  ],
+  "balances": [
+    {
+      "date": "2024-01-31",
+      "balance": 1929.50
+    }
+  ]
+}
+
