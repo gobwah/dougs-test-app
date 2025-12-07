@@ -62,7 +62,7 @@ describe('Movements Integration Tests (Examples)', () => {
       );
       expect(balanceMismatchReason).toBeDefined();
       expect(balanceMismatchReason.details.expectedBalance).toBe(1929.5);
-      expect(balanceMismatchReason.details.actualBalance).toBe(2000.0);
+      expect(balanceMismatchReason.details.actualBalance).toBe(2000);
     });
   });
 
