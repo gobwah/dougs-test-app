@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [main, master, develop]
+    # Trigger on all branches
   pull_request:
-    branches: [main, master, develop]
+    # Trigger on all pull requests
 
 jobs:
   lint:
@@ -80,14 +80,14 @@ jobs:
           const fs = require('fs');
           const coverage = JSON.parse(fs.readFileSync('coverage/coverage-summary.json', 'utf8'));
           const threshold = 80;
-          
+
           const metrics = [
             { name: 'Lines', value: coverage.total.lines.pct },
             { name: 'Branches', value: coverage.total.branches.pct },
             { name: 'Functions', value: coverage.total.functions.pct },
             { name: 'Statements', value: coverage.total.statements.pct }
           ];
-          
+
           let failed = false;
           for (const metric of metrics) {
             if (metric.value < threshold) {
@@ -97,7 +97,7 @@ jobs:
               console.log(\`\${metric.name} coverage \${metric.value}% meets threshold \${threshold}%\`);
             }
           }
-          
+
           if (failed) {
             process.exit(1);
           }
