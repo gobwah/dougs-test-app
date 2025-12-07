@@ -1,0 +1,370 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/movements/validation": {
+      "post": {
+        "operationId": "MovementsController_validateMovements",
+        "summary": "Valider des mouvements bancaires",
+        "description": "Valide une liste de mouvements bancaires en les comparant avec des points de contrôle (soldes). Détecte les incohérences, doublons et anomalies.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Données de validation contenant les mouvements et les balances",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ValidationRequestDto"
+              },
+              "examples": {
+                "valid": {
+                  "summary": "Exemple de validation réussie",
+                  "value": {
+                    "movements": [
+                      {
+                        "id": 1,
+                        "date": "2024-01-05",
+                        "label": "SALARY PAYMENT",
+                        "amount": 3000
+                      },
+                      {
+                        "id": 2,
+                        "date": "2024-01-10",
+                        "label": "RENT PAYMENT",
+                        "amount": -800
+                      }
+                    ],
+                    "balances": [
+                      {
+                        "date": "2024-01-31",
+                        "balance": 1929.5
+                      }
+                    ]
+                  }
+                },
+                "withError": {
+                  "summary": "Exemple avec erreur de balance",
+                  "value": {
+                    "movements": [
+                      {
+                        "id": 1,
+                        "date": "2024-01-05",
+                        "label": "SALARY PAYMENT",
+                        "amount": 3000
+                      }
+                    ],
+                    "balances": [
+                      {
+                        "date": "2024-01-31",
+                        "balance": 2000
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Validation réussie",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationSuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation échouée avec détails des erreurs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationFailureResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "movements"
+        ]
+      }
+    },
+    "/health": {
+      "get": {
+        "operationId": "HealthController_check",
+        "summary": "Vérifier l'état de l'application",
+        "description": "Retourne le statut de santé de l'application avec son temps de fonctionnement.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Application en cours d'exécution",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "ok"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2024-01-15T10:30:00.000Z"
+                    },
+                    "uptime": {
+                      "type": "number",
+                      "description": "Temps de fonctionnement en secondes",
+                      "example": 123.456
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "health"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Dougs Bank Validation API",
+    "description": "API de validation des opérations bancaires pour Dougs, cabinet d'expertise-comptable. Permet de valider l'intégrité des synchronisations bancaires en comparant les opérations avec les points de contrôle (soldes).",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [
+    {
+      "name": "movements",
+      "description": "Validation des mouvements bancaires"
+    },
+    {
+      "name": "health",
+      "description": "Vérification de l'état de l'application"
+    }
+  ],
+  "servers": [],
+  "components": {
+    "schemas": {
+      "MovementDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "Identifiant unique du mouvement",
+            "example": 1
+          },
+          "date": {
+            "type": "string",
+            "description": "Date du mouvement au format ISO (YYYY-MM-DD)",
+            "example": "2024-01-15"
+          },
+          "label": {
+            "type": "string",
+            "description": "Libellé du mouvement",
+            "example": "SALARY PAYMENT"
+          },
+          "amount": {
+            "type": "number",
+            "description": "Montant du mouvement (positif pour crédit, négatif pour débit)",
+            "example": 3000
+          }
+        },
+        "required": [
+          "id",
+          "date",
+          "label",
+          "amount"
+        ]
+      },
+      "BalanceDto": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "description": "Date du point de contrôle au format ISO (YYYY-MM-DD)",
+            "example": "2024-01-31"
+          },
+          "balance": {
+            "type": "number",
+            "description": "Solde au point de contrôle",
+            "example": 1929.5
+          }
+        },
+        "required": [
+          "date",
+          "balance"
+        ]
+      },
+      "ValidationRequestDto": {
+        "type": "object",
+        "properties": {
+          "movements": {
+            "description": "Liste des mouvements bancaires à valider",
+            "example": [
+              {
+                "id": 1,
+                "date": "2024-01-05",
+                "label": "SALARY PAYMENT",
+                "amount": 3000
+              },
+              {
+                "id": 2,
+                "date": "2024-01-10",
+                "label": "RENT PAYMENT",
+                "amount": -800
+              }
+            ],
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MovementDto"
+            }
+          },
+          "balances": {
+            "description": "Liste des points de contrôle (soldes)",
+            "example": [
+              {
+                "date": "2024-01-31",
+                "balance": 1929.5
+              }
+            ],
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BalanceDto"
+            }
+          }
+        },
+        "required": [
+          "movements",
+          "balances"
+        ]
+      },
+      "ValidationSuccessResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Message de succès",
+            "example": "Accepted"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "ValidationReasonDetailsDto": {
+        "type": "object",
+        "properties": {
+          "balanceDate": {
+            "type": "string",
+            "description": "Date du point de contrôle concerné"
+          },
+          "expectedBalance": {
+            "type": "number",
+            "description": "Solde attendu"
+          },
+          "actualBalance": {
+            "type": "number",
+            "description": "Solde réel"
+          },
+          "difference": {
+            "type": "number",
+            "description": "Différence entre solde attendu et réel"
+          },
+          "duplicateMovements": {
+            "type": "array",
+            "description": "Mouvements dupliqués détectés",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "number"
+                },
+                "date": {
+                  "type": "string"
+                },
+                "amount": {
+                  "type": "number"
+                },
+                "label": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "missingAmount": {
+            "type": "number",
+            "description": "Montant manquant"
+          },
+          "periodStart": {
+            "type": "string",
+            "description": "Début de la période concernée"
+          },
+          "periodEnd": {
+            "type": "string",
+            "description": "Fin de la période concernée"
+          }
+        }
+      },
+      "ValidationReasonDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "BALANCE_MISMATCH",
+              "DUPLICATE_TRANSACTION",
+              "MISSING_TRANSACTION",
+              "INVALID_DATE_ORDER"
+            ],
+            "description": "Type de raison de validation",
+            "example": "BALANCE_MISMATCH"
+          },
+          "message": {
+            "type": "string",
+            "description": "Message descriptif de la raison",
+            "example": "Balance mismatch at control point 2024-01-31T00:00:00.000Z"
+          },
+          "details": {
+            "description": "Détails spécifiques à la raison",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ValidationReasonDetailsDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "type",
+          "message",
+          "details"
+        ]
+      },
+      "ValidationFailureResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Message d'échec",
+            "example": "Validation failed"
+          },
+          "reasons": {
+            "description": "Liste des raisons de l'échec de validation",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ValidationReasonDto"
+            }
+          }
+        },
+        "required": [
+          "message",
+          "reasons"
+        ]
+      }
+    }
+  }
+}

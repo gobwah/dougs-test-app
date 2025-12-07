@@ -1,0 +1,19 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Check if any API-related files have been modified
+API_FILES_CHANGED=$(git diff --cached --name-only --diff-filter=ACM | grep -E 'src/.*\.(ts|dto\.ts|controller\.ts|service\.ts|module\.ts)$|package\.json' || true)
+
+if [ -n "$API_FILES_CHANGED" ]; then
+  echo "📝 API files modified, generating documentation..."
+  
+  # Generate API documentation
+  npm run generate:api-docs
+  
+  # Add generated documentation files to the commit
+  git add documentation/openapi.json documentation/openapi.yaml documentation/api-documentation.html 2>/dev/null || true
+  
+  echo "✅ API documentation updated and added to commit"
+else
+  echo "ℹ️  No API files modified, skipping documentation generation"
+fi

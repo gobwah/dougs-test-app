@@ -37,6 +37,64 @@ npm run start:prod
 
 L'application sera accessible sur `http://localhost:3000`
 
+## Documentation API
+
+### Documentation interactive (Swagger UI)
+
+La documentation interactive de l'API est disponible via Swagger UI à l'adresse :
+
+- **Swagger UI** : `http://localhost:3000/api`
+
+Vous pouvez tester les endpoints directement depuis l'interface Swagger.
+
+### Documentation OpenAPI
+
+La documentation OpenAPI est générée automatiquement et disponible dans le dossier `documentation/` :
+
+- **`documentation/openapi.json`** : Format JSON
+- **`documentation/openapi.yaml`** : Format YAML
+- **`documentation/api-documentation.html`** : Documentation statique HTML (Redoc)
+
+#### Génération automatique
+
+La documentation est générée automatiquement **avant chaque commit** via un hook Git pre-commit (Husky) si des fichiers API ont été modifiés. Les fichiers générés sont automatiquement ajoutés au commit.
+
+**Fichiers déclencheurs** :
+
+- `src/**/*.ts` (fichiers TypeScript)
+- `src/**/*.dto.ts` (DTOs)
+- `src/**/*.controller.ts` (controllers)
+- `src/**/*.service.ts` (services)
+- `src/**/*.module.ts` (modules)
+- `package.json` (dépendances)
+
+Un workflow GitHub Actions est également configuré comme backup pour les cas où des commits sont faits directement sur GitHub.
+
+#### Génération manuelle
+
+Pour générer la documentation manuellement :
+
+```bash
+npm run generate:api-docs
+```
+
+#### Visualiser la documentation statique
+
+La documentation HTML statique peut être ouverte directement dans votre navigateur :
+
+```bash
+# Sur macOS
+open documentation/api-documentation.html
+
+# Sur Linux
+xdg-open documentation/api-documentation.html
+
+# Sur Windows
+start documentation/api-documentation.html
+```
+
+Ou simplement double-cliquez sur le fichier `documentation/api-documentation.html` dans votre explorateur de fichiers.
+
 ## API
 
 ### GET /health
