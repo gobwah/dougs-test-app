@@ -1,5 +1,10 @@
 # Dougs Bank Validation System
 
+[![CI](https://github.com/YOUR_USERNAME/YOUR_REPO_NAME/workflows/CI/badge.svg)](https://github.com/YOUR_USERNAME/YOUR_REPO_NAME/actions)
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D20.x-brightgreen)](https://nodejs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.1-blue)](https://www.typescriptlang.org/)
+[![NestJS](https://img.shields.io/badge/NestJS-10.0-red)](https://nestjs.com/)
+
 Système de validation des opérations bancaires pour Dougs, cabinet d'expertise-comptable.
 
 ## Description
@@ -34,6 +39,20 @@ L'application sera accessible sur `http://localhost:3000`
 
 ## API
 
+### GET /health
+
+Endpoint de santé pour vérifier que l'application est en cours d'exécution.
+
+#### Response (200)
+
+```json
+{
+  "status": "ok",
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "uptime": 123.456
+}
+```
+
 ### POST /movements/validation
 
 Valide une liste d'opérations bancaires contre des points de contrôle.
@@ -47,19 +66,19 @@ Valide une liste d'opérations bancaires contre des points de contrôle.
       "id": 1,
       "date": "2024-01-15",
       "label": "PAYMENT REF 12345",
-      "amount": 100.50
+      "amount": 100.5
     },
     {
       "id": 2,
       "date": "2024-01-20",
       "label": "WITHDRAWAL",
-      "amount": -50.00
+      "amount": -50.0
     }
   ],
   "balances": [
     {
       "date": "2024-01-31",
-      "balance": 50.50
+      "balance": 50.5
     }
   ]
 }
@@ -84,9 +103,9 @@ Valide une liste d'opérations bancaires contre des points de contrôle.
       "message": "Balance mismatch at control point 2024-01-31T00:00:00.000Z",
       "details": {
         "balanceDate": "2024-01-31T00:00:00.000Z",
-        "expectedBalance": 50.50,
-        "actualBalance": 100.50,
-        "difference": 50.00
+        "expectedBalance": 50.5,
+        "actualBalance": 100.5,
+        "difference": 50.0
       }
     },
     {
@@ -97,13 +116,13 @@ Valide une liste d'opérations bancaires contre des points de contrôle.
           {
             "id": 1,
             "date": "2024-01-15T00:00:00.000Z",
-            "amount": 100.50,
+            "amount": 100.5,
             "label": "PAYMENT REF 12345"
           },
           {
             "id": 3,
             "date": "2024-01-15T00:00:00.000Z",
-            "amount": 100.50,
+            "amount": 100.5,
             "label": "PAYMENT REF 12345"
           }
         ]
@@ -131,15 +150,27 @@ Valide une liste d'opérations bancaires contre des points de contrôle.
 ## Tests
 
 ```bash
-# Exécuter les tests
+# Exécuter tous les tests
 npm test
 
-# Tests avec couverture
+# Tests avec couverture (seuil minimum: 80%)
 npm run test:cov
+
+# Tests d'intégration uniquement
+npm run test:integration
+
+# Tests e2e (serveur réel)
+npm run test:e2e
 
 # Tests en mode watch
 npm run test:watch
 ```
+
+### Types de tests
+
+- **Tests unitaires** : Tests rapides des composants isolés
+- **Tests d'intégration** : Tests de l'API en mémoire (utilisent les fichiers JSON d'exemples)
+- **Tests e2e** : Tests avec serveur HTTP réel (vérifient le build complet)
 
 ## Structure du projet
 
@@ -147,6 +178,8 @@ npm run test:watch
 src/
 ├── main.ts                    # Point d'entrée de l'application
 ├── app.module.ts             # Module principal
+├── health/
+│   └── health.controller.ts   # Contrôleur health check
 └── movements/
     ├── movements.controller.ts    # Contrôleur API
     ├── movements.service.ts        # Service de validation
@@ -156,8 +189,10 @@ src/
 
 test/
 └── movements/
-    ├── movements.controller.spec.ts    # Tests du contrôleur
-    └── movements.service.spec.ts        # Tests du service
+    ├── movements.controller.spec.ts    # Tests unitaires contrôleur
+    ├── movements.service.spec.ts        # Tests unitaires service
+    ├── movements.integration.spec.ts    # Tests d'intégration
+    └── movements.e2e-spec.ts           # Tests e2e
 ```
 
 ## Technologies utilisées
@@ -177,4 +212,3 @@ test/
 ## Exemples d'utilisation
 
 Voir le fichier `examples/` pour des exemples de requêtes.
-

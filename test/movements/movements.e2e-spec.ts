@@ -99,14 +99,15 @@ describe('Movements E2E Tests (Examples)', () => {
   });
 
   describe('Health check', () => {
-    it('should respond to requests', async () => {
-      // Test that the server is actually running and responding
-      const response = await request(SERVER_URL)
-        .post('/movements/validation')
-        .send({ movements: [], balances: [] })
-        .expect(400); // Should fail validation but server is responding
+    it('should return health status', async () => {
+      const response = await request(SERVER_URL).get('/health').expect(200);
 
-      expect(response.body).toBeDefined();
+      expect(response.body).toMatchObject({
+        status: 'ok',
+        timestamp: expect.any(String),
+        uptime: expect.any(Number),
+      });
+      expect(response.body.uptime).toBeGreaterThanOrEqual(0);
     });
   });
 });
