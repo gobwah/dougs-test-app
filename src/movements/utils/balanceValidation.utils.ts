@@ -2,7 +2,7 @@ import {
   ValidationReason,
   ValidationReasonType,
 } from '../dto/validation-response.dto';
-import { Movement, Balance } from './movement-parsing.utils';
+import { Movement, Balance } from './movementParsing.utils';
 
 const BALANCE_TOLERANCE = 0.01; // Allow small floating point differences
 

@@ -10,13 +10,13 @@ import {
   parseAndSortMovements,
   parseAndSortBalances,
   validateBalanceDateOrder,
-} from './utils/movement-parsing.utils';
-import { detectDuplicates } from './utils/duplicate-detection.utils';
+} from './utils/movementParsing.utils';
+import { detectDuplicates } from './utils/duplicateDetection.utils';
 import {
   validateFirstBalance,
   validateSubsequentBalances,
   checkMovementsAfterLastBalance,
-} from './utils/balance-validation.utils';
+} from './utils/balanceValidation.utils';
 
 @Injectable()
 export class MovementsService {
