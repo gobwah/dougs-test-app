@@ -745,6 +745,203 @@ pie title Conformité aux Exigences
 
 ---
 
+## ⚡ Étape 9 : Analyse de Complexité Algorithmique
+
+Cette section détaille la complexité temporelle et spatiale de chaque grande étape de l'algorithme de validation. Cette analyse permet de comprendre les performances attendues et d'identifier les éventuels goulots d'étranglement.
+
+### 9.1 Notations Utilisées
+
+- **n** : Nombre de mouvements bancaires
+- **m** : Nombre de points de contrôle (balances)
+- **b** : Nombre de balances (b = m)
+- **l** : Longueur moyenne des libellés de transactions
+- **k** : Taille d'un groupe de transactions potentielles (pour la détection de doublons)
+
+### 9.2 Vue d'Ensemble de la Complexité
+
+L'algorithme principal `validateMovements` a une complexité globale de :
+
+- **Complexité temporelle** : O(n log n + m log m + n² × l + b × n)
+- **Complexité spatiale** : O(n + m)
+
+#### Décomposition par Phase
+
+```mermaid
+graph TD
+    A[validateMovements]:::rootStyle --> B[Parse & Sort Movements<br/>O(n log n)]:::parseStyle
+    A --> C[Parse & Sort Balances<br/>O(m log m)]:::parseStyle
+    A --> D[Validate Date Order<br/>O(m)]:::validateStyle
+    A --> E[Detect Duplicates<br/>O(n² × l)]:::duplicateStyle
+    A --> F[Validate Balances<br/>O(b × n)]:::balanceStyle
+
+    B --> G[Total: O(n log n + m log m + n² × l + b × n)]:::totalStyle
+    C --> G
+    D --> G
+    E --> G
+    F --> G
+
+    classDef rootStyle fill:#1e40af,stroke:#1e3a8a,stroke-width:3px,color:#ffffff,font-weight:bold
+    classDef parseStyle fill:#3b82f6,stroke:#2563eb,stroke-width:2px,color:#ffffff
+    classDef validateStyle fill:#15803d,stroke:#166534,stroke-width:2px,color:#ffffff
+    classDef duplicateStyle fill:#dc2626,stroke:#991b1b,stroke-width:2px,color:#ffffff
+    classDef balanceStyle fill:#ea580c,stroke:#9a3412,stroke-width:2px,color:#ffffff
+    classDef totalStyle fill:#7c3aed,stroke:#6b21a8,stroke-width:3px,color:#ffffff,font-weight:bold
+```
+
+### 9.3 Détail par Fonction Utilitaire
+
+#### 9.3.1 Parsing et Tri des Données
+
+**Fonctions** : `parseAndSortMovements`, `parseAndSortBalances`
+
+| Fonction                   | Complexité Temporelle | Complexité Spatiale | Justification                  |
+| -------------------------- | --------------------- | ------------------- | ------------------------------ |
+| `parseAndSortMovements`    | O(n log n)            | O(n)                | Parsing O(n) + Tri O(n log n)  |
+| `parseAndSortBalances`     | O(m log m)            | O(m)                | Parsing O(m) + Tri O(m log m)  |
+| `validateBalanceDateOrder` | O(m)                  | O(1)                | Parcours linéaire des balances |
+
+**Détails** :
+
+- Le parsing nécessite de créer un nouvel objet pour chaque mouvement/balance : O(n) ou O(m)
+- Le tri utilise l'algorithme natif de JavaScript (Timsort) : O(n log n) ou O(m log m)
+- La validation de l'ordre chronologique est un simple parcours linéaire
+
+#### 9.3.2 Détection de Doublons
+
+**Fonction principale** : `detectDuplicates`
+
+| Étape                       | Complexité Temporelle | Complexité Spatiale | Justification                                               |
+| --------------------------- | --------------------- | ------------------- | ----------------------------------------------------------- |
+| Groupement par date+montant | O(n)                  | O(n)                | Parcours linéaire avec Map                                  |
+| Comparaison des libellés    | O(k² × l) par groupe  | O(k)                | Comparaison paire-à-paire avec Levenshtein                  |
+| **Total (cas moyen)**       | O(n² × l)             | O(n)                | Dans le pire cas, tous les mouvements ont même date+montant |
+| **Total (cas optimal)**     | O(n × l)              | O(n)                | Si peu de groupes avec k=1 ou k=2                           |
+
+**Fonctions utilitaires** :
+
+| Fonction              | Complexité Temporelle       | Complexité Spatiale | Justification                                   |
+| --------------------- | --------------------------- | ------------------- | ----------------------------------------------- |
+| `normalizeLabel`      | O(l)                        | O(l)                | Parcours de la chaîne + remplacements           |
+| `levenshteinDistance` | O(l₁ × l₂)                  | O(l₁ × l₂)          | Matrice de taille l₁ × l₂                       |
+| `calculateSimilarity` | O(l₁ × l₂)                  | O(l₁ × l₂)          | Appelle Levenshtein                             |
+| `areLabelsSimilar`    | O(min(l₁, l₂)) à O(l₁ × l₂) | O(l₁ × l₂)          | Contient check O(min) ou Levenshtein O(l₁ × l₂) |
+
+**Détails** :
+
+- Le groupement crée une Map avec clé `date_amount` : O(n) en temps et espace
+- Pour chaque groupe de taille k, on compare toutes les paires : O(k²)
+- Chaque comparaison utilise Levenshtein : O(l₁ × l₂) où l₁ et l₂ sont les longueurs des libellés
+- Dans le pire cas (tous les mouvements ont même date+montant), k = n, donc O(n² × l)
+
+#### 9.3.3 Validation des Balances
+
+**Fonctions principales** : `validateFirstBalance`, `validateSubsequentBalances`, `checkMovementsAfterLastBalance`
+
+| Fonction                         | Complexité Temporelle | Complexité Spatiale | Justification                    |
+| -------------------------------- | --------------------- | ------------------- | -------------------------------- |
+| `filterMovementsUpToDate`        | O(n)                  | O(k) où k ≤ n       | Filtrage linéaire                |
+| `filterMovementsBetweenDates`    | O(n)                  | O(k) où k ≤ n       | Filtrage linéaire                |
+| `sumMovementAmounts`             | O(k)                  | O(1)                | Réduction linéaire               |
+| `validateFirstBalance`           | O(n)                  | O(k) où k ≤ n       | Filtrage + somme                 |
+| `validateSubsequentBalances`     | O(b × n)              | O(n)                | Pour chaque balance, filtre O(n) |
+| `checkMovementsAfterLastBalance` | O(n)                  | O(k) où k ≤ n       | Filtrage linéaire                |
+
+**Détails** :
+
+- `validateFirstBalance` : Filtre les mouvements jusqu'au premier point O(n), puis somme O(k)
+- `validateSubsequentBalances` : Pour chaque balance (b itérations), filtre les mouvements de la période O(n)
+- Dans le pire cas, chaque période contient tous les mouvements, donc O(b × n)
+- En pratique, les mouvements sont répartis entre les périodes, donc souvent meilleur
+
+### 9.4 Analyse Globale
+
+#### Cas Typique (n = 1000, m = 12, l = 20)
+
+| Phase                  | Complexité                    | Temps Estimé | Mémoire Estimée |
+| ---------------------- | ----------------------------- | ------------ | --------------- |
+| Parse & Sort Movements | O(1000 log 1000) ≈ O(10,000)  | ~1ms         | ~100KB          |
+| Parse & Sort Balances  | O(12 log 12) ≈ O(43)          | ~0.01ms      | ~1KB            |
+| Validate Date Order    | O(12)                         | ~0.001ms     | ~0.1KB          |
+| Detect Duplicates      | O(1000² × 20) ≈ O(20,000,000) | ~200ms       | ~200KB          |
+| Validate Balances      | O(12 × 1000) ≈ O(12,000)      | ~1ms         | ~100KB          |
+| **Total**              | **O(20,012,043)**             | **~202ms**   | **~401KB**      |
+
+#### Cas Extrême (n = 100,000, m = 100, l = 50)
+
+| Phase                  | Complexité                            | Temps Estimé   | Mémoire Estimée |
+| ---------------------- | ------------------------------------- | -------------- | --------------- |
+| Parse & Sort Movements | O(100,000 log 100,000) ≈ O(1,660,000) | ~166ms         | ~10MB           |
+| Parse & Sort Balances  | O(100 log 100) ≈ O(664)               | ~0.1ms         | ~10KB           |
+| Validate Date Order    | O(100)                                | ~0.01ms        | ~1KB            |
+| Detect Duplicates      | O(100,000² × 50) ≈ O(500,000,000,000) | ~5000s (83min) | ~50MB           |
+| Validate Balances      | O(100 × 100,000) ≈ O(10,000,000)      | ~1s            | ~10MB           |
+| **Total**              | **O(500,011,660,664)**                | **~5000s**     | **~70MB**       |
+
+⚠️ **Note** : La détection de doublons devient le goulot d'étranglement pour de gros volumes.
+
+### 9.5 Optimisations Possibles
+
+#### 9.5.1 Détection de Doublons
+
+**Problème actuel** : O(n² × l) dans le pire cas
+
+**Optimisations possibles** :
+
+1. **Indexation par hash** : Utiliser un hash des libellés normalisés pour réduire les comparaisons
+   - Complexité : O(n × l) en moyenne
+   - Espace : O(n)
+
+2. **Early exit** : Arrêter la comparaison Levenshtein si la distance dépasse le seuil
+   - Réduit le facteur constant, mais pas la complexité asymptotique
+
+3. **Parallélisation** : Traiter les groupes en parallèle
+   - Complexité : O(n² × l / p) où p est le nombre de processeurs
+   - Nécessite une architecture adaptée
+
+#### 9.5.2 Validation des Balances
+
+**Problème actuel** : O(b × n) car on filtre tous les mouvements pour chaque balance
+
+**Optimisation possible** :
+
+1. **Indexation par date** : Créer un index des mouvements par date
+   - Complexité : O(n log n) pour l'index + O(b × log n) pour les recherches
+   - Espace : O(n)
+   - Gain : O(b × n) → O(n log n + b × log n)
+
+### 9.6 Résumé des Complexités
+
+#### Tableau Récapitulatif
+
+| Fonction                         | Complexité Temporelle                     | Complexité Spatiale | Dominateur               |
+| -------------------------------- | ----------------------------------------- | ------------------- | ------------------------ |
+| `parseAndSortMovements`          | O(n log n)                                | O(n)                | Tri                      |
+| `parseAndSortBalances`           | O(m log m)                                | O(m)                | Tri                      |
+| `validateBalanceDateOrder`       | O(m)                                      | O(1)                | Parcours                 |
+| `detectDuplicates`               | O(n² × l)                                 | O(n)                | Comparaisons Levenshtein |
+| `validateFirstBalance`           | O(n)                                      | O(k)                | Filtrage                 |
+| `validateSubsequentBalances`     | O(b × n)                                  | O(n)                | Filtrage itératif        |
+| `checkMovementsAfterLastBalance` | O(n)                                      | O(k)                | Filtrage                 |
+| **`validateMovements` (total)**  | **O(n log n + m log m + n² × l + b × n)** | **O(n + m)**        | **Détection doublons**   |
+
+#### Diagramme de Complexité Dominante
+
+```mermaid
+pie title Complexité Temporelle Dominante (cas typique)
+    "Détection Doublons O(n² × l)" : 99.5
+    "Tri Mouvements O(n log n)" : 0.3
+    "Validation Balances O(b × n)" : 0.2
+    "Autres O(m log m + m)" : 0.0
+```
+
+### 9.7 Recommandations
+
+1. **Pour des volumes normaux** (n < 10,000) : L'algorithme actuel est performant
+2. **Pour des volumes élevés** (n > 50,000) : Considérer l'optimisation de la détection de doublons
+3. **Pour des volumes très élevés** (n > 500,000) : Nécessite une refactorisation majeure avec indexation et/ou parallélisation
+
+---
+
 ## 🎓 Conclusion
 
 ### Points Clés de l'Approche
