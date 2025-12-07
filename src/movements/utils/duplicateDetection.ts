@@ -1,4 +1,4 @@
-import { Movement } from './movementParsing.utils';
+import { Movement } from './movementParsing';
 
 export interface DuplicateMovement {
   id: number;

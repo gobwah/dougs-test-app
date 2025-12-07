@@ -5,11 +5,11 @@ import {
   validateFirstBalance,
   validateSubsequentBalances,
   checkMovementsAfterLastBalance,
-} from '../../../src/movements/utils/balanceValidation.utils';
+} from '../../../src/movements/utils/balanceValidation';
 import {
   Movement,
   Balance,
-} from '../../../src/movements/utils/movementParsing.utils';
+} from '../../../src/movements/utils/movementParsing';
 import { ValidationReasonType } from '../../../src/movements/dto/validation-response.dto';
 
 describe('BalanceValidationUtils', () => {

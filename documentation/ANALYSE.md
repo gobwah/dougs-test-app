@@ -366,9 +366,9 @@ src/
 │   ├── movements.controller.ts    # Point d'entrée HTTP
 │   ├── movements.service.ts        # Orchestration de la logique métier
 │   ├── utils/                      # Fonctions utilitaires testables
-│   │   ├── movementParsing.utils.ts      # Parsing et tri des données
-│   │   ├── duplicateDetection.utils.ts   # Détection de doublons
-│   │   └── balanceValidation.utils.ts    # Validation des balances
+│   │   ├── movementParsing.ts      # Parsing et tri des données
+│   │   ├── duplicateDetection.ts   # Détection de doublons
+│   │   └── balanceValidation.ts    # Validation des balances
 │   └── dto/
 │       ├── validation-request.dto.ts   # Validation des entrées
 │       └── validation-response.dto.ts  # Structure des réponses

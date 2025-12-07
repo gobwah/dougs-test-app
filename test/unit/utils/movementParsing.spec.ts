@@ -2,7 +2,7 @@ import {
   parseAndSortMovements,
   parseAndSortBalances,
   validateBalanceDateOrder,
-} from '../../../src/movements/utils/movementParsing.utils';
+} from '../../../src/movements/utils/movementParsing';
 import {
   MovementDto,
   BalanceDto,
