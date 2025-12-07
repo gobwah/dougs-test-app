@@ -37,6 +37,14 @@ npm run start:prod
 
 L'application sera accessible sur `http://localhost:3000`
 
+## Documentation API
+
+La documentation interactive de l'API est disponible via Swagger UI à l'adresse :
+
+- **Swagger UI** : `http://localhost:3000/api`
+
+Vous pouvez tester les endpoints directement depuis l'interface Swagger.
+
 ## API
 
 ### GET /health
