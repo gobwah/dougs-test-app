@@ -41,20 +41,20 @@ async function generateApiDocs() {
     console.log('⚠️  YAML generation skipped (js-yaml not installed)');
   }
 
-  // Generate static HTML documentation with Redoc
+  // Generate static HTML documentation with Redocly
   try {
     const { execSync } = require('node:child_process');
     const htmlPath = path.join(docsDir, 'api-documentation.html');
 
-    // Use redoc-cli to generate HTML
+    // Use @redocly/cli to generate HTML
     execSync(
-      `npx redoc-cli bundle ${jsonPath} -o ${htmlPath} --title "Dougs Bank Validation API" --options.theme.colors.primary.main="#1e40af"`,
+      `npx @redocly/cli build-docs ${jsonPath} -o ${htmlPath} --title "Dougs Bank Validation API" --theme.openapi.colors.primary.main="#1e40af"`,
       { stdio: 'inherit' },
     );
     console.log(`✅ Static HTML documentation generated: ${htmlPath}`);
   } catch (error) {
     console.log(
-      '⚠️  HTML generation skipped (redoc-cli not available or error occurred)',
+      '⚠️  HTML generation skipped (@redocly/cli not available or error occurred)',
     );
     console.error(error);
   }
