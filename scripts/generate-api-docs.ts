@@ -31,7 +31,7 @@ async function generateApiDocs() {
   fs.writeFileSync(jsonPath, JSON.stringify(document, null, 2), 'utf-8');
   console.log(`✅ OpenAPI JSON generated: ${jsonPath}`);
 
-  // Write YAML format (if swagger-ui-express is available, otherwise just JSON)
+  // Write YAML format
   try {
     const yaml = require('js-yaml');
     const yamlPath = path.join(docsDir, 'openapi.yaml');
@@ -39,6 +39,24 @@ async function generateApiDocs() {
     console.log(`✅ OpenAPI YAML generated: ${yamlPath}`);
   } catch (error) {
     console.log('⚠️  YAML generation skipped (js-yaml not installed)');
+  }
+
+  // Generate static HTML documentation with Redoc
+  try {
+    const { execSync } = require('node:child_process');
+    const htmlPath = path.join(docsDir, 'api-documentation.html');
+
+    // Use redoc-cli to generate HTML
+    execSync(
+      `npx redoc-cli bundle ${jsonPath} -o ${htmlPath} --title "Dougs Bank Validation API" --options.theme.colors.primary.main="#1e40af"`,
+      { stdio: 'inherit' },
+    );
+    console.log(`✅ Static HTML documentation generated: ${htmlPath}`);
+  } catch (error) {
+    console.log(
+      '⚠️  HTML generation skipped (redoc-cli not available or error occurred)',
+    );
+    console.error(error);
   }
 
   await app.close();

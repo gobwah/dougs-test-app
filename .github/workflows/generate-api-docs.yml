@@ -55,11 +55,11 @@ jobs:
           fi
 
           # Check if the generated file differs from the committed version
-          if ! git diff --quiet HEAD -- documentation/openapi.json documentation/openapi.yaml 2>/dev/null; then
+          if ! git diff --quiet HEAD -- documentation/openapi.json documentation/openapi.yaml documentation/api-documentation.html 2>/dev/null; then
             echo "changed=true" >> $GITHUB_OUTPUT
             echo "📝 API documentation has changed"
             echo "Changes:"
-            git diff --stat HEAD -- documentation/openapi.json documentation/openapi.yaml || true
+            git diff --stat HEAD -- documentation/openapi.json documentation/openapi.yaml documentation/api-documentation.html || true
           else
             echo "changed=false" >> $GITHUB_OUTPUT
             echo "📝 No changes detected in API documentation"
@@ -70,7 +70,7 @@ jobs:
         run: |
           git config --local user.email "vincou40@gmail.com"
           git config --local user.name "GoBwah"
-          git add documentation/openapi.json documentation/openapi.yaml
+          git add documentation/openapi.json documentation/openapi.yaml documentation/api-documentation.html
           git commit -m "docs: update API documentation [skip ci]" || exit 0
           git push
         env:

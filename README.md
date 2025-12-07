@@ -53,6 +53,7 @@ La documentation OpenAPI est générée automatiquement et disponible dans le do
 
 - **`documentation/openapi.json`** : Format JSON
 - **`documentation/openapi.yaml`** : Format YAML
+- **`documentation/api-documentation.html`** : Documentation statique HTML (Redoc)
 
 #### Génération automatique
 
@@ -76,6 +77,23 @@ Pour générer la documentation manuellement :
 ```bash
 npm run generate:api-docs
 ```
+
+#### Visualiser la documentation statique
+
+La documentation HTML statique peut être ouverte directement dans votre navigateur :
+
+```bash
+# Sur macOS
+open documentation/api-documentation.html
+
+# Sur Linux
+xdg-open documentation/api-documentation.html
+
+# Sur Windows
+start documentation/api-documentation.html
+```
+
+Ou simplement double-cliquez sur le fichier `documentation/api-documentation.html` dans votre explorateur de fichiers.
 
 ## API
 

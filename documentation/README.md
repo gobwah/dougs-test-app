@@ -68,10 +68,11 @@ Les images seront générées dans `documentation/images/`.
 
 - **`openapi.json`** : Documentation OpenAPI au format JSON
 - **`openapi.yaml`** : Documentation OpenAPI au format YAML
+- **`api-documentation.html`** : Documentation statique HTML générée avec Redoc (peut être ouverte directement dans un navigateur)
 
 ### Génération automatique
 
-La documentation API est **générée automatiquement** par un workflow GitHub Actions lors de chaque push sur les branches `main`, `master` ou `develop` si des fichiers de l'API ont été modifiés (controllers, DTOs, services, modules).
+La documentation API est **générée automatiquement** par un workflow GitHub Actions lors de chaque push sur la branche `main` si des fichiers de l'API ont été modifiés (controllers, DTOs, services, modules).
 
 ### Génération manuelle
 
@@ -85,10 +86,10 @@ npm run generate:api-docs
 
 Ces fichiers peuvent être utilisés avec :
 
+- **Documentation statique HTML** : Ouvrez directement `api-documentation.html` dans votre navigateur pour une documentation interactive et élégante
 - **Swagger UI** : Importez le fichier JSON ou YAML dans [Swagger Editor](https://editor.swagger.io/)
 - **Postman** : Importez le fichier pour générer une collection automatiquement
 - **Outils de génération de clients** : Utilisez des outils comme `openapi-generator` pour générer des clients dans différents langages (TypeScript, Python, Java, etc.)
-- **Documentation statique** : Utilisez des outils comme Redoc ou Swagger UI pour générer une documentation statique HTML
 
 ### Exemple d'utilisation avec openapi-generator
 
