@@ -3,9 +3,8 @@
   "paths": {
     "/movements/validation": {
       "post": {
-        "operationId": "MovementsController_validateMovements",
-        "summary": "Valider des mouvements bancaires",
         "description": "Valide une liste de mouvements bancaires en les comparant avec des points de contrôle (soldes). Détecte les incohérences, doublons et anomalies.",
+        "operationId": "MovementsController_validateMovements",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -86,6 +85,7 @@
             }
           }
         },
+        "summary": "Valider des mouvements bancaires",
         "tags": [
           "movements"
         ]
@@ -93,9 +93,8 @@
     },
     "/health": {
       "get": {
-        "operationId": "HealthController_check",
-        "summary": "Vérifier l'état de l'application",
         "description": "Retourne le statut de santé de l'application avec son temps de fonctionnement.",
+        "operationId": "HealthController_check",
         "parameters": [],
         "responses": {
           "200": {
@@ -125,6 +124,7 @@
             }
           }
         },
+        "summary": "Vérifier l'état de l'application",
         "tags": [
           "health"
         ]
