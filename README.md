@@ -39,11 +39,28 @@ L'application sera accessible sur `http://localhost:3000`
 
 ## Documentation API
 
+### Documentation interactive (Swagger UI)
+
 La documentation interactive de l'API est disponible via Swagger UI à l'adresse :
 
 - **Swagger UI** : `http://localhost:3000/api`
 
 Vous pouvez tester les endpoints directement depuis l'interface Swagger.
+
+### Documentation OpenAPI
+
+La documentation OpenAPI est générée automatiquement et disponible dans le dossier `documentation/` :
+
+- **`documentation/openapi.json`** : Format JSON
+- **`documentation/openapi.yaml`** : Format YAML
+
+Cette documentation est mise à jour automatiquement lors de chaque modification de l'API via un workflow GitHub Actions.
+
+Pour générer la documentation manuellement :
+
+```bash
+npm run generate:api-docs
+```
 
 ## API
 

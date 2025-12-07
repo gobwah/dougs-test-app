@@ -59,3 +59,46 @@ node scripts/generate-diagrams.js
 ```
 
 Les images seront générées dans `documentation/images/`.
+
+---
+
+## 📡 Documentation API OpenAPI
+
+### Fichiers disponibles
+
+- **`openapi.json`** : Documentation OpenAPI au format JSON
+- **`openapi.yaml`** : Documentation OpenAPI au format YAML
+
+### Génération automatique
+
+La documentation API est **générée automatiquement** par un workflow GitHub Actions lors de chaque push sur les branches `main`, `master` ou `develop` si des fichiers de l'API ont été modifiés (controllers, DTOs, services, modules).
+
+### Génération manuelle
+
+Pour générer la documentation manuellement :
+
+```bash
+npm run generate:api-docs
+```
+
+### Utilisation
+
+Ces fichiers peuvent être utilisés avec :
+
+- **Swagger UI** : Importez le fichier JSON ou YAML dans [Swagger Editor](https://editor.swagger.io/)
+- **Postman** : Importez le fichier pour générer une collection automatiquement
+- **Outils de génération de clients** : Utilisez des outils comme `openapi-generator` pour générer des clients dans différents langages (TypeScript, Python, Java, etc.)
+- **Documentation statique** : Utilisez des outils comme Redoc ou Swagger UI pour générer une documentation statique HTML
+
+### Exemple d'utilisation avec openapi-generator
+
+```bash
+# Installer openapi-generator
+npm install -g @openapitools/openapi-generator-cli
+
+# Générer un client TypeScript
+openapi-generator-cli generate \
+  -i documentation/openapi.yaml \
+  -g typescript-axios \
+  -o generated-client
+```
