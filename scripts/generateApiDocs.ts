@@ -43,31 +43,26 @@ async function generateApiDocs() {
 
   // Generate static HTML documentation with Redocly
   try {
-    const { execSync } = require('node:child_process');
+    const { execSync } = require('child_process');
     const htmlPath = path.join(docsDir, 'api-documentation.html');
-
-    // Use @redocly/cli to generate HTML
     execSync(
-      `npx @redocly/cli build-docs ${jsonPath} -o ${htmlPath} --title "Dougs Bank Validation API" --theme.openapi.colors.primary.main="#1e40af"`,
+      `npx @redocly/cli build-docs ${path.join(
+        docsDir,
+        'openapi.yaml',
+      )} -o ${htmlPath}`,
       { stdio: 'inherit' },
     );
-    console.log(`✅ Static HTML documentation generated: ${htmlPath}`);
+    console.log(`✅ HTML documentation generated: ${htmlPath}`);
   } catch (error) {
     console.log(
-      '⚠️  HTML generation skipped (@redocly/cli not available or error occurred)',
+      '⚠️  HTML generation skipped (Redocly CLI not available or error occurred)',
     );
-    console.error(error);
   }
 
   await app.close();
 }
 
-generateApiDocs()
-  .then(() => {
-    console.log('📚 API documentation generated successfully');
-    process.exit(0);
-  })
-  .catch((error) => {
-    console.error('❌ Error generating API documentation:', error);
-    process.exit(1);
-  });
+generateApiDocs().catch((error) => {
+  console.error('❌ Error generating API documentation:', error);
+  process.exit(1);
+});

@@ -22,7 +22,7 @@
     "test:all": "jest",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "generate:diagrams": "node scripts/generate-diagrams.js",
-    "generate:api-docs": "ts-node scripts/generate-api-docs.ts",
+    "generate:api-docs": "ts-node scripts/generateApiDocs.ts",
     "prepare": "husky"
   },
   "dependencies": {
