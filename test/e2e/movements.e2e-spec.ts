@@ -1,28 +1,13 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
-import { AppModule } from '../../src/app.module';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { ValidationReasonType } from '../../src/movements/dto/validation-response.dto';
 
-describe('Movements Integration Tests (Examples)', () => {
-  let app: INestApplication;
+// Get the server URL from the global setup
+const SERVER_URL =
+  (global as any).__E2E_SERVER_URL__ || 'http://localhost:3001';
 
-  beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-
-    app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(new ValidationPipe());
-    await app.init();
-  });
-
-  afterAll(async () => {
-    await app.close();
-  });
-
+describe('Movements E2E Tests (Examples)', () => {
   const loadExampleFile = (filename: string): any => {
     const filePath = path.join(__dirname, '../../examples', filename);
     const fileContent = fs.readFileSync(filePath, 'utf-8');
@@ -33,7 +18,7 @@ describe('Movements Integration Tests (Examples)', () => {
     it('should accept valid movements and balances', async () => {
       const testData = loadExampleFile('example-valid.json');
 
-      const response = await request(app.getHttpServer())
+      const response = await request(SERVER_URL)
         .post('/movements/validation')
         .send(testData)
         .expect(200);
@@ -48,7 +33,7 @@ describe('Movements Integration Tests (Examples)', () => {
     it('should reject movements with balance mismatch', async () => {
       const testData = loadExampleFile('example-balance-mismatch.json');
 
-      const response = await request(app.getHttpServer())
+      const response = await request(SERVER_URL)
         .post('/movements/validation')
         .send(testData)
         .expect(400);
@@ -70,7 +55,7 @@ describe('Movements Integration Tests (Examples)', () => {
     it('should accept movements with multiple balance control points', async () => {
       const testData = loadExampleFile('example-multiple-balances.json');
 
-      const response = await request(app.getHttpServer())
+      const response = await request(SERVER_URL)
         .post('/movements/validation')
         .send(testData)
         .expect(200);
@@ -85,7 +70,7 @@ describe('Movements Integration Tests (Examples)', () => {
     it('should reject movements with duplicate transactions', async () => {
       const testData = loadExampleFile('example-with-duplicates.json');
 
-      const response = await request(app.getHttpServer())
+      const response = await request(SERVER_URL)
         .post('/movements/validation')
         .send(testData)
         .expect(400);
@@ -110,6 +95,19 @@ describe('Movements Integration Tests (Examples)', () => {
       );
       expect(duplicateIds).toContain(2);
       expect(duplicateIds).toContain(3);
+    });
+  });
+
+  describe('Health check', () => {
+    it('should return health status', async () => {
+      const response = await request(SERVER_URL).get('/health').expect(200);
+
+      expect(response.body).toMatchObject({
+        status: 'ok',
+        timestamp: expect.any(String),
+        uptime: expect.any(Number),
+      });
+      expect(response.body.uptime).toBeGreaterThanOrEqual(0);
     });
   });
 });
