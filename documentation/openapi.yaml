@@ -6,7 +6,7 @@ paths:
         Valide une liste de mouvements bancaires en les comparant avec des
         points de contrôle (soldes). Détecte les incohérences, doublons et
         anomalies.
-      operationId: MovementsController_validateMovements
+      operationId: MovementController_validateMovements
       parameters: []
       requestBody:
         required: true

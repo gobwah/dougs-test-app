@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
-import { AppModule } from '../../src/appModule';
+import { AppModule } from '../../src/app';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { ValidationReasonType } from '../../src/movements/dto/responseDto';

@@ -13,7 +13,7 @@ import {
   ApiBody,
   ApiBadRequestResponse,
 } from '@nestjs/swagger';
-import { MovementsService } from './movementsService';
+import { MovementService } from './movementService';
 import { ValidationRequestDto } from './dto/requestDto';
 import {
   ValidationFailureResponse,
@@ -22,8 +22,8 @@ import {
 
 @ApiTags('movements')
 @Controller('movements')
-export class MovementsController {
-  constructor(private readonly movementsService: MovementsService) {}
+export class MovementController {
+  constructor(private readonly movementsService: MovementService) {}
 
   @Post('validation')
   @HttpCode(HttpStatus.OK)

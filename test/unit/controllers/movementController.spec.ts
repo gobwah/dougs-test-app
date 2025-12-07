@@ -1,21 +1,21 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { MovementsController } from '../../../src/movements/movementsController';
-import { MovementsService } from '../../../src/movements/movementsService';
+import { MovementController } from '../../../src/movements/movementController';
+import { MovementService } from '../../../src/movements/movementService';
 import { ValidationRequestDto } from '../../../src/movements/dto/requestDto';
 
-describe('MovementsController', () => {
-  let controller: MovementsController;
-  let service: MovementsService;
+describe('MovementController', () => {
+  let controller: MovementController;
+  let service: MovementService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [MovementsController],
-      providers: [MovementsService],
+      controllers: [MovementController],
+      providers: [MovementService],
     }).compile();
 
-    controller = module.get<MovementsController>(MovementsController);
-    service = module.get<MovementsService>(MovementsService);
+    controller = module.get<MovementController>(MovementController);
+    service = module.get<MovementService>(MovementService);
   });
 
   it('should be defined', () => {

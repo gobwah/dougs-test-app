@@ -363,8 +363,8 @@ flowchart TD
 ```
 src/
 ├── movements/
-│   ├── movementsController.ts    # Point d'entrée HTTP
-│   ├── movementsService.ts        # Orchestration de la logique métier
+│   ├── movementController.ts    # Point d'entrée HTTP
+│   ├── movementService.ts        # Orchestration de la logique métier
 │   ├── utils/                      # Fonctions utilitaires testables
 │   │   ├── movementParsing.ts      # Parsing et tri des données
 │   │   ├── duplicateDetection.ts   # Détection de doublons
@@ -390,8 +390,8 @@ graph TB
     end
 
     subgraph "Application"
-        B[MovementsController]
-        C[MovementsService]
+        B[MovementController]
+        C[MovementService]
         D[ValidationRequestDto]
         E[ValidationResponseDto]
     end

@@ -19,7 +19,7 @@ import {
 } from './utils/balanceValidation';
 
 @Injectable()
-export class MovementsService {
+export class MovementService {
   /**
    * Validate movements against balance control points
    * Time complexity: O(n log n + m log m + n² * l + b * n) where:

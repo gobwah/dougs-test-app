@@ -1,21 +1,21 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { MovementsService } from '../../../src/movements/movementsService';
+import { MovementService } from '../../../src/movements/movementService';
 import { ValidationRequestDto } from '../../../src/movements/dto/requestDto';
 
 /**
- * Tests d'intégration pour MovementsService
+ * Tests d'intégration pour MovementService
  * Ces tests vérifient l'orchestration des utilitaires.
  * Les détails de chaque fonction utilitaire sont testés dans leurs propres fichiers de test.
  */
-describe('MovementsService', () => {
-  let service: MovementsService;
+describe('MovementService', () => {
+  let service: MovementService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [MovementsService],
+      providers: [MovementService],
     }).compile();
 
-    service = module.get<MovementsService>(MovementsService);
+    service = module.get<MovementService>(MovementService);
   });
 
   it('should be defined', () => {
