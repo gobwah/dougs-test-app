@@ -41,17 +41,3 @@ export function parseAndSortBalances(balances: BalanceDto[]): Balance[] {
     }))
     .sort((a, b) => a.date.getTime() - b.date.getTime());
 }
-
-/**
- * Validate that balances are in chronological order
- * Time complexity: O(n) where n is the number of balances
- * Space complexity: O(1)
- */
-export function validateBalanceDateOrder(balances: Balance[]): boolean {
-  for (let i = 1; i < balances.length; i++) {
-    if (balances[i].date <= balances[i - 1].date) {
-      return false;
-    }
-  }
-  return true;
-}

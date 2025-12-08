@@ -1,41 +1,12 @@
 import { ValidationReason, ValidationReasonType } from '../dto/responseDto';
-import { Movement, Balance } from './movementParsing';
+import { Movement, Balance } from './parsingUtils';
+import {
+  filterMovementsUpToDate,
+  filterMovementsBetweenDates,
+  sumMovementAmounts,
+} from './movementUtils';
 
 const BALANCE_TOLERANCE = 0.01; // Allow small floating point differences
-
-/**
- * Filter movements up to a specific date (inclusive)
- * Time complexity: O(n) where n is the number of movements
- * Space complexity: O(k) where k is the number of filtered movements
- */
-export function filterMovementsUpToDate(
-  movements: Movement[],
-  date: Date,
-): Movement[] {
-  return movements.filter((m) => m.date <= date);
-}
-
-/**
- * Filter movements between two dates (exclusive start, inclusive end)
- * Time complexity: O(n) where n is the number of movements
- * Space complexity: O(k) where k is the number of filtered movements
- */
-export function filterMovementsBetweenDates(
-  movements: Movement[],
-  startDate: Date,
-  endDate: Date,
-): Movement[] {
-  return movements.filter((m) => m.date > startDate && m.date <= endDate);
-}
-
-/**
- * Calculate the sum of movement amounts
- * Time complexity: O(n) where n is the number of movements
- * Space complexity: O(1)
- */
-export function sumMovementAmounts(movements: Movement[]): number {
-  return movements.reduce((sum, m) => sum + m.amount, 0);
-}
 
 /**
  * Validate the first balance point
@@ -157,4 +128,47 @@ export function checkMovementsAfterLastBalance(
   }
 
   return null;
+}
+
+/**
+ * Validate all balances and add reasons to the array if invalid
+ * Time complexity: O(b * n) where b is the number of balance points and n is the number of movements
+ * Space complexity: O(n) in worst case for filtered movements
+ */
+export function validateBalances(
+  balances: Balance[],
+  movements: Movement[],
+  reasons: ValidationReason[],
+): void {
+  if (balances.length === 0) {
+    reasons.push({
+      type: ValidationReasonType.BALANCE_MISMATCH,
+      message: 'No balance control points provided',
+      details: {},
+    });
+    return;
+  }
+
+  if (movements.length === 0) {
+    return;
+  }
+
+  // Validate first balance point
+  const firstBalanceError = validateFirstBalance(balances[0], movements);
+  if (firstBalanceError) {
+    reasons.push(firstBalanceError);
+  }
+
+  // Validate subsequent balance points
+  const subsequentErrors = validateSubsequentBalances(balances, movements);
+  reasons.push(...subsequentErrors);
+
+  // Check for movements after the last balance point
+  const missingTransactionError = checkMovementsAfterLastBalance(
+    balances,
+    movements,
+  );
+  if (missingTransactionError) {
+    reasons.push(missingTransactionError);
+  }
 }

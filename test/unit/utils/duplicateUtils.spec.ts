@@ -4,10 +4,10 @@ import {
   calculateSimilarity,
   areLabelsSimilar,
   detectDuplicates,
-} from '../../../src/movements/utils/duplicateDetection';
-import { Movement } from '../../../src/movements/utils/movementParsing';
+} from '../../../src/movements/utils/duplicateUtils';
+import { Movement } from '../../../src/movements/utils/parsingUtils';
 
-describe('DuplicateDetectionUtils', () => {
+describe('DuplicateUtils', () => {
   describe('normalizeLabel', () => {
     it('should convert to lowercase', () => {
       expect(normalizeLabel('PAYMENT')).toBe('payment');

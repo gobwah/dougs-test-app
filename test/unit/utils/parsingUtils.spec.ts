@@ -1,11 +1,10 @@
 import {
   parseAndSortMovements,
   parseAndSortBalances,
-  validateBalanceDateOrder,
-} from '../../../src/movements/utils/movementParsing';
+} from '../../../src/movements/utils/parsingUtils';
 import { MovementDto, BalanceDto } from '../../../src/movements/dto/requestDto';
 
-describe('MovementParsingUtils', () => {
+describe('ParsingUtils', () => {
   describe('parseAndSortMovements', () => {
     it('should parse and sort movements by date', () => {
       const movements: MovementDto[] = [
@@ -135,94 +134,6 @@ describe('MovementParsingUtils', () => {
       expect(result).toHaveLength(1);
       expect(result[0].date).toEqual(new Date('2024-01-31'));
       expect(result[0].balance).toBe(100);
-    });
-  });
-
-  describe('validateBalanceDateOrder', () => {
-    it('should return true for valid chronological order', () => {
-      const balances = [
-        {
-          date: new Date('2024-01-31'),
-          balance: 50,
-        },
-        {
-          date: new Date('2024-02-28'),
-          balance: 100,
-        },
-        {
-          date: new Date('2024-03-31'),
-          balance: 150,
-        },
-      ];
-
-      const result = validateBalanceDateOrder(balances);
-      expect(result).toBe(true);
-    });
-
-    it('should return false for invalid order (descending)', () => {
-      const balances = [
-        {
-          date: new Date('2024-02-28'),
-          balance: 100,
-        },
-        {
-          date: new Date('2024-01-31'),
-          balance: 50,
-        },
-      ];
-
-      const result = validateBalanceDateOrder(balances);
-      expect(result).toBe(false);
-    });
-
-    it('should return false for equal dates', () => {
-      const balances = [
-        {
-          date: new Date('2024-01-31'),
-          balance: 50,
-        },
-        {
-          date: new Date('2024-01-31'),
-          balance: 100,
-        },
-      ];
-
-      const result = validateBalanceDateOrder(balances);
-      expect(result).toBe(false);
-    });
-
-    it('should return true for single balance', () => {
-      const balances = [
-        {
-          date: new Date('2024-01-31'),
-          balance: 50,
-        },
-      ];
-
-      const result = validateBalanceDateOrder(balances);
-      expect(result).toBe(true);
-    });
-
-    it('should return true for empty array', () => {
-      const result = validateBalanceDateOrder([]);
-      expect(result).toBe(true);
-    });
-
-    it('should handle dates with different times on same day', () => {
-      const balances = [
-        {
-          date: new Date('2024-01-31T10:00:00'),
-          balance: 50,
-        },
-        {
-          date: new Date('2024-01-31T11:00:00'),
-          balance: 100,
-        },
-      ];
-
-      // Should return true because dates are different (different times)
-      const result = validateBalanceDateOrder(balances);
-      expect(result).toBe(true);
     });
   });
 });

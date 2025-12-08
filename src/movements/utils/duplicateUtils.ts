@@ -1,4 +1,5 @@
-import { Movement } from './movementParsing';
+import { Movement } from './parsingUtils';
+import { ValidationReason, ValidationReasonType } from '../dto/responseDto';
 
 export interface DuplicateMovement {
   id: number;
@@ -155,4 +156,25 @@ export function detectDuplicates(movements: Movement[]): DuplicateMovement[] {
   );
 
   return uniqueDuplicates;
+}
+
+/**
+ * Detect duplicates and add reasons to the array if found
+ * Time complexity: O(n² * m) where n is the number of movements and m is the average label length
+ * Space complexity: O(n) for the map and duplicate arrays
+ */
+export function detectAndReportDuplicates(
+  movements: Movement[],
+  reasons: ValidationReason[],
+): void {
+  const duplicates = detectDuplicates(movements);
+  if (duplicates.length > 0) {
+    reasons.push({
+      type: ValidationReasonType.DUPLICATE_TRANSACTION,
+      message: `Found ${duplicates.length} duplicate transaction(s)`,
+      details: {
+        duplicateMovements: duplicates,
+      },
+    });
+  }
 }
