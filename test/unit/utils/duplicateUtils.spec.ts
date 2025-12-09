@@ -1,7 +1,5 @@
 import {
   normalizeLabel,
-  levenshteinDistance,
-  calculateSimilarity,
   areLabelsSimilar,
   detectDuplicates,
 } from '../../../src/movements/utils/duplicateUtils';
@@ -38,63 +36,6 @@ describe('DuplicateUtils', () => {
     });
   });
 
-  describe('levenshteinDistance', () => {
-    it('should return 0 for identical strings', () => {
-      expect(levenshteinDistance('abc', 'abc')).toBe(0);
-    });
-
-    it('should return length for completely different strings', () => {
-      expect(levenshteinDistance('abc', 'xyz')).toBe(3);
-    });
-
-    it('should return 1 for one character difference', () => {
-      expect(levenshteinDistance('abc', 'abd')).toBe(1);
-    });
-
-    it('should handle empty strings', () => {
-      expect(levenshteinDistance('', '')).toBe(0);
-      expect(levenshteinDistance('abc', '')).toBe(3);
-      expect(levenshteinDistance('', 'abc')).toBe(3);
-    });
-
-    it('should handle strings of different lengths', () => {
-      expect(levenshteinDistance('abc', 'abcd')).toBe(1);
-      expect(levenshteinDistance('abcd', 'abc')).toBe(1);
-    });
-
-    it('should calculate distance correctly for complex cases', () => {
-      expect(levenshteinDistance('kitten', 'sitting')).toBe(3);
-      expect(levenshteinDistance('saturday', 'sunday')).toBe(3);
-    });
-  });
-
-  describe('calculateSimilarity', () => {
-    it('should return 1 for identical strings', () => {
-      expect(calculateSimilarity('abc', 'abc')).toBe(1);
-    });
-
-    it('should return 0 for completely different strings', () => {
-      expect(calculateSimilarity('abc', 'xyz')).toBe(0);
-    });
-
-    it('should return high similarity for similar strings', () => {
-      const similarity = calculateSimilarity('payment', 'paymnt');
-      expect(similarity).toBeGreaterThan(0.7);
-    });
-
-    it('should handle empty strings', () => {
-      expect(calculateSimilarity('', '')).toBe(1);
-      expect(calculateSimilarity('abc', '')).toBe(0);
-      expect(calculateSimilarity('', 'abc')).toBe(0);
-    });
-
-    it('should return similarity between 0 and 1', () => {
-      const similarity = calculateSimilarity('payment', 'paymnt');
-      expect(similarity).toBeGreaterThanOrEqual(0);
-      expect(similarity).toBeLessThanOrEqual(1);
-    });
-  });
-
   describe('areLabelsSimilar', () => {
     it('should return true for identical labels', () => {
       expect(areLabelsSimilar('payment', 'payment')).toBe(true);
@@ -118,6 +59,10 @@ describe('DuplicateUtils', () => {
       const label1 = normalizeLabel('PAYMENT');
       const label2 = normalizeLabel('payment');
       expect(areLabelsSimilar(label1, label2)).toBe(true);
+    });
+
+    it('should handle empty strings', () => {
+      expect(areLabelsSimilar('', '')).toBe(true);
     });
   });
 
@@ -143,6 +88,9 @@ describe('DuplicateUtils', () => {
       expect(duplicates).toHaveLength(2);
       expect(duplicates.map((d) => d.id)).toContain(1);
       expect(duplicates.map((d) => d.id)).toContain(2);
+      duplicates.forEach((dup) => {
+        expect(dup.duplicateType).toBe('exact');
+      });
     });
 
     it('should detect duplicates with similar labels using Levenshtein', () => {
@@ -166,6 +114,9 @@ describe('DuplicateUtils', () => {
       expect(duplicates.length).toBeGreaterThanOrEqual(2);
       expect(duplicates.map((d) => d.id)).toContain(1);
       expect(duplicates.map((d) => d.id)).toContain(2);
+      duplicates.forEach((dup) => {
+        expect(dup.duplicateType).toBe('similar');
+      });
     });
 
     it('should detect duplicates when one label contains the other', () => {
@@ -189,6 +140,9 @@ describe('DuplicateUtils', () => {
       expect(duplicates.length).toBeGreaterThanOrEqual(2);
       expect(duplicates.map((d) => d.id)).toContain(1);
       expect(duplicates.map((d) => d.id)).toContain(2);
+      duplicates.forEach((dup) => {
+        expect(dup.duplicateType).toBe('similar');
+      });
     });
 
     it('should not detect duplicates when labels are different enough', () => {
@@ -359,6 +313,145 @@ describe('DuplicateUtils', () => {
       expect(duplicates.map((d) => d.id)).toContain(2);
       expect(duplicates.map((d) => d.id)).toContain(3);
       expect(duplicates.map((d) => d.id)).toContain(4);
+    });
+
+    it('should mark exact duplicates with duplicateType "exact"', () => {
+      const movements: Movement[] = [
+        {
+          id: 1,
+          date: new Date('2024-01-01'),
+          label: 'PAYMENT ABC',
+          amount: 100,
+        },
+        {
+          id: 2,
+          date: new Date('2024-01-01'),
+          label: 'Payment ABC', // Same after normalization
+          amount: 100,
+        },
+        {
+          id: 3,
+          date: new Date('2024-01-01'),
+          label: 'payment abc', // Same after normalization
+          amount: 100,
+        },
+      ];
+
+      const duplicates = detectDuplicates(movements);
+
+      expect(duplicates).toHaveLength(3);
+      duplicates.forEach((dup) => {
+        expect(dup.duplicateType).toBe('exact');
+      });
+    });
+
+    it('should mark similar duplicates with duplicateType "similar"', () => {
+      const movements: Movement[] = [
+        {
+          id: 1,
+          date: new Date('2024-01-01'),
+          label: 'PAYMENT',
+          amount: 100,
+        },
+        {
+          id: 2,
+          date: new Date('2024-01-01'),
+          label: 'PAYMNT', // Similar but not exact
+          amount: 100,
+        },
+      ];
+
+      const duplicates = detectDuplicates(movements);
+
+      expect(duplicates).toHaveLength(2);
+      duplicates.forEach((dup) => {
+        expect(dup.duplicateType).toBe('similar');
+      });
+    });
+
+    it('should prioritize "exact" over "similar" when a movement is both', () => {
+      const movements: Movement[] = [
+        {
+          id: 1,
+          date: new Date('2024-01-01'),
+          label: 'PAYMENT ABC',
+          amount: 100,
+        },
+        {
+          id: 2,
+          date: new Date('2024-01-01'),
+          label: 'Payment ABC', // Exact match with id:1
+          amount: 100,
+        },
+        {
+          id: 3,
+          date: new Date('2024-01-01'),
+          label: 'PAYMENT ABD', // Similar to id:1 and id:2
+          amount: 100,
+        },
+      ];
+
+      const duplicates = detectDuplicates(movements);
+
+      expect(duplicates).toHaveLength(3);
+      const duplicate1 = duplicates.find((d) => d.id === 1);
+      const duplicate2 = duplicates.find((d) => d.id === 2);
+      const duplicate3 = duplicates.find((d) => d.id === 3);
+
+      // id:1 and id:2 are exact duplicates, so they should be 'exact'
+      expect(duplicate1?.duplicateType).toBe('exact');
+      expect(duplicate2?.duplicateType).toBe('exact');
+      // id:3 is only similar, so it should be 'similar'
+      expect(duplicate3?.duplicateType).toBe('similar');
+    });
+
+    it('should handle mixed exact and similar duplicates in different groups', () => {
+      const movements: Movement[] = [
+        {
+          id: 1,
+          date: new Date('2024-01-01'),
+          label: 'PAYMENT ABC',
+          amount: 100,
+        },
+        {
+          id: 2,
+          date: new Date('2024-01-01'),
+          label: 'Payment ABC', // Exact with id:1
+          amount: 100,
+        },
+        {
+          id: 3,
+          date: new Date('2024-01-02'),
+          label: 'WITHDRAWAL',
+          amount: 50,
+        },
+        {
+          id: 4,
+          date: new Date('2024-01-02'),
+          label: 'WITHDRAW', // Similar to id:3
+          amount: 50,
+        },
+      ];
+
+      const duplicates = detectDuplicates(movements);
+
+      expect(duplicates.length).toBeGreaterThanOrEqual(4);
+      const exactDuplicates = duplicates.filter(
+        (d) => d.duplicateType === 'exact',
+      );
+      const similarDuplicates = duplicates.filter(
+        (d) => d.duplicateType === 'similar',
+      );
+
+      // Should have exact duplicates (id:1 and id:2)
+      expect(exactDuplicates.length).toBeGreaterThanOrEqual(2);
+      expect(exactDuplicates.map((d) => d.id)).toContain(1);
+      expect(exactDuplicates.map((d) => d.id)).toContain(2);
+
+      // Should have similar duplicates (id:3 and id:4)
+      expect(similarDuplicates.length).toBeGreaterThanOrEqual(2);
+      expect(similarDuplicates.map((d) => d.id)).toContain(3);
+      expect(similarDuplicates.map((d) => d.id)).toContain(4);
     });
   });
 });

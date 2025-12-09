@@ -95,6 +95,28 @@ describe('Movements E2E Tests (Examples)', () => {
       );
       expect(duplicateIds).toContain(2);
       expect(duplicateIds).toContain(3);
+
+      // Verify that duplicateType is present and valid for all duplicate movements
+      expect(duplicateReason.details.duplicateMovements.length).toBeGreaterThan(
+        0,
+      );
+      duplicateReason.details.duplicateMovements.forEach((m: any) => {
+        expect(m).toHaveProperty('duplicateType');
+        expect(m.duplicateType).toBeDefined();
+        expect(['exact', 'similar']).toContain(m.duplicateType);
+      });
+
+      // In this example, movements 2 and 3 have identical labels, so they should be 'exact'
+      const movement2 = duplicateReason.details.duplicateMovements.find(
+        (m: any) => m.id === 2,
+      );
+      const movement3 = duplicateReason.details.duplicateMovements.find(
+        (m: any) => m.id === 3,
+      );
+      expect(movement2).toBeDefined();
+      expect(movement3).toBeDefined();
+      expect(movement2?.duplicateType).toBe('exact');
+      expect(movement3?.duplicateType).toBe('exact');
     });
   });
 

@@ -207,6 +207,14 @@ components:
                 type: number
               label:
                 type: string
+              duplicateType:
+                type: string
+                enum:
+                  - exact
+                  - similar
+                description: >-
+                  Type de doublon: 'exact' pour labels identiques, 'similar'
+                  pour labels similaires
         missingAmount:
           type: number
           description: Montant manquant
