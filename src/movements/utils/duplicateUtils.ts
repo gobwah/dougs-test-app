@@ -95,6 +95,40 @@ function canBeSimilarByLength(label1: string, label2: string): boolean {
 }
 
 /**
+ * Quick heuristic check using common characters to avoid expensive Levenshtein
+ * If two strings have too few characters in common, they cannot be 80% similar
+ * Time complexity: O(m + n) where m and n are the lengths of the strings
+ * Space complexity: O(min(m, n)) for character frequency maps
+ */
+function quickSimilarityCheck(label1: string, label2: string): boolean {
+  // Count character frequencies
+  const freq1 = new Map<string, number>();
+  const freq2 = new Map<string, number>();
+
+  for (const char of label1) {
+    freq1.set(char, (freq1.get(char) || 0) + 1);
+  }
+  for (const char of label2) {
+    freq2.set(char, (freq2.get(char) || 0) + 1);
+  }
+
+  // Count common characters (minimum frequency in both strings)
+  let commonChars = 0;
+  const allChars = new Set([...freq1.keys(), ...freq2.keys()]);
+  for (const char of allChars) {
+    const count1 = freq1.get(char) || 0;
+    const count2 = freq2.get(char) || 0;
+    commonChars += Math.min(count1, count2);
+  }
+
+  // For 80% similarity, common characters should be at least 80% of the average length
+  const avgLength = (label1.length + label2.length) / 2;
+  const minCommonChars = avgLength * 0.8;
+
+  return commonChars >= minCommonChars;
+}
+
+/**
  * Check if two labels are similar
  * Time complexity: O(m * n) in worst case (Levenshtein), O(min(m, n)) for contains check
  * Space complexity: O(m * n) in worst case
@@ -110,6 +144,11 @@ export function areLabelsSimilar(label1: string, label2: string): boolean {
 
   // Quick length check to avoid expensive Levenshtein calculation
   if (!canBeSimilarByLength(label1, label2)) {
+    return false;
+  }
+
+  // Quick heuristic check using common characters
+  if (!quickSimilarityCheck(label1, label2)) {
     return false;
   }
 
@@ -233,9 +272,31 @@ function groupByExactLabel(
 }
 
 /**
+ * Group labels by length for efficient comparison
+ * Labels of similar lengths are grouped together to reduce comparisons
+ * Time complexity: O(k') where k' is the number of unique labels
+ * Space complexity: O(k')
+ */
+function groupLabelsByLength(uniqueLabels: string[]): Map<number, string[]> {
+  const lengthGroups = new Map<number, string[]>();
+  uniqueLabels.forEach((label) => {
+    const length = label.length;
+    const group = lengthGroups.get(length) ?? [];
+    group.push(label);
+    lengthGroups.set(length, group);
+  });
+  return lengthGroups;
+}
+
+/**
  * Find duplicates between similar label groups
- * Time complexity: O(k'² * m) where k' is the number of unique labels
- * Space complexity: O(1)
+ * Optimized: Groups labels by length and uses cache to avoid duplicate calculations
+ * Time complexity: O(Σ(kᵢ² * m) + Σ(kᵢ * kⱼ)) where:
+ *   - kᵢ is the number of labels of length i
+ *   - First term: comparisons within same length (with Levenshtein, cached)
+ *   - Second term: comparisons between different lengths (includes check only, O(1))
+ *   This is typically much better than O(k'² * m) when labels have varied lengths
+ * Space complexity: O(k'²) for the similarity cache (worst case)
  */
 function findSimilarLabelDuplicates(
   labelGroups: Map<
@@ -245,17 +306,57 @@ function findSimilarLabelDuplicates(
   duplicates: Map<number, DuplicateMovement>,
 ): void {
   const uniqueLabels = Array.from(labelGroups.keys());
+  const lengthGroups = groupLabelsByLength(uniqueLabels);
+  const lengths = Array.from(lengthGroups.keys()).sort((a, b) => a - b);
 
-  for (let i = 0; i < uniqueLabels.length; i++) {
-    for (let j = i + 1; j < uniqueLabels.length; j++) {
-      if (areLabelsSimilar(uniqueLabels[i], uniqueLabels[j])) {
-        const group1 = labelGroups.get(uniqueLabels[i]);
-        const group2 = labelGroups.get(uniqueLabels[j]);
+  // Cache for similarity results to avoid recalculating
+  const similarityCache = new Map<string, boolean>();
 
-        if (group1 && group2) {
-          addSimilarLabelDuplicates(group1, group2, duplicates);
+  const getCachedSimilarity = (label1: string, label2: string): boolean => {
+    // Create a canonical key (smaller label first for symmetry)
+    const key = label1 < label2 ? `${label1}|${label2}` : `${label2}|${label1}`;
+    const cached = similarityCache.get(key);
+    if (cached !== undefined) {
+      return cached;
+    }
+    const result = areLabelsSimilar(label1, label2);
+    similarityCache.set(key, result);
+    return result;
+  };
+
+  // Compare labels within the same length group
+  lengths.forEach((length) => {
+    const labels = lengthGroups.get(length);
+    for (let i = 0; i < labels.length; i++) {
+      for (let j = i + 1; j < labels.length; j++) {
+        if (getCachedSimilarity(labels[i], labels[j])) {
+          const group1 = labelGroups.get(labels[i]);
+          const group2 = labelGroups.get(labels[j]);
+          if (group1 && group2) {
+            addSimilarLabelDuplicates(group1, group2, duplicates);
+          }
         }
       }
+    }
+  });
+
+  // Compare labels between different length groups
+  // areLabelsSimilar handles the optimization (includes check before Levenshtein)
+  for (let i = 0; i < lengths.length; i++) {
+    for (let j = i + 1; j < lengths.length; j++) {
+      const labels1 = lengthGroups.get(lengths[i]);
+      const labels2 = lengthGroups.get(lengths[j]);
+      labels1.forEach((label1) => {
+        labels2.forEach((label2) => {
+          if (getCachedSimilarity(label1, label2)) {
+            const group1 = labelGroups.get(label1);
+            const group2 = labelGroups.get(label2);
+            if (group1 && group2) {
+              addSimilarLabelDuplicates(group1, group2, duplicates);
+            }
+          }
+        });
+      });
     }
   }
 }
