@@ -73,6 +73,28 @@ function calculateSimilarity(str1: string, str2: string): number {
 }
 
 /**
+ * Quick check if two labels can potentially be similar based on length
+ * For 80% similarity threshold, the longer label must be <= 1.25 * shorter label
+ * Time complexity: O(1)
+ * Space complexity: O(1)
+ */
+function canBeSimilarByLength(label1: string, label2: string): boolean {
+  const len1 = label1.length;
+  const len2 = label2.length;
+
+  if (len1 === 0 || len2 === 0) {
+    return len1 === len2;
+  }
+
+  const longer = Math.max(len1, len2);
+  const shorter = Math.min(len1, len2);
+
+  // For 80% similarity: shorter / longer >= 0.8
+  // Therefore: longer <= shorter / 0.8 = shorter * 1.25
+  return longer <= shorter * 1.25;
+}
+
+/**
  * Check if two labels are similar
  * Time complexity: O(m * n) in worst case (Levenshtein), O(min(m, n)) for contains check
  * Space complexity: O(m * n) in worst case
@@ -84,6 +106,11 @@ export function areLabelsSimilar(label1: string, label2: string): boolean {
 
   if (label1.includes(label2) || label2.includes(label1)) {
     return true;
+  }
+
+  // Quick length check to avoid expensive Levenshtein calculation
+  if (!canBeSimilarByLength(label1, label2)) {
+    return false;
   }
 
   const similarity = calculateSimilarity(label1, label2);

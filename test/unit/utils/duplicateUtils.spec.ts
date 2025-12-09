@@ -54,6 +54,15 @@ describe('DuplicateUtils', () => {
       expect(areLabelsSimilar('payment', 'withdrawal')).toBe(false);
     });
 
+    it('should return false quickly for labels with very different lengths', () => {
+      // These labels cannot be 80% similar due to length difference
+      // "xyz" (3 chars) vs "abcdefghijklmnopqrstuvw" (22 chars)
+      // 3 / 22 = 0.136 < 0.8, so they cannot be similar
+      // Note: They don't contain each other, so we test the length filter
+      expect(areLabelsSimilar('xyz', 'abcdefghijklmnopqrstuvw')).toBe(false);
+      expect(areLabelsSimilar('abcdefghijklmnopqrstuvw', 'xyz')).toBe(false);
+    });
+
     it('should handle normalized labels', () => {
       // areLabelsSimilar expects normalized labels, so we need to normalize first
       const label1 = normalizeLabel('PAYMENT');
