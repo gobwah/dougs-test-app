@@ -29,19 +29,11 @@ export class MovementService {
   ): ValidationSuccessResponse | ValidationFailureResponse {
     const reasons: ValidationReason[] = [];
 
-    // Parse and sort movements by date
     const movements = parseAndSortMovements(request.movements);
-
-    // Parse and sort balances by date
     const balances = parseAndSortBalances(request.balances);
 
-    // Validate date order
     validateDateOrder(balances, reasons);
-
-    // Detect duplicates
     detectAndReportDuplicates(movements, reasons);
-
-    // Validate balances
     validateBalances(balances, movements, reasons);
 
     if (reasons.length > 0) {

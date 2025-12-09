@@ -77,17 +77,14 @@ export function calculateSimilarity(str1: string, str2: string): number {
  * Space complexity: O(m * n) in worst case
  */
 export function areLabelsSimilar(label1: string, label2: string): boolean {
-  // Exact match
   if (label1 === label2) {
     return true;
   }
 
-  // Check if one contains the other (for cases like "PAYMENT" vs "PAYMENT REF 123")
   if (label1.includes(label2) || label2.includes(label1)) {
     return true;
   }
 
-  // Calculate similarity using Levenshtein distance (simplified)
   const similarity = calculateSimilarity(label1, label2);
   return similarity > 0.8; // 80% similarity threshold
 }

@@ -98,7 +98,6 @@ export class MovementController {
     const result = this.movementsService.validateMovements(request);
 
     if ('reasons' in result && result.reasons.length > 0) {
-      // Return 400 Bad Request if validation failed
       throw new HttpException(
         {
           message: result.message,

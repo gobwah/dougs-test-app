@@ -153,17 +153,14 @@ export function validateBalances(
     return;
   }
 
-  // Validate first balance point
   const firstBalanceError = validateFirstBalance(balances[0], movements);
   if (firstBalanceError) {
     reasons.push(firstBalanceError);
   }
 
-  // Validate subsequent balance points
   const subsequentErrors = validateSubsequentBalances(balances, movements);
   reasons.push(...subsequentErrors);
 
-  // Check for movements after the last balance point
   const missingTransactionError = checkMovementsAfterLastBalance(
     balances,
     movements,
