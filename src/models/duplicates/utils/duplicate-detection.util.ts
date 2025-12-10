@@ -58,7 +58,6 @@ export function addSimilarLabelDuplicates(
 
 /**
  * Find duplicates between similar label groups
- * Optimized: Groups labels by length and uses cache to avoid duplicate calculations
  * Time complexity: O(Σ(kᵢ² * m) + Σ(kᵢ * kⱼ)) where:
  *   - kᵢ is the number of labels of length i
  *   - First term: comparisons within same length (with Levenshtein, cached)
@@ -77,7 +76,6 @@ export function findSimilarLabelDuplicates(
   const lengthGroups = groupLabelsByLength(uniqueLabels);
   const lengths = Array.from(lengthGroups.keys()).sort((a, b) => a - b);
 
-  // Cache for similarity results to avoid recalculating
   const similarityCache = new Map<string, boolean>();
 
   const getCachedSimilarity = (label1: string, label2: string): boolean => {
@@ -92,7 +90,6 @@ export function findSimilarLabelDuplicates(
     return result;
   };
 
-  // Compare labels within the same length group
   lengths.forEach((length) => {
     const labels = lengthGroups.get(length);
     if (!labels) {
@@ -111,8 +108,6 @@ export function findSimilarLabelDuplicates(
     }
   });
 
-  // Compare labels between different length groups
-  // areLabelsSimilar handles the optimization (includes check before Levenshtein)
   for (let i = 0; i < lengths.length; i++) {
     for (let j = i + 1; j < lengths.length; j++) {
       const labels1 = lengthGroups.get(lengths[i]);

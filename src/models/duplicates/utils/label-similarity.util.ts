@@ -90,7 +90,6 @@ function canBeSimilarByLength(label1: string, label2: string): boolean {
  * Space complexity: O(min(m, n)) for character frequency maps
  */
 function quickSimilarityCheck(label1: string, label2: string): boolean {
-  // Count character frequencies
   const freq1 = new Map<string, number>();
   const freq2 = new Map<string, number>();
 
@@ -101,7 +100,6 @@ function quickSimilarityCheck(label1: string, label2: string): boolean {
     freq2.set(char, (freq2.get(char) || 0) + 1);
   }
 
-  // Count common characters (minimum frequency in both strings)
   let commonChars = 0;
   const allChars = new Set([...freq1.keys(), ...freq2.keys()]);
   for (const char of allChars) {
@@ -131,16 +129,14 @@ export function areLabelsSimilar(label1: string, label2: string): boolean {
     return true;
   }
 
-  // Quick length check to avoid expensive Levenshtein calculation
   if (!canBeSimilarByLength(label1, label2)) {
     return false;
   }
 
-  // Quick heuristic check using common characters
   if (!quickSimilarityCheck(label1, label2)) {
     return false;
   }
 
   const similarity = calculateSimilarity(label1, label2);
-  return similarity > 0.8; // 80% similarity threshold
+  return similarity > 0.8;
 }

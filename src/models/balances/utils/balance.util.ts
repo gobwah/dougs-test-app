@@ -33,8 +33,6 @@ export function validateFirstBalance(
 
   const sumMovementsUpToFirst = sumMovementAmounts(movementsUpToFirst);
 
-  // Assume initial balance = 0 and validate first point
-  // Expected balance = 0 + sum of movements up to first point
   const expectedFirstBalance = sumMovementsUpToFirst;
   const difference = Math.abs(expectedFirstBalance - firstBalance.balance);
 
@@ -71,7 +69,6 @@ export function validateSubsequentBalances(
     const previousBalance = balances[i - 1];
     const currentBalance = balances[i];
 
-    // Get movements between the two balance points
     const movementsInPeriod = filterMovementsBetweenDates(
       movements,
       previousBalance.date,
@@ -79,7 +76,6 @@ export function validateSubsequentBalances(
     );
     const sumMovementsInPeriod = sumMovementAmounts(movementsInPeriod);
 
-    // The difference between balances should equal the sum of movements in that period
     const expectedBalance = previousBalance.balance + sumMovementsInPeriod;
     const difference = Math.abs(expectedBalance - currentBalance.balance);
 

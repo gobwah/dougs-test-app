@@ -75,7 +75,6 @@ export function groupByExactLabel(
 
 /**
  * Group labels by length for efficient comparison
- * Labels of similar lengths are grouped together to reduce comparisons
  * Time complexity: O(k') where k' is the number of unique labels
  * Space complexity: O(k')
  */

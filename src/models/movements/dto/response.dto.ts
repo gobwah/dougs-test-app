@@ -110,7 +110,6 @@ export class ValidationFailureResponse {
   reasons: ValidationReasonDto[];
 }
 
-// Keep interface for backward compatibility
 export interface ValidationReason {
   type: ValidationReasonType;
   message: string;
