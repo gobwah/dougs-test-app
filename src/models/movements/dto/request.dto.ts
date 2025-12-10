@@ -7,6 +7,13 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
+import {
+  IsValidDate,
+  IsNotFutureDate,
+  IsNotTooOld,
+} from './validators/date.validator';
+import { IsValidAmount } from './validators/amount.validator';
+import { HasMovementsIfBalances } from './validators/coherence.validator';
 
 export class MovementDto {
   @ApiProperty({
@@ -22,6 +29,9 @@ export class MovementDto {
   })
   @IsString()
   @IsNotEmpty()
+  @IsValidDate()
+  @IsNotFutureDate()
+  @IsNotTooOld()
   date: string;
 
   @ApiProperty({
@@ -38,6 +48,7 @@ export class MovementDto {
     example: 3000,
   })
   @IsNumber()
+  @IsValidAmount()
   amount: number;
 }
 
@@ -48,6 +59,9 @@ export class BalanceDto {
   })
   @IsString()
   @IsNotEmpty()
+  @IsValidDate()
+  @IsNotFutureDate()
+  @IsNotTooOld()
   date: string;
 
   @ApiProperty({
@@ -55,6 +69,7 @@ export class BalanceDto {
     example: 1929.5,
   })
   @IsNumber()
+  @IsValidAmount()
   balance: number;
 }
 
@@ -95,5 +110,6 @@ export class ValidationRequestDto {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => BalanceDto)
+  @HasMovementsIfBalances()
   balances: BalanceDto[];
 }

@@ -80,4 +80,66 @@ describe('Configuration', () => {
     expect(config.apiPrefix).toBe('api/v2');
     expect(config.logLevel).toBe('warn');
   });
+
+  it('should use default CORS_ORIGIN when not set', () => {
+    delete process.env.CORS_ORIGIN;
+
+    const config = configuration();
+
+    expect(config.corsOrigin).toBe('*');
+  });
+
+  it('should parse CORS_ORIGIN as array when multiple origins provided', () => {
+    process.env.CORS_ORIGIN = 'http://localhost:3000,https://example.com';
+
+    const config = configuration();
+
+    expect(config.corsOrigin).toEqual([
+      'http://localhost:3000',
+      'https://example.com',
+    ]);
+  });
+
+  it('should trim whitespace from CORS_ORIGIN', () => {
+    process.env.CORS_ORIGIN = ' http://localhost:3000 , https://example.com ';
+
+    const config = configuration();
+
+    expect(config.corsOrigin).toEqual([
+      'http://localhost:3000',
+      'https://example.com',
+    ]);
+  });
+
+  it('should use default THROTTLE_TTL when not set', () => {
+    delete process.env.THROTTLE_TTL;
+
+    const config = configuration();
+
+    expect(config.throttleTtl).toBe(60);
+  });
+
+  it('should use THROTTLE_TTL environment variable', () => {
+    process.env.THROTTLE_TTL = '120';
+
+    const config = configuration();
+
+    expect(config.throttleTtl).toBe(120);
+  });
+
+  it('should use default THROTTLE_LIMIT when not set', () => {
+    delete process.env.THROTTLE_LIMIT;
+
+    const config = configuration();
+
+    expect(config.throttleLimit).toBe(100);
+  });
+
+  it('should use THROTTLE_LIMIT environment variable', () => {
+    process.env.THROTTLE_LIMIT = '200';
+
+    const config = configuration();
+
+    expect(config.throttleLimit).toBe(200);
+  });
 });

@@ -17,6 +17,15 @@ async function bootstrap() {
   const port = configService.get<number>('port', 3000);
   const nodeEnv = configService.get<string>('nodeEnv', 'development');
   const apiPrefix = configService.get<string>('apiPrefix', 'api');
+  const corsOrigin = configService.get<string | string[]>('corsOrigin', '*');
+
+  // CORS configuration
+  app.enableCors({
+    origin: corsOrigin,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: nodeEnv !== 'production', // Allow credentials in dev/staging
+  });
 
   // Global exception filter
   app.useGlobalFilters(new AllExceptionsFilter());
