@@ -4,7 +4,7 @@
     "/movements/validation": {
       "post": {
         "description": "Valide une liste de mouvements bancaires en les comparant avec des points de contrôle (soldes). Détecte les incohérences, doublons et anomalies.",
-        "operationId": "MovementsController_validateMovements",
+        "operationId": "MovementController_validateMovements",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -292,6 +292,14 @@
                 },
                 "label": {
                   "type": "string"
+                },
+                "duplicateType": {
+                  "type": "string",
+                  "enum": [
+                    "exact",
+                    "similar"
+                  ],
+                  "description": "Type de doublon: 'exact' pour labels identiques, 'similar' pour labels similaires"
                 }
               }
             }

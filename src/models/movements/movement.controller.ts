@@ -13,17 +13,17 @@ import {
   ApiBody,
   ApiBadRequestResponse,
 } from '@nestjs/swagger';
-import { MovementsService } from './movements.service';
-import { ValidationRequestDto } from './dto/validation-request.dto';
+import { MovementService } from './movement.service';
+import { ValidationRequestDto } from './dto/request.dto';
 import {
   ValidationFailureResponse,
   ValidationSuccessResponse,
-} from './dto/validation-response.dto';
+} from './dto/response.dto';
 
 @ApiTags('movements')
 @Controller('movements')
-export class MovementsController {
-  constructor(private readonly movementsService: MovementsService) {}
+export class MovementController {
+  constructor(private readonly movementsService: MovementService) {}
 
   @Post('validation')
   @HttpCode(HttpStatus.OK)
@@ -98,7 +98,6 @@ export class MovementsController {
     const result = this.movementsService.validateMovements(request);
 
     if ('reasons' in result && result.reasons.length > 0) {
-      // Return 400 Bad Request if validation failed
       throw new HttpException(
         {
           message: result.message,

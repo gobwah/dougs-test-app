@@ -7,7 +7,6 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe());
 
-  // Swagger configuration
   const config = new DocumentBuilder()
     .setTitle('Dougs Bank Validation API')
     .setDescription(

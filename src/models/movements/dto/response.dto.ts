@@ -37,6 +37,12 @@ export class ValidationReasonDetailsDto {
         date: { type: 'string' },
         amount: { type: 'number' },
         label: { type: 'string' },
+        duplicateType: {
+          type: 'string',
+          enum: ['exact', 'similar'],
+          description:
+            "Type de doublon: 'exact' pour labels identiques, 'similar' pour labels similaires",
+        },
       },
     },
   })
@@ -45,6 +51,7 @@ export class ValidationReasonDetailsDto {
     date: string;
     amount: number;
     label: string;
+    duplicateType: 'exact' | 'similar';
   }>;
 
   @ApiProperty({ required: false, description: 'Montant manquant' })
@@ -103,7 +110,6 @@ export class ValidationFailureResponse {
   reasons: ValidationReasonDto[];
 }
 
-// Keep interface for backward compatibility
 export interface ValidationReason {
   type: ValidationReasonType;
   message: string;

@@ -4,7 +4,7 @@ import request from 'supertest';
 import { AppModule } from '../../src/app.module';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { ValidationReasonType } from '../../src/movements/dto/validation-response.dto';
+import { ValidationReasonType } from '../../src/models/movements/dto/response.dto';
 
 describe('Movements Integration Tests (Examples)', () => {
   let app: INestApplication;
@@ -110,6 +110,22 @@ describe('Movements Integration Tests (Examples)', () => {
       );
       expect(duplicateIds).toContain(2);
       expect(duplicateIds).toContain(3);
+
+      // Verify that duplicateType is present and valid
+      duplicateReason.details.duplicateMovements.forEach((m: any) => {
+        expect(m.duplicateType).toBeDefined();
+        expect(['exact', 'similar']).toContain(m.duplicateType);
+      });
+
+      // In this example, movements 2 and 3 have identical labels, so they should be 'exact'
+      const movement2 = duplicateReason.details.duplicateMovements.find(
+        (m: any) => m.id === 2,
+      );
+      const movement3 = duplicateReason.details.duplicateMovements.find(
+        (m: any) => m.id === 3,
+      );
+      expect(movement2?.duplicateType).toBe('exact');
+      expect(movement3?.duplicateType).toBe('exact');
     });
   });
 });
