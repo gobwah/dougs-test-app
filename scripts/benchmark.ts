@@ -69,7 +69,7 @@ function generateBalances(
 }
 
 function formatNumber(num: number): string {
-  return num.toLocaleString('fr-FR', { maximumFractionDigits: 2 });
+  return num.toLocaleString('en-US', { maximumFractionDigits: 2 });
 }
 
 function runBenchmark(
@@ -113,10 +113,10 @@ function runBenchmark(
 }
 
 function printResults(results: BenchmarkResult[]): void {
-  console.log('\n📊 Résultats des Benchmarks\n');
+  console.log('\n📊 Benchmark Results\n');
   console.log('─'.repeat(100));
   console.log(
-    '| Dataset      | Movements | Balances | Durée (ms) | Mémoire (MB) | Débit (mov/s) |',
+    '| Dataset      | Movements | Balances | Duration (ms) | Memory (MB) | Throughput (mov/s) |',
   );
   console.log('─'.repeat(100));
 
@@ -131,31 +131,35 @@ function printResults(results: BenchmarkResult[]): void {
 }
 
 async function main(): Promise<void> {
-  console.log('🚀 Démarrage des benchmarks de performance...\n');
+  console.log('🚀 Starting performance benchmarks...\n');
 
   const results: BenchmarkResult[] = [];
 
   // Small dataset
-  console.log('📦 Test avec petit dataset (100 mouvements, 4 balances)...');
+  console.log('📦 Testing with small dataset (100 movements, 4 balances)...');
   const smallMovements = generateMovements(100);
   const smallBalances = generateBalances(100, 4);
   results.push(runBenchmark(smallMovements, smallBalances, 'Small'));
 
   // Medium dataset
-  console.log('📦 Test avec dataset moyen (1,000 mouvements, 12 balances)...');
+  console.log(
+    '📦 Testing with medium dataset (1,000 movements, 12 balances)...',
+  );
   const mediumMovements = generateMovements(1000);
   const mediumBalances = generateBalances(1000, 12);
   results.push(runBenchmark(mediumMovements, mediumBalances, 'Medium'));
 
   // Large dataset
-  console.log('📦 Test avec grand dataset (10,000 mouvements, 24 balances)...');
+  console.log(
+    '📦 Testing with large dataset (10,000 movements, 24 balances)...',
+  );
   const largeMovements = generateMovements(10000);
   const largeBalances = generateBalances(10000, 24);
   results.push(runBenchmark(largeMovements, largeBalances, 'Large'));
 
   // Very large dataset
   console.log(
-    '📦 Test avec très grand dataset (50,000 mouvements, 50 balances)...',
+    '📦 Testing with very large dataset (50,000 movements, 50 balances)...',
   );
   const veryLargeMovements = generateMovements(50000);
   const veryLargeBalances = generateBalances(50000, 50);
@@ -165,7 +169,7 @@ async function main(): Promise<void> {
 
   // Dataset with duplicates
   console.log(
-    '📦 Test avec dataset contenant des doublons (1,000 mouvements + 50 doublons)...',
+    '📦 Testing with dataset containing duplicates (1,000 movements + 50 duplicates)...',
   );
   const dupMovements = generateMovements(1000);
   for (let i = 0; i < 50; i++) {
@@ -180,23 +184,23 @@ async function main(): Promise<void> {
   printResults(results);
 
   // Summary
-  console.log('📈 Analyse des performances:\n');
+  console.log('📈 Performance Analysis:\n');
   const avgThroughput =
     results.reduce((sum, r) => sum + r.throughput, 0) / results.length;
   const maxDuration = Math.max(...results.map((r) => r.durationMs));
   const maxMemory = Math.max(...results.map((r) => r.memoryMB));
 
   console.log(
-    `  • Débit moyen: ${formatNumber(avgThroughput)} mouvements/seconde`,
+    `  • Average throughput: ${formatNumber(avgThroughput)} movements/second`,
   );
-  console.log(`  • Durée maximale: ${formatNumber(maxDuration)}ms`);
-  console.log(`  • Mémoire maximale: ${formatNumber(maxMemory)}MB`);
-  console.log('\n✅ Benchmarks terminés!\n');
+  console.log(`  • Maximum duration: ${formatNumber(maxDuration)}ms`);
+  console.log(`  • Maximum memory: ${formatNumber(maxMemory)}MB`);
+  console.log('\n✅ Benchmarks completed!\n');
 }
 
 if (require.main === module) {
   main().catch((error) => {
-    console.error('❌ Erreur lors des benchmarks:', error);
+    console.error('❌ Error during benchmarks:', error);
     process.exit(1);
   });
 }

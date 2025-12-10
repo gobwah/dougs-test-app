@@ -1,63 +1,63 @@
-# 🚀 Guide de Déploiement - Dougs Bank Validation System
+# 🚀 Deployment Guide - Dougs Bank Validation System
 
-Ce guide explique comment déployer l'application Dougs Bank Validation System dans différents environnements.
+This guide explains how to deploy the Dougs Bank Validation System application in different environments.
 
-## 📋 Table des Matières
+## 📋 Table of Contents
 
-- [Prérequis](#-prérequis)
-- [Déploiement avec Docker](#-déploiement-avec-docker)
-- [Déploiement manuel](#-déploiement-manuel)
+- [Prerequisites](#-prerequisites)
+- [Docker Deployment](#-docker-deployment)
+- [Manual Deployment](#-manual-deployment)
 - [Configuration](#-configuration)
-- [Environnements](#-environnements)
-- [Monitoring et Health Checks](#-monitoring-et-health-checks)
-- [Dépannage](#-dépannage)
+- [Environments](#-environments)
+- [Monitoring and Health Checks](#-monitoring-and-health-checks)
+- [Troubleshooting](#-troubleshooting)
 
 ---
 
-## 📦 Prérequis
+## 📦 Prerequisites
 
-### Pour Docker
+### For Docker
 
 - Docker >= 20.10
 - Docker Compose >= 2.0
 
-### Pour déploiement manuel
+### For manual deployment
 
 - Node.js >= 20.x
 - npm >= 9.x
 
 ---
 
-## 🐳 Déploiement avec Docker
+## 🐳 Docker Deployment
 
-### Déploiement rapide
+### Quick deployment
 
 ```bash
-# Cloner le repository
+# Clone the repository
 git clone <repository-url>
 cd dougs-test-app
 
-# Copier et configurer les variables d'environnement
+# Copy and configure environment variables
 cp .env.example .env
-# Éditer .env selon vos besoins
+# Edit .env according to your needs
 
-# Démarrer avec Docker Compose
+# Start with Docker Compose
 docker-compose up -d
 
-# Vérifier les logs
+# Check logs
 docker-compose logs -f app
 
-# Vérifier le statut
+# Check status
 curl http://localhost:3000/health
 ```
 
-### Build de l'image Docker
+### Docker image build
 
 ```bash
-# Build l'image
+# Build the image
 docker build -t dougs-bank-validation:latest .
 
-# Run le container
+# Run the container
 docker run -d \
   --name dougs-bank-validation \
   -p 3000:3000 \
@@ -66,9 +66,9 @@ docker run -d \
   dougs-bank-validation:latest
 ```
 
-### Docker Compose avec configuration personnalisée
+### Docker Compose with custom configuration
 
-Créez un fichier `docker-compose.override.yml` pour personnaliser la configuration :
+Create a `docker-compose.override.yml` file to customize the configuration:
 
 ```yaml
 version: '3.8'
@@ -83,7 +83,7 @@ services:
       - '8080:3000'
 ```
 
-Puis démarrez avec :
+Then start with:
 
 ```bash
 docker-compose up -d
@@ -91,65 +91,65 @@ docker-compose up -d
 
 ---
 
-## 🛠️ Déploiement manuel
+## 🛠️ Manual Deployment
 
-### 1. Installation des dépendances
+### 1. Install dependencies
 
 ```bash
-# Installer les dépendances
+# Install dependencies
 npm ci --only=production
 
-# Ou pour inclure les dépendances de développement
+# Or to include development dependencies
 npm ci
 ```
 
-### 2. Build de l'application
+### 2. Build the application
 
 ```bash
-# Compiler TypeScript
+# Compile TypeScript
 npm run build
 
-# Vérifier que le build a réussi
+# Verify the build succeeded
 ls -la dist/
 ```
 
 ### 3. Configuration
 
 ```bash
-# Créer le fichier .env
+# Create the .env file
 cp .env.example .env
 
-# Éditer .env avec vos valeurs
+# Edit .env with your values
 nano .env
 ```
 
-### 4. Démarrage
+### 4. Start
 
 ```bash
-# Mode production
+# Production mode
 npm run start:prod
 
-# Ou directement avec Node.js
+# Or directly with Node.js
 NODE_ENV=production node dist/src/main.js
 ```
 
-### 5. Utilisation avec PM2 (recommandé pour production)
+### 5. Using PM2 (recommended for production)
 
 ```bash
-# Installer PM2 globalement
+# Install PM2 globally
 npm install -g pm2
 
-# Démarrer l'application
+# Start the application
 pm2 start dist/src/main.js --name dougs-bank-validation
 
-# Sauvegarder la configuration PM2
+# Save PM2 configuration
 pm2 save
 
-# Configurer PM2 pour démarrer au boot
+# Configure PM2 to start on boot
 pm2 startup
 ```
 
-**Fichier `ecosystem.config.js` pour PM2 :**
+**PM2 `ecosystem.config.js` file:**
 
 ```javascript
 module.exports = {
@@ -174,7 +174,7 @@ module.exports = {
 };
 ```
 
-Utilisation :
+Usage:
 
 ```bash
 pm2 start ecosystem.config.js
@@ -184,19 +184,19 @@ pm2 start ecosystem.config.js
 
 ## ⚙️ Configuration
 
-### Variables d'environnement
+### Environment Variables
 
-| Variable         | Description                                     | Défaut        | Exemple                  |
-| ---------------- | ----------------------------------------------- | ------------- | ------------------------ |
-| `PORT`           | Port d'écoute de l'application                  | `3000`        | `8080`                   |
-| `NODE_ENV`       | Environnement d'exécution                       | `development` | `production`             |
-| `API_PREFIX`     | Préfixe de l'API                                | `api`         | `api/v1`                 |
-| `LOG_LEVEL`      | Niveau de log                                   | `info`        | `debug`, `warn`, `error` |
-| `CORS_ORIGIN`    | Origines CORS autorisées (séparées par virgule) | `*`           | `https://app.dougs.com`  |
-| `THROTTLE_TTL`   | Fenêtre de temps pour rate limiting (secondes)  | `60`          | `120`                    |
-| `THROTTLE_LIMIT` | Nombre max de requêtes par fenêtre              | `100`         | `200`                    |
+| Variable         | Description                             | Default       | Example                  |
+| ---------------- | --------------------------------------- | ------------- | ------------------------ |
+| `PORT`           | Application listening port              | `3000`        | `8080`                   |
+| `NODE_ENV`       | Execution environment                   | `development` | `production`             |
+| `API_PREFIX`     | API prefix                              | `api`         | `api/v1`                 |
+| `LOG_LEVEL`      | Log level                               | `info`        | `debug`, `warn`, `error` |
+| `CORS_ORIGIN`    | Allowed CORS origins (comma-separated)  | `*`           | `https://app.dougs.com`  |
+| `THROTTLE_TTL`   | Time window for rate limiting (seconds) | `60`          | `120`                    |
+| `THROTTLE_LIMIT` | Maximum number of requests per window   | `100`         | `200`                    |
 
-### Exemple de fichier `.env` pour production
+### Example `.env` file for production
 
 ```env
 NODE_ENV=production
@@ -210,22 +210,22 @@ THROTTLE_LIMIT=200
 
 ---
 
-## 🌍 Environnements
+## 🌍 Environments
 
-### Développement
+### Development
 
 ```bash
-# Démarrer en mode développement avec hot-reload
+# Start in development mode with hot-reload
 npm run start:dev
 
-# L'application sera accessible sur http://localhost:3000
-# Swagger UI sur http://localhost:3000/api
+# The application will be accessible at http://localhost:3000
+# Swagger UI at http://localhost:3000/api
 ```
 
 ### Staging
 
 ```bash
-# Build et démarrage
+# Build and start
 npm run build
 NODE_ENV=staging npm run start:prod
 ```
@@ -233,26 +233,26 @@ NODE_ENV=staging npm run start:prod
 ### Production
 
 ```bash
-# Avec Docker (recommandé)
+# With Docker (recommended)
 docker-compose -f docker-compose.yml up -d
 
-# Ou manuellement avec PM2
+# Or manually with PM2
 pm2 start ecosystem.config.js
 ```
 
 ---
 
-## 📊 Monitoring et Health Checks
+## 📊 Monitoring and Health Checks
 
 ### Health Check Endpoint
 
-L'application expose un endpoint de health check :
+The application exposes a health check endpoint:
 
 ```bash
-# Vérifier le statut
+# Check status
 curl http://localhost:3000/health
 
-# Réponse attendue
+# Expected response
 {
   "status": "ok",
   "timestamp": "2024-01-15T10:30:00.000Z",
@@ -260,12 +260,12 @@ curl http://localhost:3000/health
 }
 ```
 
-### Intégration avec des outils de monitoring
+### Integration with monitoring tools
 
-#### Prometheus (futur)
+#### Prometheus (future)
 
 ```yaml
-# Exemple de configuration Prometheus
+# Prometheus configuration example
 scrape_configs:
   - job_name: 'dougs-bank-validation'
     static_configs:
@@ -275,65 +275,65 @@ scrape_configs:
 
 #### Docker Health Check
 
-Le Dockerfile inclut un health check automatique :
+The Dockerfile includes an automatic health check:
 
 ```dockerfile
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD node -e "require('http').get('http://localhost:3000/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
 ```
 
-Vérifier le statut :
+Check status:
 
 ```bash
 docker ps
-# La colonne STATUS affichera "healthy" ou "unhealthy"
+# The STATUS column will show "healthy" or "unhealthy"
 ```
 
 ---
 
-## 🔧 Dépannage
+## 🔧 Troubleshooting
 
-### Problèmes courants
+### Common Issues
 
-#### 1. Port déjà utilisé
+#### 1. Port already in use
 
 ```bash
-# Vérifier quel processus utilise le port
+# Check which process is using the port
 lsof -i :3000
 
-# Changer le port dans .env
+# Change the port in .env
 PORT=8080
 ```
 
-#### 2. Erreurs de build
+#### 2. Build errors
 
 ```bash
-# Nettoyer et rebuilder
+# Clean and rebuild
 rm -rf dist node_modules
 npm ci
 npm run build
 ```
 
-#### 3. Problèmes de mémoire
+#### 3. Memory issues
 
 ```bash
-# Augmenter la limite de mémoire Node.js
+# Increase Node.js memory limit
 NODE_OPTIONS="--max-old-space-size=2048" npm run start:prod
 ```
 
-#### 4. Logs Docker
+#### 4. Docker logs
 
 ```bash
-# Voir les logs
+# View logs
 docker-compose logs -f app
 
-# Logs des 100 dernières lignes
+# Last 100 lines of logs
 docker-compose logs --tail=100 app
 ```
 
-#### 5. Rate Limiting trop restrictif
+#### 5. Rate limiting too restrictive
 
-Ajuster dans `.env` :
+Adjust in `.env`:
 
 ```env
 THROTTLE_TTL=120
@@ -342,16 +342,16 @@ THROTTLE_LIMIT=500
 
 ---
 
-## 📈 Performance et Scaling
+## 📈 Performance and Scaling
 
-### Optimisations recommandées
+### Recommended optimizations
 
-1. **Utiliser PM2 en mode cluster** pour utiliser tous les CPU cores
-2. **Configurer un reverse proxy** (Nginx, Traefik) pour le load balancing
-3. **Utiliser un cache** (Redis) pour les validations répétées (futur)
-4. **Monitoring** avec Prometheus/Grafana (futur)
+1. **Use PM2 in cluster mode** to use all CPU cores
+2. **Configure a reverse proxy** (Nginx, Traefik) for load balancing
+3. **Use caching** (Redis) for repeated validations (future)
+4. **Monitoring** with Prometheus/Grafana (future)
 
-### Exemple avec Nginx
+### Example with Nginx
 
 ```nginx
 upstream dougs_api {
@@ -378,46 +378,46 @@ server {
 
 ---
 
-## 🔐 Sécurité
+## 🔐 Security
 
-### Recommandations
+### Recommendations
 
-1. **Ne jamais commiter `.env`** dans le repository
-2. **Utiliser HTTPS** en production (via reverse proxy)
-3. **Configurer CORS** avec des origines spécifiques en production
-4. **Limiter le rate limiting** selon vos besoins
-5. **Mettre à jour régulièrement** les dépendances (`npm audit`)
+1. **Never commit `.env`** to the repository
+2. **Use HTTPS** in production (via reverse proxy)
+3. **Configure CORS** with specific origins in production
+4. **Limit rate limiting** according to your needs
+5. **Regularly update** dependencies (`npm audit`)
 
-### Variables sensibles
+### Sensitive variables
 
-Les variables suivantes doivent être sécurisées :
+The following variables must be secured:
 
-- `CORS_ORIGIN` : Limiter aux domaines autorisés en production
-- `THROTTLE_LIMIT` : Ajuster selon la capacité du serveur
-
----
-
-## 📝 Checklist de déploiement
-
-- [ ] Variables d'environnement configurées (`.env`)
-- [ ] Build de l'application réussi (`npm run build`)
-- [ ] Tests passent (`npm run test:all`)
-- [ ] Health check fonctionne (`curl http://localhost:3000/health`)
-- [ ] CORS configuré correctement
-- [ ] Rate limiting configuré
-- [ ] Logs accessibles et configurés
-- [ ] Monitoring en place (si applicable)
-- [ ] Backup de la configuration
-- [ ] Documentation à jour
+- `CORS_ORIGIN` : Limit to authorized domains in production
+- `THROTTLE_LIMIT` : Adjust according to server capacity
 
 ---
 
-## 🔗 Ressources
+## 📝 Deployment Checklist
 
-- [Documentation NestJS](https://docs.nestjs.com/)
+- [ ] Environment variables configured (`.env`)
+- [ ] Application build successful (`npm run build`)
+- [ ] Tests pass (`npm run test:all`)
+- [ ] Health check works (`curl http://localhost:3000/health`)
+- [ ] CORS configured correctly
+- [ ] Rate limiting configured
+- [ ] Logs accessible and configured
+- [ ] Monitoring in place (if applicable)
+- [ ] Configuration backup
+- [ ] Documentation up to date
+
+---
+
+## 🔗 Resources
+
+- [NestJS Documentation](https://docs.nestjs.com/)
 - [Docker Documentation](https://docs.docker.com/)
 - [PM2 Documentation](https://pm2.keymetrics.io/docs/)
 
 ---
 
-**Dernière mise à jour** : Décembre 2025
+**Last updated**: December 2025

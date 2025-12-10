@@ -3,21 +3,20 @@ paths:
   /movements/validation:
     post:
       description: >-
-        Valide une liste de mouvements bancaires en les comparant avec des
-        points de contrôle (soldes). Détecte les incohérences, doublons et
-        anomalies.
+        Validates a list of bank movements by comparing them with control points
+        (balances). Detects inconsistencies, duplicates, and anomalies.
       operationId: MovementController_validateMovements
       parameters: []
       requestBody:
         required: true
-        description: Données de validation contenant les mouvements et les balances
+        description: Validation data containing movements and balances
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/ValidationRequestDto'
             examples:
               valid:
-                summary: Exemple de validation réussie
+                summary: Successful validation example
                 value:
                   movements:
                     - id: 1
@@ -32,7 +31,7 @@ paths:
                     - date: '2024-01-31'
                       balance: 1929.5
               withError:
-                summary: Exemple avec erreur de balance
+                summary: Example with balance error
                 value:
                   movements:
                     - id: 1
@@ -44,7 +43,7 @@ paths:
                       balance: 2000
       responses:
         '200':
-          description: Validation réussie - Tous les mouvements sont valides
+          description: Validation successful - All movements are valid
           content:
             application/json:
               schema:
@@ -52,12 +51,12 @@ paths:
               examples:
                 success:
                   summary: >-
-                    Validation réussie - Exemple de réponse lorsque tous les
-                    mouvements sont valides
+                    Validation successful - Example response when all movements
+                    are valid
                   value:
                     message: Accepted
         '400':
-          description: Validation échouée - Une ou plusieurs erreurs ont été détectées
+          description: Validation failed - One or more errors have been detected
           content:
             application/json:
               schema:
@@ -65,8 +64,8 @@ paths:
               examples:
                 balanceMismatch:
                   summary: >-
-                    Erreur de déséquilibre de solde - Le solde calculé ne
-                    correspond pas au solde du point de contrôle
+                    Balance mismatch error - The calculated balance does not
+                    match the control point balance
                   value:
                     message: Validation failed
                     reasons:
@@ -81,9 +80,8 @@ paths:
                           difference: -70.5
                 duplicateTransaction:
                   summary: >-
-                    Transactions dupliquées détectées - Des transactions avec la
-                    même date, le même montant et des libellés similaires ont
-                    été détectées
+                    Duplicate transactions detected - Transactions with the same
+                    date, same amount, and similar labels have been detected
                   value:
                     message: Validation failed
                     reasons:
@@ -103,9 +101,9 @@ paths:
                               duplicateType: exact
                 missingTransaction:
                   summary: >-
-                    Transactions après le dernier point de contrôle - Des
-                    mouvements existent après le dernier point de contrôle,
-                    indiquant possiblement des transactions manquantes
+                    Transactions after the last control point - Movements exist
+                    after the last control point, possibly indicating missing
+                    transactions
                   value:
                     message: Validation failed
                     reasons:
@@ -120,8 +118,8 @@ paths:
                           missingAmount: -500
                 invalidDateOrder:
                   summary: >-
-                    Ordre chronologique invalide - Les points de contrôle ne
-                    sont pas dans l'ordre chronologique
+                    Invalid chronological order - Control points are not in
+                    chronological order
                   value:
                     message: Validation failed
                     reasons:
@@ -131,8 +129,8 @@ paths:
                           balanceDate: '2024-01-15T00:00:00.000Z'
                 multipleErrors:
                   summary: >-
-                    Plusieurs erreurs détectées - Exemple avec plusieurs types
-                    d'erreurs simultanées
+                    Multiple errors detected - Example with multiple types of
+                    simultaneous errors
                   value:
                     message: Validation failed
                     reasons:
@@ -156,8 +154,8 @@ paths:
                               duplicateType: exact
         '429':
           description: >-
-            Trop de requêtes - Limite de rate limiting atteinte. Réessayez plus
-            tard.
+            Too many requests - Rate limiting limit reached. Please try again
+            later.
           content:
             application/json:
               schema:
@@ -173,7 +171,7 @@ paths:
                     type: string
                     example: Too Many Requests
         '500':
-          description: Erreur serveur interne - Une erreur inattendue s'est produite
+          description: Internal server error - An unexpected error occurred
           content:
             application/json:
               schema:
@@ -200,19 +198,17 @@ paths:
                   method:
                     type: string
                     example: POST
-      summary: Valider des mouvements bancaires
+      summary: Validate bank movements
       tags:
         - movements
   /health:
     get:
-      description: >-
-        Retourne le statut de santé de l'application avec son temps de
-        fonctionnement.
+      description: Returns the application health status with its uptime.
       operationId: HealthController_check
       parameters: []
       responses:
         '200':
-          description: Application en cours d'exécution
+          description: Application is running
           content:
             application/json:
               schema:
@@ -221,15 +217,15 @@ paths:
                   status:
                     type: string
                     example: ok
-                    description: Statut de santé de l'application
+                    description: Application health status
                   timestamp:
                     type: string
                     format: date-time
                     example: '2024-01-15T10:30:00.000Z'
-                    description: Horodatage de la réponse
+                    description: Response timestamp
                   uptime:
                     type: number
-                    description: Temps de fonctionnement en secondes
+                    description: Uptime in seconds
                     example: 123.456
                 required:
                   - status
@@ -237,15 +233,15 @@ paths:
                   - uptime
               examples:
                 healthy:
-                  summary: Application saine - L'application fonctionne correctement
+                  summary: Healthy application - The application is working correctly
                   value:
                     status: ok
                     timestamp: '2024-01-15T10:30:00.000Z'
                     uptime: 123.456
         '503':
           description: >-
-            Service indisponible - L'application n'est pas disponible (cas futur
-            avec health checks avancés)
+            Service unavailable - The application is not available (future case
+            with advanced health checks)
           content:
             application/json:
               schema:
@@ -257,22 +253,22 @@ paths:
                   message:
                     type: string
                     example: Service temporarily unavailable
-      summary: Vérifier l'état de l'application
+      summary: Check application status
       tags:
         - health
 info:
   title: Dougs Bank Validation API
   description: >-
-    API de validation des opérations bancaires pour Dougs, cabinet
-    d'expertise-comptable. Permet de valider l'intégrité des synchronisations
-    bancaires en comparant les opérations avec les points de contrôle (soldes).
+    Bank transaction validation API for Dougs, accounting firm. Allows
+    validation of bank synchronization integrity by comparing transactions with
+    control points (balances).
   version: '1.0'
   contact: {}
 tags:
   - name: movements
-    description: Validation des mouvements bancaires
+    description: Bank movement validation
   - name: health
-    description: Vérification de l'état de l'application
+    description: Application status check
 servers: []
 components:
   schemas:
