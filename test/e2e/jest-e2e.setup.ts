@@ -17,7 +17,7 @@ async function waitForServer(url: string, maxAttempts = 60): Promise<void> {
         return;
       }
     } catch (error) {
-      // Server not ready yet
+      console.error(`[E2E Setup] Error waiting for server: ${error}`);
     }
     await new Promise((resolve) => setTimeout(resolve, 500));
   }
@@ -134,4 +134,4 @@ async function stopServer(): Promise<void> {
 export { startServer, stopServer, SERVER_URL };
 
 // Store server URL globally for tests
-(global as any).__E2E_SERVER_URL__ = SERVER_URL;
+(globalThis as any).__E2E_SERVER_URL__ = SERVER_URL;

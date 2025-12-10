@@ -22,14 +22,14 @@ if ! command -v mmdc &> /dev/null; then
     exit 1
 fi
 
-# Extraire les diagrammes du fichier ANALYSE.md
-echo "📄 Extraction des diagrammes de ANALYSE.md..."
+# Extraire les diagrammes du fichier analyse.md
+echo "📄 Extraction des diagrammes de analyse.md..."
 
 # Compteur pour nommer les fichiers
 counter=1
 
 # Extraire chaque bloc mermaid
-awk '/```mermaid/,/```/' "$DOC_DIR/ANALYSE.md" | \
+awk '/```mermaid/,/```/' "$DOC_DIR/analyse.md" | \
 while IFS= read -r line; do
     if [[ $line == "```mermaid" ]]; then
         # Nouveau diagramme

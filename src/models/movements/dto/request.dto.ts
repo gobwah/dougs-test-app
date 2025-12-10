@@ -35,7 +35,7 @@ export class MovementDto {
   @ApiProperty({
     description:
       'Montant du mouvement (positif pour crédit, négatif pour débit)',
-    example: 3000.0,
+    example: 3000,
   })
   @IsNumber()
   amount: number;
@@ -67,13 +67,13 @@ export class ValidationRequestDto {
         id: 1,
         date: '2024-01-05',
         label: 'SALARY PAYMENT',
-        amount: 3000.0,
+        amount: 3000,
       },
       {
         id: 2,
         date: '2024-01-10',
         label: 'RENT PAYMENT',
-        amount: -800.0,
+        amount: -800,
       },
     ],
   })

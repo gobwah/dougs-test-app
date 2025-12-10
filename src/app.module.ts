@@ -1,11 +1,13 @@
 import { Module } from '@nestjs/common';
-import { MovementsController } from './movements/movements.controller';
-import { MovementsService } from './movements/movements.service';
+import { BalanceService } from './models/balances/balance.service';
+import { DuplicateService } from './models/duplicates/duplicate.service';
 import { HealthController } from './health/health.controller';
+import { MovementController } from './models/movements/movement.controller';
+import { MovementService } from './models/movements/movement.service';
 
 @Module({
   imports: [],
-  controllers: [MovementsController, HealthController],
-  providers: [MovementsService],
+  controllers: [MovementController, HealthController],
+  providers: [MovementService, DuplicateService, BalanceService],
 })
 export class AppModule {}
