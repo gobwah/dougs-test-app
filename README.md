@@ -138,7 +138,7 @@ See the [Deployment Guide](./documentation/deployment.md) for detailed instructi
 
 ## 📖 For More Information
 
-- **Detailed Analysis** : [documentation/ANALYSE.md](./documentation/ANALYSE.md)
-- **API Documentation** : [documentation/api/index.md](./documentation/api/index.md)
-- **Deployment Guide** : [documentation/deployment.md](./documentation/deployment.md)
-- **Mermaid Guide** : [documentation/installation_mermaid.md](./documentation/installation_mermaid.md)
+- **Detailed Analysis** : [documentation/en/analysis.md](./documentation/en/analysis.md) or [documentation/fr/analysis.md](./documentation/fr/analysis.md)
+- **API Documentation** : [documentation/en/api_index.md](./documentation/en/api_index.md) or [documentation/fr/api_index.md](./documentation/fr/api_index.md)
+- **Deployment Guide** : [documentation/en/deployment.md](./documentation/en/deployment.md) or [documentation/fr/deployment.md](./documentation/fr/deployment.md)
+- **Mermaid Guide** : [documentation/en/install_mermaid.md](./documentation/en/install_mermaid.md) or [documentation/fr/install_mermaid.md](./documentation/fr/install_mermaid.md)
