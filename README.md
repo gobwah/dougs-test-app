@@ -6,138 +6,139 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.1-blue)](https://www.typescriptlang.org/)
 [![NestJS](https://img.shields.io/badge/NestJS-11.0-red)](https://nestjs.com/)
 
-Système de validation des opérations bancaires pour Dougs, cabinet d'expertise-comptable.
+Bank transaction validation system for Dougs, accounting firm.
 
-## 🚀 Démarrage Rapide
+## 🚀 Quick Start
 
 ```bash
 # Installation
 npm install
 
-# Démarrage en mode développement
+# Start in development mode
 npm run start:dev
 
-# L'application sera accessible sur http://localhost:3000
-# Swagger UI disponible sur http://localhost:3000/api
+# The application will be accessible at http://localhost:3000
+# Swagger UI available at http://localhost:3000/api
 ```
 
 ## 📚 Documentation
 
-Toute la documentation est disponible dans le dossier [`documentation/`](./documentation/) :
+All documentation is available in the [`documentation/`](./documentation/) folder:
 
-- **[📖 Documentation Complète](./documentation/index.md)** : Index de toute la documentation
-- **[🔍 Analyse Détaillée](./documentation/analyse.md)** : Approche méthodique du problème avec diagrammes
-- **[📡 Documentation API](./documentation/api/)** : Documentation OpenAPI (JSON, YAML, HTML)
+- **[📖 Documentation Index](./documentation/index.md)** : Choose your language (FR/EN)
+- **[🇫🇷 French Documentation](./documentation/fr/)** : Documentation en français
+- **[🇬🇧 English Documentation](./documentation/en/)** : Documentation in English
+- **[📡 API Documentation](./documentation/api/)** : OpenAPI documentation (JSON, YAML, HTML)
 
-## 🎯 Fonctionnalités
+## 🎯 Features
 
-- ✅ **Validation des soldes** : Vérifie que les soldes aux points de contrôle correspondent aux sommes calculées
-- ✅ **Détection de doublons** : Identifie les transactions dupliquées (même date, même montant, libellés similaires)
-- ✅ **Détection d'opérations manquantes** : Signale les incohérences potentielles
-- ✅ **Validation de l'ordre chronologique** : Vérifie que les points de contrôle sont dans l'ordre
+- ✅ **Balance validation** : Verifies that balances at control points match calculated sums
+- ✅ **Duplicate detection** : Identifies duplicate transactions (same date, same amount, similar labels)
+- ✅ **Missing transaction detection** : Reports potential inconsistencies
+- ✅ **Chronological order validation** : Verifies that control points are in order
 
 ## 🔌 API
 
-### Endpoints Principaux
+### Main Endpoints
 
-- **GET /health** : Vérification de santé de l'application
-- **POST /movements/validation** : Validation d'opérations bancaires contre des points de contrôle
+- **GET /health** : Application health check
+- **POST /movements/validation** : Validate bank transactions against control points
 
-### Documentation Interactive
+### Interactive Documentation
 
-- **Swagger UI** : `http://localhost:3000/api` (quand l'application est démarrée)
+- **Swagger UI** : `http://localhost:3000/api` (when the application is running)
 
 ## 🧪 Tests
 
 ```bash
-# Tests unitaires (par défaut)
+# Unit tests (default)
 npm test
 
-# Tests avec couverture (seuil minimum: 80%)
+# Tests with coverage (minimum threshold: 80%)
 npm run test:cov
 
-# Tests d'intégration
+# Integration tests
 npm run test:integration
 
-# Tests e2e (serveur réel)
+# E2E tests (real server)
 npm run test:e2e
 
-# Tous les tests
+# All tests
 npm run test:all
 ```
 
-### Types de tests
+### Test Types
 
-- **Tests unitaires** : Tests rapides des composants isolés (`test/unit/`)
-- **Tests d'intégration** : Tests de l'API en mémoire (`test/integration/`)
-- **Tests e2e** : Tests avec serveur HTTP réel (`test/e2e/`)
+- **Unit tests** : Fast tests of isolated components (`test/unit/`)
+- **Integration tests** : In-memory API tests (`test/integration/`)
+- **E2E tests** : Tests with real HTTP server (`test/e2e/`)
 
-## 📁 Structure du Projet
+## 📁 Project Structure
 
 ```
 src/
 ├── models/
-│   ├── movements/          # Gestion des mouvements
-│   ├── balances/            # Gestion des balances
-│   └── duplicates/          # Détection de doublons
+│   ├── movements/          # Movement management
+│   ├── balances/            # Balance management
+│   └── duplicates/          # Duplicate detection
 ├── health/                  # Health check
-└── main.ts                  # Point d'entrée
+└── main.ts                  # Entry point
 
 test/
-├── unit/                    # Tests unitaires
-├── integration/             # Tests d'intégration
-└── e2e/                    # Tests end-to-end
+├── unit/                    # Unit tests
+├── integration/             # Integration tests
+└── e2e/                    # End-to-end tests
 
 documentation/
-├── index.md                # Index de la documentation
-├── analyse.md               # Analyse détaillée (document principal)
-├── installation_mermaid.md  # Guide Mermaid
-├── api/                     # Documentation API OpenAPI
-└── images/                  # Images des diagrammes Mermaid
+├── index.md                # Documentation index
+├── analyse.md               # Detailed analysis (main document)
+├── installation_mermaid.md  # Mermaid guide
+├── api/                     # OpenAPI API documentation
+└── images/                  # Mermaid diagram images
 ```
 
-## 📝 Exemples
+## 📝 Examples
 
-Des exemples de requêtes sont disponibles dans le dossier [`examples/`](./examples/) :
+Request examples are available in the [`examples/`](./examples/) folder:
 
-- `example-valid.json` : Cas valide
-- `example-balance-mismatch.json` : Cas avec déséquilibre de solde
-- `example-with-duplicates.json` : Cas avec doublons
-- `example-multiple-balances.json` : Cas avec plusieurs points de contrôle
+- `example-valid.json` : Valid case
+- `example-balance-mismatch.json` : Case with balance mismatch
+- `example-with-duplicates.json` : Case with duplicates
+- `example-multiple-balances.json` : Case with multiple control points
 
-## 🔧 Scripts Disponibles
+## 🔧 Available Scripts
 
 ```bash
-npm run build              # Compiler le projet
-npm run start:dev          # Démarrage en mode développement
-npm run start:prod        # Démarrage en mode production
-npm run lint              # Linter le code
-npm run format            # Formater le code
-npm run test:performance  # Tests de performance
-npm run benchmark         # Benchmarks de performance
-npm run generate:diagrams # Générer les images des diagrammes Mermaid
-npm run generate:api-docs # Générer la documentation OpenAPI
+npm run build              # Build the project
+npm run start:dev          # Start in development mode
+npm run start:prod        # Start in production mode
+npm run lint              # Lint the code
+npm run format            # Format the code
+npm run test:performance  # Performance tests
+npm run benchmark         # Performance benchmarks
+npm run generate:diagrams # Generate Mermaid diagram images
+npm run generate:api-docs # Generate OpenAPI documentation
 ```
 
-## 🐳 Déploiement
+## 🐳 Deployment
 
-### Avec Docker
+### With Docker
 
 ```bash
-# Démarrage rapide
+# Quick start
 docker-compose up -d
 
-# Build de l'image
+# Build the image
 docker build -t dougs-bank-validation:latest .
 ```
 
-### Déploiement manuel
+### Manual Deployment
 
-Consultez le [Guide de Déploiement](./documentation/deployment.md) pour les instructions détaillées.
+See the [Deployment Guide](./documentation/deployment.md) for detailed instructions.
 
-## 📖 Pour Plus d'Informations
+## 📖 For More Information
 
-- **Analyse détaillée** : [documentation/ANALYSE.md](./documentation/ANALYSE.md)
-- **Documentation API** : [documentation/api/index.md](./documentation/api/index.md)
-- **Guide de Déploiement** : [documentation/deployment.md](./documentation/deployment.md)
-- **Guide Mermaid** : [documentation/installation_mermaid.md](./documentation/installation_mermaid.md)
+- **Detailed Analysis** : [documentation/ANALYSE.md](./documentation/ANALYSE.md)
+- **API Documentation** : [documentation/api/index.md](./documentation/api/index.md)
+- **Deployment Guide** : [documentation/deployment.md](./documentation/deployment.md)
+- **Mermaid Guide** : [documentation/installation_mermaid.md](./documentation/installation_mermaid.md)

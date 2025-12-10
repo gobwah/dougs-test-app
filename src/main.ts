@@ -46,11 +46,11 @@ async function bootstrap() {
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Dougs Bank Validation API')
     .setDescription(
-      "API de validation des opérations bancaires pour Dougs, cabinet d'expertise-comptable. Permet de valider l'intégrité des synchronisations bancaires en comparant les opérations avec les points de contrôle (soldes).",
+      'Bank transaction validation API for Dougs, accounting firm. Allows validation of bank synchronization integrity by comparing transactions with control points (balances).',
     )
     .setVersion('1.0')
-    .addTag('movements', 'Validation des mouvements bancaires')
-    .addTag('health', "Vérification de l'état de l'application")
+    .addTag('movements', 'Bank movement validation')
+    .addTag('health', 'Application status check')
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);

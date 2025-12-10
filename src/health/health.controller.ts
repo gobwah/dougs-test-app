@@ -6,16 +6,15 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 export class HealthController {
   @Get()
   @ApiOperation({
-    summary: "Vérifier l'état de l'application",
-    description:
-      "Retourne le statut de santé de l'application avec son temps de fonctionnement.",
+    summary: 'Check application status',
+    description: 'Returns the application health status with its uptime.',
   })
   @ApiResponse({
     status: 200,
-    description: "Application en cours d'exécution",
+    description: 'Application is running',
     examples: {
       healthy: {
-        summary: "Application saine - L'application fonctionne correctement",
+        summary: 'Healthy application - The application is working correctly',
         value: {
           status: 'ok',
           timestamp: '2024-01-15T10:30:00.000Z',
@@ -29,17 +28,17 @@ export class HealthController {
         status: {
           type: 'string',
           example: 'ok',
-          description: "Statut de santé de l'application",
+          description: 'Application health status',
         },
         timestamp: {
           type: 'string',
           format: 'date-time',
           example: '2024-01-15T10:30:00.000Z',
-          description: 'Horodatage de la réponse',
+          description: 'Response timestamp',
         },
         uptime: {
           type: 'number',
-          description: 'Temps de fonctionnement en secondes',
+          description: 'Uptime in seconds',
           example: 123.456,
         },
       },
@@ -49,7 +48,7 @@ export class HealthController {
   @ApiResponse({
     status: 503,
     description:
-      "Service indisponible - L'application n'est pas disponible (cas futur avec health checks avancés)",
+      'Service unavailable - The application is not available (future case with advanced health checks)',
     schema: {
       type: 'object',
       properties: {

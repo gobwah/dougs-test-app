@@ -28,17 +28,16 @@ export class MovementController {
   @Post('validation')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: 'Valider des mouvements bancaires',
+    summary: 'Validate bank movements',
     description:
-      'Valide une liste de mouvements bancaires en les comparant avec des points de contrôle (soldes). Détecte les incohérences, doublons et anomalies.',
+      'Validates a list of bank movements by comparing them with control points (balances). Detects inconsistencies, duplicates, and anomalies.',
   })
   @ApiBody({
     type: ValidationRequestDto,
-    description:
-      'Données de validation contenant les mouvements et les balances',
+    description: 'Validation data containing movements and balances',
     examples: {
       valid: {
-        summary: 'Exemple de validation réussie',
+        summary: 'Successful validation example',
         value: {
           movements: [
             {
@@ -63,7 +62,7 @@ export class MovementController {
         },
       },
       withError: {
-        summary: 'Exemple avec erreur de balance',
+        summary: 'Example with balance error',
         value: {
           movements: [
             {
@@ -85,12 +84,12 @@ export class MovementController {
   })
   @ApiResponse({
     status: 200,
-    description: 'Validation réussie - Tous les mouvements sont valides',
+    description: 'Validation successful - All movements are valid',
     type: ValidationSuccessResponse,
     examples: {
       success: {
         summary:
-          'Validation réussie - Exemple de réponse lorsque tous les mouvements sont valides',
+          'Validation successful - Example response when all movements are valid',
         value: {
           message: 'Accepted',
         },
@@ -98,13 +97,12 @@ export class MovementController {
     },
   })
   @ApiBadRequestResponse({
-    description:
-      'Validation échouée - Une ou plusieurs erreurs ont été détectées',
+    description: 'Validation failed - One or more errors have been detected',
     type: ValidationFailureResponse,
     examples: {
       balanceMismatch: {
         summary:
-          'Erreur de déséquilibre de solde - Le solde calculé ne correspond pas au solde du point de contrôle',
+          'Balance mismatch error - The calculated balance does not match the control point balance',
         value: {
           message: 'Validation failed',
           reasons: [
@@ -124,7 +122,7 @@ export class MovementController {
       },
       duplicateTransaction: {
         summary:
-          'Transactions dupliquées détectées - Des transactions avec la même date, le même montant et des libellés similaires ont été détectées',
+          'Duplicate transactions detected - Transactions with the same date, same amount, and similar labels have been detected',
         value: {
           message: 'Validation failed',
           reasons: [
@@ -155,7 +153,7 @@ export class MovementController {
       },
       missingTransaction: {
         summary:
-          'Transactions après le dernier point de contrôle - Des mouvements existent après le dernier point de contrôle, indiquant possiblement des transactions manquantes',
+          'Transactions after the last control point - Movements exist after the last control point, possibly indicating missing transactions',
         value: {
           message: 'Validation failed',
           reasons: [
@@ -174,7 +172,7 @@ export class MovementController {
       },
       invalidDateOrder: {
         summary:
-          "Ordre chronologique invalide - Les points de contrôle ne sont pas dans l'ordre chronologique",
+          'Invalid chronological order - Control points are not in chronological order',
         value: {
           message: 'Validation failed',
           reasons: [
@@ -190,7 +188,7 @@ export class MovementController {
       },
       multipleErrors: {
         summary:
-          "Plusieurs erreurs détectées - Exemple avec plusieurs types d'erreurs simultanées",
+          'Multiple errors detected - Example with multiple types of simultaneous errors',
         value: {
           message: 'Validation failed',
           reasons: [
@@ -228,7 +226,7 @@ export class MovementController {
   @ApiResponse({
     status: 400,
     description:
-      "Requête invalide - Erreurs de validation des données d'entrée (format de date, montants invalides, etc.)",
+      'Invalid request - Input data validation errors (date format, invalid amounts, etc.)',
     schema: {
       type: 'object',
       properties: {
@@ -266,7 +264,7 @@ export class MovementController {
   @ApiResponse({
     status: 429,
     description:
-      'Trop de requêtes - Limite de rate limiting atteinte. Réessayez plus tard.',
+      'Too many requests - Rate limiting limit reached. Please try again later.',
     schema: {
       type: 'object',
       properties: {
@@ -287,8 +285,7 @@ export class MovementController {
   })
   @ApiResponse({
     status: 500,
-    description:
-      "Erreur serveur interne - Une erreur inattendue s'est produite",
+    description: 'Internal server error - An unexpected error occurred',
     schema: {
       type: 'object',
       properties: {
