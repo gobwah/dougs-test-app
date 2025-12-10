@@ -150,5 +150,31 @@ describe('Date Validators', () => {
       );
       expect(tooOldErrors.length).toBeGreaterThan(0);
     });
+
+    it('should accept empty string (let other validators handle)', async () => {
+      // This test covers line 71: return true for empty string
+      const dto = plainToInstance(TestDtoWithOldDate, {
+        date: '',
+      });
+      const errors = await validate(dto);
+      // Should pass this validator (other validators will catch empty)
+      const tooOldErrors = errors.filter((e) =>
+        e.constraints?.hasOwnProperty('isNotTooOld'),
+      );
+      expect(tooOldErrors.length).toBe(0);
+    });
+
+    it('should accept invalid date string (let other validators handle)', async () => {
+      // This test covers line 76: return true for invalid date
+      const dto = plainToInstance(TestDtoWithOldDate, {
+        date: 'invalid-date',
+      });
+      const errors = await validate(dto);
+      // Should pass this validator (other validators will catch invalid)
+      const tooOldErrors = errors.filter((e) =>
+        e.constraints?.hasOwnProperty('isNotTooOld'),
+      );
+      expect(tooOldErrors.length).toBe(0);
+    });
   });
 });
