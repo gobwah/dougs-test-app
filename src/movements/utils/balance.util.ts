@@ -1,5 +1,5 @@
-import { ValidationReason, ValidationReasonType } from '../dto/responseDto';
-import { Balance } from './parsingUtils';
+import { ValidationReason, ValidationReasonType } from '../dto/response.dto';
+import { Balance } from './parsing.util';
 
 /**
  * Validate date order and add reasons to the array if invalid

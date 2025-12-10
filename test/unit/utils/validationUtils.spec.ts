@@ -2,14 +2,14 @@ import {
   validateFirstBalance,
   validateSubsequentBalances,
   checkMovementsAfterLastBalance,
-} from '../../../src/movements/utils/validationUtils';
+} from '../../../src/movements/utils/validation.util';
 import {
   filterMovementsUpToDate,
   filterMovementsBetweenDates,
   sumMovementAmounts,
-} from '../../../src/movements/utils/movementUtils';
-import { Movement, Balance } from '../../../src/movements/utils/parsingUtils';
-import { ValidationReasonType } from '../../../src/movements/dto/responseDto';
+} from '../../../src/movements/utils/movement.util';
+import { Movement, Balance } from '../../../src/movements/utils/parsing.util';
+import { ValidationReasonType } from '../../../src/movements/dto/response.dto';
 
 describe('ValidationUtils', () => {
   describe('filterMovementsUpToDate', () => {

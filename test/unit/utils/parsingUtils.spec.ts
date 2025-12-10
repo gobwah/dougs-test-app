@@ -1,8 +1,11 @@
 import {
   parseAndSortMovements,
   parseAndSortBalances,
-} from '../../../src/movements/utils/parsingUtils';
-import { MovementDto, BalanceDto } from '../../../src/movements/dto/requestDto';
+} from '../../../src/movements/utils/parsing.util';
+import {
+  MovementDto,
+  BalanceDto,
+} from '../../../src/movements/dto/request.dto';
 
 describe('ParsingUtils', () => {
   describe('parseAndSortMovements', () => {

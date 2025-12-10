@@ -1,10 +1,10 @@
-import { ValidationReason, ValidationReasonType } from '../dto/responseDto';
-import { Movement, Balance } from './parsingUtils';
+import { ValidationReason, ValidationReasonType } from '../dto/response.dto';
+import { Movement, Balance } from './parsing.util';
 import {
   filterMovementsUpToDate,
   filterMovementsBetweenDates,
   sumMovementAmounts,
-} from './movementUtils';
+} from './movement.util';
 
 const BALANCE_TOLERANCE = 0.01; // Allow small floating point differences
 

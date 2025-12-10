@@ -1,6 +1,6 @@
-import { validateDateOrder } from '../../../src/movements/utils/balanceUtils';
-import { Balance } from '../../../src/movements/utils/parsingUtils';
-import { ValidationReasonType } from '../../../src/movements/dto/responseDto';
+import { validateDateOrder } from '../../../src/movements/utils/balance.util';
+import { Balance } from '../../../src/movements/utils/parsing.util';
+import { ValidationReasonType } from '../../../src/movements/dto/response.dto';
 
 describe('BalanceUtils', () => {
   describe('validateDateOrder', () => {

@@ -1,4 +1,4 @@
-import { Movement } from './parsingUtils';
+import { Movement } from './parsing.util';
 
 /**
  * Filter movements up to a specific date (inclusive)

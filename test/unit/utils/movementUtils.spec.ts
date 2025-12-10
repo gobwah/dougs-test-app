@@ -2,8 +2,8 @@ import {
   filterMovementsUpToDate,
   filterMovementsBetweenDates,
   sumMovementAmounts,
-} from '../../../src/movements/utils/movementUtils';
-import { Movement } from '../../../src/movements/utils/parsingUtils';
+} from '../../../src/movements/utils/movement.util';
+import { Movement } from '../../../src/movements/utils/parsing.util';
 
 describe('MovementUtils', () => {
   describe('filterMovementsUpToDate', () => {

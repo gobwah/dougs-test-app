@@ -1,4 +1,4 @@
-import { MovementDto, BalanceDto } from '../dto/requestDto';
+import { MovementDto, BalanceDto } from '../dto/request.dto';
 
 export interface Movement {
   id: number;

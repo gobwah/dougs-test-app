@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
-import { AppModule } from '../../src/app';
+import { AppModule } from '../../src/app.module';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { ValidationReasonType } from '../../src/movements/dto/responseDto';
+import { ValidationReasonType } from '../../src/movements/dto/response.dto';
 
 describe('Movements Integration Tests (Examples)', () => {
   let app: INestApplication;

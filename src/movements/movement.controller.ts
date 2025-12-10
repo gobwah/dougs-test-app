@@ -13,12 +13,12 @@ import {
   ApiBody,
   ApiBadRequestResponse,
 } from '@nestjs/swagger';
-import { MovementService } from './movementService';
-import { ValidationRequestDto } from './dto/requestDto';
+import { MovementService } from './movement.service';
+import { ValidationRequestDto } from './dto/request.dto';
 import {
   ValidationFailureResponse,
   ValidationSuccessResponse,
-} from './dto/responseDto';
+} from './dto/response.dto';
 
 @ApiTags('movements')
 @Controller('movements')

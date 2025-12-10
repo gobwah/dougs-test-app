@@ -1,20 +1,21 @@
 import { Injectable } from '@nestjs/common';
-import { ValidationRequestDto } from './dto/requestDto';
+import { ValidationRequestDto } from './dto/request.dto';
 import {
   ValidationFailureResponse,
   ValidationReason,
   ValidationSuccessResponse,
-} from './dto/responseDto';
+} from './dto/response.dto';
 import {
   parseAndSortMovements,
   parseAndSortBalances,
-} from './utils/parsingUtils';
-import { validateDateOrder } from './utils/balanceUtils';
-import { detectAndReportDuplicates } from './utils/duplicateUtils';
-import { validateBalances } from './utils/validationUtils';
+} from './utils/parsing.util';
+import { validateDateOrder } from './utils/balance.util';
+import { DuplicateService } from './duplicate.service';
+import { validateBalances } from './utils/validation.util';
 
 @Injectable()
 export class MovementService {
+  constructor(private readonly duplicateService: DuplicateService) {}
   /**
    * Validate movements against balance control points
    * Time complexity: O(n log n + m log m + n² * l + b * n) where:
@@ -33,7 +34,7 @@ export class MovementService {
     const balances = parseAndSortBalances(request.balances);
 
     validateDateOrder(balances, reasons);
-    detectAndReportDuplicates(movements, reasons);
+    this.duplicateService.detectAndReportDuplicates(movements, reasons);
     validateBalances(balances, movements, reasons);
 
     if (reasons.length > 0) {

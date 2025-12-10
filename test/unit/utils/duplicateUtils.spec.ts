@@ -1,9 +1,9 @@
 import {
   normalizeLabel,
   areLabelsSimilar,
-  detectDuplicates,
-} from '../../../src/movements/utils/duplicateUtils';
-import { Movement } from '../../../src/movements/utils/parsingUtils';
+} from '../../../src/movements/utils/label-similarity.util';
+import { detectDuplicates } from '../../../src/movements/utils/duplicate-detection.util';
+import { Movement } from '../../../src/movements/utils/parsing.util';
 
 describe('DuplicateUtils', () => {
   describe('normalizeLabel', () => {

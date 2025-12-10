@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { MovementService } from '../../../src/movements/movementService';
-import { ValidationRequestDto } from '../../../src/movements/dto/requestDto';
+import { MovementService } from '../../../src/movements/movement.service';
+import { DuplicateService } from '../../../src/movements/duplicate.service';
+import { ValidationRequestDto } from '../../../src/movements/dto/request.dto';
 
 /**
  * Tests d'intégration pour MovementService
@@ -12,7 +13,7 @@ describe('MovementService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [MovementService],
+      providers: [MovementService, DuplicateService],
     }).compile();
 
     service = module.get<MovementService>(MovementService);
