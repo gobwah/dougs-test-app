@@ -1,16 +1,6 @@
+import { Balance } from '../../balances/entities/balance.entity';
 import { MovementDto, BalanceDto } from '../dto/request.dto';
-
-export interface Movement {
-  id: number;
-  date: Date;
-  label: string;
-  amount: number;
-}
-
-export interface Balance {
-  date: Date;
-  balance: number;
-}
+import { Movement } from '../entities/movement.entity';
 
 /**
  * Parse and sort movements by date

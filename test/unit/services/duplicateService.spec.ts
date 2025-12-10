@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { DuplicateService } from '../../../src/movements/duplicate.service';
-import { Movement } from '../../../src/movements/utils/parsing.util';
-import { ValidationReason } from '../../../src/movements/dto/response.dto';
+import { DuplicateService } from '../../../src/models/duplicates/duplicate.service';
+import { ValidationReason } from '../../../src/models/movements/dto/response.dto';
+import { Movement } from '../../../src/models/movements/entities/movement.entity';
 
 describe('DuplicateService', () => {
   let service: DuplicateService;

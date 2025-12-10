@@ -1,6 +1,6 @@
-import { Movement } from './parsing.util';
+import { Movement } from '../../movements/entities/movement.entity';
+import { DuplicateMovement } from '../entities/duplicate.entity';
 import { normalizeLabel } from './label-similarity.util';
-import { DuplicateMovement } from './duplicate-detection.util';
 
 /**
  * Create a grouping key from a movement (date + amount)

@@ -1,5 +1,9 @@
-import { Movement } from './parsing.util';
-import { ValidationReason, ValidationReasonType } from '../dto/response.dto';
+import { Movement } from '../../movements/entities/movement.entity';
+import {
+  ValidationReason,
+  ValidationReasonType,
+} from '../../movements/dto/response.dto';
+import { DuplicateMovement } from '../entities/duplicate.entity';
 import { areLabelsSimilar } from './label-similarity.util';
 import {
   groupMovementsByDateAndAmount,
@@ -8,20 +12,12 @@ import {
   toDuplicateMovement,
 } from './duplicate-grouping.util';
 
-export interface DuplicateMovement {
-  id: number;
-  date: string;
-  amount: number;
-  label: string;
-  duplicateType: 'exact' | 'similar';
-}
-
 /**
  * Add duplicates for movements with identical normalized labels
  * Time complexity: O(k) for a label group of size k
  * Space complexity: O(1)
  */
-function addExactLabelDuplicates(
+export function addExactLabelDuplicates(
   labelGroup: Array<{ movement: Movement; normalizedLabel: string }>,
   duplicates: Map<number, DuplicateMovement>,
 ): void {
@@ -40,7 +36,7 @@ function addExactLabelDuplicates(
  * Time complexity: O(k₁ * k₂) where k₁ and k₂ are the sizes of the two groups
  * Space complexity: O(1)
  */
-function addSimilarLabelDuplicates(
+export function addSimilarLabelDuplicates(
   group1: Array<{ movement: Movement; normalizedLabel: string }>,
   group2: Array<{ movement: Movement; normalizedLabel: string }>,
   duplicates: Map<number, DuplicateMovement>,
@@ -70,7 +66,7 @@ function addSimilarLabelDuplicates(
  *   This is typically much better than O(k'² * m) when labels have varied lengths
  * Space complexity: O(k'²) for the similarity cache (worst case)
  */
-function findSimilarLabelDuplicates(
+export function findSimilarLabelDuplicates(
   labelGroups: Map<
     string,
     Array<{ movement: Movement; normalizedLabel: string }>
@@ -144,7 +140,7 @@ function findSimilarLabelDuplicates(
  * Time complexity: O(k + k'² * m) for each group of size k, where k' is the number of unique labels
  * Space complexity: O(d) where d is the number of unique duplicate movements
  */
-function findDuplicatesInGroups(
+export function findDuplicatesInGroups(
   potentialDuplicates: Map<
     string,
     Array<{ movement: Movement; normalizedLabel: string }>

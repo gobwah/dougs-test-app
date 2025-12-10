@@ -4,7 +4,7 @@ import request from 'supertest';
 import { AppModule } from '../../src/app.module';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { ValidationReasonType } from '../../src/movements/dto/response.dto';
+import { ValidationReasonType } from '../../src/models/movements/dto/response.dto';
 
 describe('Movements Integration Tests (Examples)', () => {
   let app: INestApplication;

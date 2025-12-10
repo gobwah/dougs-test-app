@@ -1,9 +1,10 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { MovementController } from '../../../src/movements/movement.controller';
-import { MovementService } from '../../../src/movements/movement.service';
-import { DuplicateService } from '../../../src/movements/duplicate.service';
-import { ValidationRequestDto } from '../../../src/movements/dto/request.dto';
+import { Test, TestingModule } from '@nestjs/testing';
+import { BalanceService } from '../../../src/models/balances/balance.service';
+import { DuplicateService } from '../../../src/models/duplicates/duplicate.service';
+import { ValidationRequestDto } from '../../../src/models/movements/dto/request.dto';
+import { MovementController } from '../../../src/models/movements/movement.controller';
+import { MovementService } from '../../../src/models/movements/movement.service';
 
 describe('MovementController', () => {
   let controller: MovementController;
@@ -12,7 +13,7 @@ describe('MovementController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [MovementController],
-      providers: [MovementService, DuplicateService],
+      providers: [MovementService, DuplicateService, BalanceService],
     }).compile();
 
     controller = module.get<MovementController>(MovementController);

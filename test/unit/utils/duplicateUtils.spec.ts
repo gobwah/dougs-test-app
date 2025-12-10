@@ -1,9 +1,9 @@
+import { Movement } from '../../../src/models/movements/entities/movement.entity';
+import { detectDuplicates } from '../../../src/models/duplicates/utils/duplicate-detection.util';
 import {
   normalizeLabel,
   areLabelsSimilar,
-} from '../../../src/movements/utils/label-similarity.util';
-import { detectDuplicates } from '../../../src/movements/utils/duplicate-detection.util';
-import { Movement } from '../../../src/movements/utils/parsing.util';
+} from '../../../src/models/duplicates/utils/label-similarity.util';
 
 describe('DuplicateUtils', () => {
   describe('normalizeLabel', () => {

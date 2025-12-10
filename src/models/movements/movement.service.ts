@@ -9,13 +9,15 @@ import {
   parseAndSortMovements,
   parseAndSortBalances,
 } from './utils/parsing.util';
-import { validateDateOrder } from './utils/balance.util';
-import { DuplicateService } from './duplicate.service';
-import { validateBalances } from './utils/validation.util';
+import { DuplicateService } from '../duplicates/duplicate.service';
+import { BalanceService } from '../balances/balance.service';
 
 @Injectable()
 export class MovementService {
-  constructor(private readonly duplicateService: DuplicateService) {}
+  constructor(
+    private readonly duplicateService: DuplicateService,
+    private readonly balanceService: BalanceService,
+  ) {}
   /**
    * Validate movements against balance control points
    * Time complexity: O(n log n + m log m + n² * l + b * n) where:
@@ -33,9 +35,9 @@ export class MovementService {
     const movements = parseAndSortMovements(request.movements);
     const balances = parseAndSortBalances(request.balances);
 
-    validateDateOrder(balances, reasons);
+    this.balanceService.validateDateOrder(balances, reasons);
     this.duplicateService.detectAndReportDuplicates(movements, reasons);
-    validateBalances(balances, movements, reasons);
+    this.balanceService.validateBalances(balances, movements, reasons);
 
     if (reasons.length > 0) {
       return {

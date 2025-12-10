@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { Movement } from './utils/parsing.util';
-import { ValidationReason } from './dto/response.dto';
 import {
-  detectDuplicates as detectDuplicatesUtil,
-  DuplicateMovement,
-} from './utils/duplicate-detection.util';
-import { ValidationReasonType } from './dto/response.dto';
+  ValidationReason,
+  ValidationReasonType,
+} from '../movements/dto/response.dto';
+import { Movement } from '../movements/entities/movement.entity';
+import { DuplicateMovement } from './entities/duplicate.entity';
+import { findDuplicatesInGroups } from './utils/duplicate-detection.util';
+import { groupMovementsByDateAndAmount } from './utils/duplicate-grouping.util';
 
 @Injectable()
 export class DuplicateService {
@@ -21,7 +22,9 @@ export class DuplicateService {
    * Space complexity: O(n) for the maps and duplicate arrays
    */
   detectDuplicates(movements: Movement[]): DuplicateMovement[] {
-    return detectDuplicatesUtil(movements);
+    const potentialDuplicates = groupMovementsByDateAndAmount(movements);
+    const duplicatesMap = findDuplicatesInGroups(potentialDuplicates);
+    return Array.from(duplicatesMap.values());
   }
 
   /**
