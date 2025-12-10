@@ -113,12 +113,31 @@ npm run start:dev          # Démarrage en mode développement
 npm run start:prod        # Démarrage en mode production
 npm run lint              # Linter le code
 npm run format            # Formater le code
+npm run test:performance  # Tests de performance
+npm run benchmark         # Benchmarks de performance
 npm run generate:diagrams # Générer les images des diagrammes Mermaid
 npm run generate:api-docs # Générer la documentation OpenAPI
 ```
 
+## 🐳 Déploiement
+
+### Avec Docker
+
+```bash
+# Démarrage rapide
+docker-compose up -d
+
+# Build de l'image
+docker build -t dougs-bank-validation:latest .
+```
+
+### Déploiement manuel
+
+Consultez le [Guide de Déploiement](./documentation/deployment.md) pour les instructions détaillées.
+
 ## 📖 Pour Plus d'Informations
 
-- **Analyse détaillée** : [documentation/analyse.md](./documentation/analyse.md)
+- **Analyse détaillée** : [documentation/ANALYSE.md](./documentation/ANALYSE.md)
 - **Documentation API** : [documentation/api/index.md](./documentation/api/index.md)
+- **Guide de Déploiement** : [documentation/deployment.md](./documentation/deployment.md)
 - **Guide Mermaid** : [documentation/installation_mermaid.md](./documentation/installation_mermaid.md)
