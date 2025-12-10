@@ -97,7 +97,8 @@ export class MovementController {
   ): ValidationSuccessResponse | ValidationFailureResponse {
     const result = this.movementsService.validateMovements(request);
 
-    if ('reasons' in result && result.reasons.length > 0) {
+    // The global exception filter will handle the HttpException
+    if ('reasons' in result && result.reasons && result.reasons.length > 0) {
       throw new HttpException(
         {
           message: result.message,

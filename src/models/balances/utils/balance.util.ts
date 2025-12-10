@@ -109,19 +109,27 @@ export function checkMovementsAfterLastBalance(
     return null;
   }
 
-  const lastBalanceDate = balances.at(-1)!.date;
+  const lastBalance = balances.at(-1);
+  if (!lastBalance) {
+    return null;
+  }
+
+  const lastBalanceDate = lastBalance.date;
   const movementsAfterLastBalance = movements.filter(
     (m) => m.date > lastBalanceDate,
   );
 
   if (movementsAfterLastBalance.length > 0) {
     const totalAfterLastBalance = sumMovementAmounts(movementsAfterLastBalance);
+    const lastMovement = movements.at(-1);
     return {
       type: ValidationReasonType.MISSING_TRANSACTION,
       message: `There are ${movementsAfterLastBalance.length} movement(s) after the last balance control point. This may indicate missing balance control points or missing transactions.`,
       details: {
         periodStart: lastBalanceDate.toISOString(),
-        periodEnd: movements.at(-1)!.date.toISOString(),
+        periodEnd: lastMovement
+          ? lastMovement.date.toISOString()
+          : lastBalanceDate.toISOString(),
         missingAmount: totalAfterLastBalance,
       },
     };

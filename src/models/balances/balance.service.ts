@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import {
   ValidationReason,
   ValidationReasonType,
@@ -13,6 +13,7 @@ import {
 
 @Injectable()
 export class BalanceService {
+  private readonly logger = new Logger(BalanceService.name);
   /**
    * Validate date order and add reasons to the array if invalid
    * Time complexity: O(n) where n is the number of balances
@@ -20,11 +21,18 @@ export class BalanceService {
    */
   validateDateOrder(balances: Balance[], reasons: ValidationReason[]): void {
     if (balances.length === 0) {
+      this.logger.debug('No balances to validate date order');
       return;
     }
 
+    this.logger.debug(
+      `Validating date order for ${balances.length} balance points`,
+    );
     for (let i = 1; i < balances.length; i++) {
       if (balances[i].date <= balances[i - 1].date) {
+        this.logger.warn(
+          `Invalid date order detected: balance at ${balances[i].date.toISOString()} is not after ${balances[i - 1].date.toISOString()}`,
+        );
         reasons.push({
           type: ValidationReasonType.INVALID_DATE_ORDER,
           message: 'Balance control points must be in chronological order',
@@ -47,6 +55,7 @@ export class BalanceService {
     reasons: ValidationReason[],
   ): void {
     if (balances.length === 0) {
+      this.logger.warn('No balance control points provided');
       reasons.push({
         type: ValidationReasonType.BALANCE_MISMATCH,
         message: 'No balance control points provided',
@@ -56,15 +65,28 @@ export class BalanceService {
     }
 
     if (movements.length === 0) {
+      this.logger.debug('No movements to validate against balances');
       return;
     }
 
+    this.logger.debug(
+      `Validating ${balances.length} balance points against ${movements.length} movements`,
+    );
+
     const firstBalanceError = validateFirstBalance(balances[0], movements);
     if (firstBalanceError) {
+      this.logger.warn(
+        `First balance mismatch: expected ${firstBalanceError.details.expectedBalance}, actual ${firstBalanceError.details.actualBalance}`,
+      );
       reasons.push(firstBalanceError);
     }
 
     const subsequentErrors = validateSubsequentBalances(balances, movements);
+    if (subsequentErrors.length > 0) {
+      this.logger.warn(
+        `Found ${subsequentErrors.length} subsequent balance error(s)`,
+      );
+    }
     reasons.push(...subsequentErrors);
 
     const missingTransactionError = checkMovementsAfterLastBalance(
@@ -72,6 +94,7 @@ export class BalanceService {
       movements,
     );
     if (missingTransactionError) {
+      this.logger.warn('Movements detected after last balance point');
       reasons.push(missingTransactionError);
     }
   }
