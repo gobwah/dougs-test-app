@@ -76,7 +76,7 @@
     "collectCoverageFrom": [
       "src/**/*.(t|j)s",
       "!src/main.ts",
-      "!src/app.ts"
+      "!src/app.module.ts"
     ],
     "coverageDirectory": "coverage",
     "coverageReporters": [
