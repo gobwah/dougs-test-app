@@ -1,9 +1,11 @@
 import { MovementService } from '../../src/models/movements/movement.service';
 import { BalanceService } from '../../src/models/balances/balance.service';
 import { DuplicateService } from '../../src/models/duplicates/duplicate.service';
-import { ValidationRequestDto } from '../../src/models/movements/dto/request.dto';
-import { MovementDto } from '../../src/models/movements/dto/request.dto';
-import { BalanceDto } from '../../src/models/movements/dto/request.dto';
+import {
+  BalanceDto,
+  MovementDto,
+  ValidationRequestDto,
+} from 'src/models/movements/dto/request.dto';
 
 describe('Performance Tests', () => {
   let movementService: MovementService;

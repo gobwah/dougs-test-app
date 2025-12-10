@@ -20,7 +20,7 @@
     "test:watch": "jest --watch --testPathPattern=test/unit",
     "test:cov": "jest --coverage --testPathPattern=test/unit",
     "test:all": "jest",
-    "test:performance": "jest --testPathPattern=test/performance",
+    "test:performance": "jest --testPathPattern=test/performance --testRegex=test/performance/.*\\.spec\\.ts$",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "benchmark": "ts-node scripts/benchmark.ts",
     "benchmark:gc": "node --expose-gc -r ts-node/register scripts/benchmark.ts",
