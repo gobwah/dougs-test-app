@@ -69,7 +69,7 @@ function generateBalances(
 }
 
 function formatNumber(num: number): string {
-  return num.toLocaleString('en-US', { maximumFractionDigits: 2 });
+  return num.toLocaleString('fr-FR', { maximumFractionDigits: 2 });
 }
 
 function runBenchmark(
