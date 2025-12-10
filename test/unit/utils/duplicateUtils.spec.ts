@@ -1,9 +1,13 @@
 import { Movement } from '../../../src/models/movements/entities/movement.entity';
-import { detectDuplicates } from '../../../src/models/duplicates/utils/duplicate-detection.util';
+import {
+  detectDuplicates,
+  detectAndReportDuplicates,
+} from '../../../src/models/duplicates/utils/duplicate-detection.util';
 import {
   normalizeLabel,
   areLabelsSimilar,
 } from '../../../src/models/duplicates/utils/label-similarity.util';
+import { ValidationReasonType } from '../../../src/models/movements/dto/response.dto';
 
 describe('DuplicateUtils', () => {
   describe('normalizeLabel', () => {
@@ -71,6 +75,29 @@ describe('DuplicateUtils', () => {
     });
 
     it('should handle empty strings', () => {
+      expect(areLabelsSimilar('', '')).toBe(true);
+    });
+
+    it('should return false when quickSimilarityCheck fails', () => {
+      // Labels that pass length check but fail quick similarity check
+      // These labels have very few common characters
+      const label1 = 'abcdefghijklmnopqrstuvwxyz';
+      const label2 = '01234567890123456789012345';
+      // They have similar lengths but no common characters
+      expect(areLabelsSimilar(label1, label2)).toBe(false);
+    });
+
+    it('should handle one empty string', () => {
+      // An empty string is always contained in any other string, so they are considered similar
+      // This tests the includes check path in areLabelsSimilar
+      expect(areLabelsSimilar('', 'payment')).toBe(true);
+      expect(areLabelsSimilar('payment', '')).toBe(true);
+    });
+
+    it('should handle both empty strings in calculateSimilarity path', () => {
+      // This tests the edge case where calculateSimilarity is called with empty strings
+      // In practice, areLabelsSimilar returns true for identical empty strings before this,
+      // but we test the canBeSimilarByLength logic for empty strings
       expect(areLabelsSimilar('', '')).toBe(true);
     });
   });
@@ -461,6 +488,147 @@ describe('DuplicateUtils', () => {
       expect(similarDuplicates.length).toBeGreaterThanOrEqual(2);
       expect(similarDuplicates.map((d) => d.id)).toContain(3);
       expect(similarDuplicates.map((d) => d.id)).toContain(4);
+    });
+
+    it('should use cache for repeated similarity checks', () => {
+      // Test that the cache is used when comparing the same labels multiple times
+      // This tests the cache hit path in getCachedSimilarity
+      // We create multiple groups with similar labels to trigger cache usage
+      const movements: Movement[] = [
+        {
+          id: 1,
+          date: new Date('2024-01-01'),
+          label: 'Payment ABC',
+          amount: 100,
+        },
+        {
+          id: 2,
+          date: new Date('2024-01-01'),
+          label: 'Payment Abc', // Similar to id:1, will be cached
+          amount: 100,
+        },
+        {
+          id: 3,
+          date: new Date('2024-01-01'),
+          label: 'Payment ABC', // Same as id:1
+          amount: 100,
+        },
+        {
+          id: 4,
+          date: new Date('2024-01-01'),
+          label: 'Payment Abc', // Same as id:2, cache will be hit
+          amount: 100,
+        },
+        {
+          id: 5,
+          date: new Date('2024-01-01'),
+          label: 'Payment ABC', // Same as id:1, will trigger cache hit
+          amount: 100,
+        },
+      ];
+
+      const duplicates = detectDuplicates(movements);
+      // All should be detected as duplicates
+      expect(duplicates.length).toBeGreaterThanOrEqual(2);
+    });
+
+    it('should handle labels with different lengths in same group', () => {
+      // Test labels that are grouped by date+amount but have different lengths
+      // This helps test the length grouping logic and cache
+      const movements: Movement[] = [
+        {
+          id: 1,
+          date: new Date('2024-01-01'),
+          label: 'Payment',
+          amount: 100,
+        },
+        {
+          id: 2,
+          date: new Date('2024-01-01'),
+          label: 'Payment ABC', // Longer but similar
+          amount: 100,
+        },
+        {
+          id: 3,
+          date: new Date('2024-01-01'),
+          label: 'Payment', // Same as id:1
+          amount: 100,
+        },
+      ];
+
+      const duplicates = detectDuplicates(movements);
+      expect(duplicates.length).toBeGreaterThanOrEqual(2);
+    });
+  });
+
+  describe('detectAndReportDuplicates', () => {
+    it('should not add reason when no duplicates', () => {
+      const movements: Movement[] = [
+        {
+          id: 1,
+          date: new Date('2024-01-01'),
+          label: 'Transaction 1',
+          amount: 100,
+        },
+      ];
+      const reasons: any[] = [];
+
+      detectAndReportDuplicates(movements, reasons);
+      expect(reasons.length).toBe(0);
+    });
+
+    it('should add reason when duplicates found', () => {
+      const movements: Movement[] = [
+        {
+          id: 1,
+          date: new Date('2024-01-01'),
+          label: 'Payment ABC',
+          amount: 100,
+        },
+        {
+          id: 2,
+          date: new Date('2024-01-01'),
+          label: 'Payment ABC',
+          amount: 100,
+        },
+      ];
+      const reasons: any[] = [];
+
+      detectAndReportDuplicates(movements, reasons);
+      expect(reasons.length).toBe(1);
+      expect(reasons[0].type).toBe(ValidationReasonType.DUPLICATE_TRANSACTION);
+      expect(reasons[0].message).toContain('duplicate transaction');
+      expect(reasons[0].details?.duplicateMovements).toBeDefined();
+      expect(reasons[0].details?.duplicateMovements?.length).toBe(2);
+    });
+
+    it('should add reason with correct count when multiple duplicates found', () => {
+      const movements: Movement[] = [
+        {
+          id: 1,
+          date: new Date('2024-01-01'),
+          label: 'Payment ABC',
+          amount: 100,
+        },
+        {
+          id: 2,
+          date: new Date('2024-01-01'),
+          label: 'Payment ABC',
+          amount: 100,
+        },
+        {
+          id: 3,
+          date: new Date('2024-01-01'),
+          label: 'Payment ABC',
+          amount: 100,
+        },
+      ];
+      const reasons: any[] = [];
+
+      detectAndReportDuplicates(movements, reasons);
+      expect(reasons.length).toBe(1);
+      expect(reasons[0].message).toBe('Found 3 duplicate transaction(s)');
+      expect(reasons[0].details?.duplicateMovements?.length).toBe(3);
     });
   });
 });

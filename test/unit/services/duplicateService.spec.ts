@@ -124,5 +124,34 @@ describe('DuplicateService', () => {
       expect(reasons[0].details?.duplicateMovements).toBeDefined();
       expect(reasons[0].details?.duplicateMovements?.length).toBe(2);
     });
+
+    it('should add reason with correct message format when duplicates found', () => {
+      const movements: Movement[] = [
+        {
+          id: 1,
+          date: new Date('2024-01-01'),
+          label: 'Payment ABC',
+          amount: 100,
+        },
+        {
+          id: 2,
+          date: new Date('2024-01-01'),
+          label: 'Payment ABC',
+          amount: 100,
+        },
+        {
+          id: 3,
+          date: new Date('2024-01-01'),
+          label: 'Payment ABC',
+          amount: 100,
+        },
+      ];
+      const reasons: ValidationReason[] = [];
+
+      service.detectAndReportDuplicates(movements, reasons);
+      expect(reasons.length).toBe(1);
+      expect(reasons[0].message).toBe('Found 3 duplicate transaction(s)');
+      expect(reasons[0].details?.duplicateMovements?.length).toBe(3);
+    });
   });
 });

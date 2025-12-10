@@ -5,7 +5,7 @@ import { ValidationReasonType } from '../../src/models/movements/dto/response.dt
 
 // Get the server URL from the global setup
 const SERVER_URL =
-  (global as any).__E2E_SERVER_URL__ || 'http://localhost:3001';
+  (globalThis as any).__E2E_SERVER_URL__ || 'http://localhost:3001';
 
 describe('Movements E2E Tests (Examples)', () => {
   const loadExampleFile = (filename: string): any => {
@@ -47,7 +47,7 @@ describe('Movements E2E Tests (Examples)', () => {
       );
       expect(balanceMismatchReason).toBeDefined();
       expect(balanceMismatchReason.details.expectedBalance).toBe(1929.5);
-      expect(balanceMismatchReason.details.actualBalance).toBe(2000.0);
+      expect(balanceMismatchReason.details.actualBalance).toBe(2000);
     });
   });
 

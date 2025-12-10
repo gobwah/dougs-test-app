@@ -110,7 +110,7 @@ describe('BalanceUtils', () => {
           id: 1,
           date: new Date('2024-01-05'),
           label: 'SALARY',
-          amount: 100.0,
+          amount: 100,
         },
       ];
 
