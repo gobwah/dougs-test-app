@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import {
   ValidationReason,
   ValidationReasonType,
@@ -10,6 +10,8 @@ import { groupMovementsByDateAndAmount } from './utils/duplicate-grouping.util';
 
 @Injectable()
 export class DuplicateService {
+  private readonly logger = new Logger(DuplicateService.name);
+
   /**
    * Detect duplicate movements
    * Time complexity: O(n * m + Σ(k + k'² * m)) where:
@@ -36,8 +38,10 @@ export class DuplicateService {
     movements: Movement[],
     reasons: ValidationReason[],
   ): void {
+    this.logger.debug(`Detecting duplicates in ${movements.length} movements`);
     const duplicates = this.detectDuplicates(movements);
     if (duplicates.length > 0) {
+      this.logger.warn(`Found ${duplicates.length} duplicate transaction(s)`);
       reasons.push({
         type: ValidationReasonType.DUPLICATE_TRANSACTION,
         message: `Found ${duplicates.length} duplicate transaction(s)`,
@@ -45,6 +49,8 @@ export class DuplicateService {
           duplicateMovements: duplicates,
         },
       });
+    } else {
+      this.logger.debug('No duplicates detected');
     }
   }
 }
