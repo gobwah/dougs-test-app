@@ -492,5 +492,98 @@ describe('BalanceUtils', () => {
         expect(result.details.missingAmount).toBe(-500);
       }
     });
+
+    it('should handle edge case where lastMovement is undefined when building response', () => {
+      // This test covers the case where movements.at(-1) returns undefined
+      // even though movementsAfterLastBalance has items
+      const movements: Movement[] = [
+        {
+          id: 1,
+          date: new Date('2024-02-01'),
+          label: 'RENT',
+          amount: -500,
+        },
+      ];
+
+      const balances: Balance[] = [
+        {
+          date: new Date('2024-01-31'),
+          balance: 1000,
+        },
+      ];
+
+      // Mock Array.prototype.at to return undefined for movements.at(-1)
+      // while still allowing the filter to work
+      const originalAt = Array.prototype.at;
+      let callCount = 0;
+      Array.prototype.at = jest.fn().mockImplementation(function (
+        index: number,
+      ) {
+        // First call is for balances.at(-1) - return normally
+        if (callCount === 0) {
+          callCount++;
+          return originalAt.call(this, index);
+        }
+        // Second call is for movements.at(-1) - return undefined
+        callCount++;
+        return undefined;
+      });
+
+      const result = checkMovementsAfterLastBalance(balances, movements);
+
+      expect(result).not.toBeNull();
+      if (result) {
+        // Should fallback to lastBalanceDate when lastMovement is undefined
+        expect(result.details.periodEnd).toBe(
+          new Date('2024-01-31').toISOString(),
+        );
+        expect(result.details.periodStart).toBe(
+          new Date('2024-01-31').toISOString(),
+        );
+      }
+
+      // Restore original method
+      Array.prototype.at = originalAt;
+    });
+
+    it('should handle edge case where lastBalance is undefined (defensive check)', () => {
+      // This test covers the defensive check for lastBalance being undefined
+      // by mocking Array.prototype.at to return undefined for balances.at(-1)
+      const movements: Movement[] = [
+        {
+          id: 1,
+          date: new Date('2024-01-05'),
+          label: 'SALARY',
+          amount: 1000,
+        },
+      ];
+
+      const balances: Balance[] = [
+        {
+          date: new Date('2024-01-31'),
+          balance: 1000,
+        },
+      ];
+
+      // Mock Array.prototype.at to return undefined for balances.at(-1)
+      const originalAt = Array.prototype.at;
+      Array.prototype.at = jest.fn().mockImplementation(function (
+        index: number,
+      ) {
+        // Only mock for balances array, return undefined
+        if (this === balances) {
+          return undefined;
+        }
+        // For other arrays, use original behavior
+        return originalAt.call(this, index);
+      });
+
+      const result = checkMovementsAfterLastBalance(balances, movements);
+
+      expect(result).toBeNull();
+
+      // Restore original method
+      Array.prototype.at = originalAt;
+    });
   });
 });

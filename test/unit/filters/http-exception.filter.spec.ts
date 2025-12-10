@@ -211,5 +211,54 @@ describe('AllExceptionsFilter', () => {
         }),
       );
     });
+
+    it('should handle HttpException with non-string, non-object response', () => {
+      // Create an HttpException with a response that is neither string nor object
+      // This tests the fallback to exception.message
+      const exception = new HttpException(
+        null as unknown as string,
+        HttpStatus.BAD_REQUEST,
+      );
+
+      filter.catch(exception, mockArgumentsHost);
+
+      expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.BAD_REQUEST);
+      expect(mockResponse.json).toHaveBeenCalled();
+    });
+
+    it('should handle Error without stack trace', () => {
+      const error = new Error('Test error');
+      // Remove stack property to test fallback to message
+      delete error.stack;
+
+      const loggerSpy = jest.spyOn(filter['logger'], 'error');
+
+      filter.catch(error, mockArgumentsHost);
+
+      expect(loggerSpy).toHaveBeenCalledWith(
+        expect.stringContaining('POST /movements/validation'),
+        'Test error',
+      );
+    });
+
+    it('should handle standard error object without message property', () => {
+      // Create an HttpException with an object that has no message property
+      // This tests the fallback to exception.message
+      const errorObject = {
+        error: 'Bad Request',
+        // No message property
+      };
+      const exception = new HttpException(errorObject, HttpStatus.BAD_REQUEST);
+
+      filter.catch(exception, mockArgumentsHost);
+
+      expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.BAD_REQUEST);
+      expect(mockResponse.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          statusCode: HttpStatus.BAD_REQUEST,
+          error: 'Bad Request',
+        }),
+      );
+    });
   });
 });
