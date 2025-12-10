@@ -25,8 +25,9 @@ npm run start:dev
 
 All documentation is available in the [`documentation/`](./documentation/) folder:
 
-- **[📖 Complete Documentation](./documentation/index.md)** : Index of all documentation
-- **[🔍 Detailed Analysis](./documentation/analyse.md)** : Methodical approach to the problem with diagrams
+- **[📖 Documentation Index](./documentation/index.md)** : Choose your language (FR/EN)
+- **[🇫🇷 French Documentation](./documentation/fr/)** : Documentation en français
+- **[🇬🇧 English Documentation](./documentation/en/)** : Documentation in English
 - **[📡 API Documentation](./documentation/api/)** : OpenAPI documentation (JSON, YAML, HTML)
 
 ## 🎯 Features
