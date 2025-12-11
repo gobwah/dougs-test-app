@@ -129,6 +129,6 @@ npm run benchmark          # Run performance benchmarks
 
 All documentation is available in the [`documentation/`](./documentation/) folder:
 
-- **[📖 Documentation Index](./documentation/index.md)** : Choose your language (FR/EN)
-- **[🇫🇷 French Documentation](./documentation/fr/)** : Documentation en français
-- **[🇬🇧 English Documentation](./documentation/en/)** : Documentation in English
+- **[📖 Documentation Index](./documentation/index.md)** : Index de la documentation
+- **[📊 Analysis](./documentation/analysis.md)** : Analyse détaillée de l'approche et de l'algorithme (en français)
+- **[📡 API Documentation](./documentation/api/)** : Documentation OpenAPI (JSON, YAML)
