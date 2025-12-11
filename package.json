@@ -23,7 +23,6 @@
     "test:performance": "jest --testPathPatterns=test/performance --testRegex=test/performance/.*\\.spec\\.ts$",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "benchmark": "ts-node scripts/benchmark.ts",
-    "benchmark:gc": "node --expose-gc -r ts-node/register scripts/benchmark.ts",
     "generate:diagrams": "node scripts/generate-diagrams.js",
     "generate:api-docs": "ts-node scripts/generateApiDocs.ts",
     "prepare": "husky"

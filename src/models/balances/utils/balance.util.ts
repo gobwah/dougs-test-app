@@ -13,6 +13,14 @@ import {
 const BALANCE_TOLERANCE = 0.01; // Allow small floating point differences
 
 /**
+ * Round a number to 2 decimal places (for monetary amounts)
+ * This avoids floating point precision issues
+ */
+function roundToTwoDecimals(value: number): number {
+  return Math.round(value * 100) / 100;
+}
+
+/**
  * Validate the first balance point
  * Time complexity: O(n) where n is the number of movements up to the first balance
  * Space complexity: O(k) where k is the number of movements up to the first balance
@@ -37,14 +45,15 @@ export function validateFirstBalance(
   const difference = Math.abs(expectedFirstBalance - firstBalance.balance);
 
   if (difference > BALANCE_TOLERANCE) {
+    const calculatedDifference = expectedFirstBalance - firstBalance.balance;
     return {
       type: ValidationReasonType.BALANCE_MISMATCH,
       message: `Balance mismatch at first control point ${firstBalance.date.toISOString()}`,
       details: {
         balanceDate: firstBalance.date.toISOString(),
-        expectedBalance: expectedFirstBalance,
-        actualBalance: firstBalance.balance,
-        difference: expectedFirstBalance - firstBalance.balance,
+        expectedBalance: roundToTwoDecimals(expectedFirstBalance),
+        actualBalance: roundToTwoDecimals(firstBalance.balance),
+        difference: roundToTwoDecimals(calculatedDifference),
       },
     };
   }
@@ -80,14 +89,15 @@ export function validateSubsequentBalances(
     const difference = Math.abs(expectedBalance - currentBalance.balance);
 
     if (difference > BALANCE_TOLERANCE) {
+      const calculatedDifference = expectedBalance - currentBalance.balance;
       reasons.push({
         type: ValidationReasonType.BALANCE_MISMATCH,
         message: `Balance mismatch at control point ${currentBalance.date.toISOString()}`,
         details: {
           balanceDate: currentBalance.date.toISOString(),
-          expectedBalance: expectedBalance,
-          actualBalance: currentBalance.balance,
-          difference: expectedBalance - currentBalance.balance,
+          expectedBalance: roundToTwoDecimals(expectedBalance),
+          actualBalance: roundToTwoDecimals(currentBalance.balance),
+          difference: roundToTwoDecimals(calculatedDifference),
         },
       });
     }
@@ -130,7 +140,7 @@ export function checkMovementsAfterLastBalance(
         periodEnd: lastMovement
           ? lastMovement.date.toISOString()
           : lastBalanceDate.toISOString(),
-        missingAmount: totalAfterLastBalance,
+        missingAmount: roundToTwoDecimals(totalAfterLastBalance),
       },
     };
   }

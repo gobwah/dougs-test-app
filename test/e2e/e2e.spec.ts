@@ -120,6 +120,34 @@ describe('Movements E2E Tests (Examples)', () => {
     });
   });
 
+  describe('example-large.json', () => {
+    it('should handle large dataset and respond in less than 10 seconds', async () => {
+      const testData = loadExampleFile('example-large.json');
+      const startTime = Date.now();
+
+      const response = await request(SERVER_URL)
+        .post('/movements/validation')
+        .send(testData)
+        .expect((res) => {
+          // Accept both 200 (valid) and 400 (validation errors) as valid responses
+          // The important thing is that the server responds quickly
+          if (res.status !== 200 && res.status !== 400) {
+            throw new Error(`Expected 200 or 400, got ${res.status}`);
+          }
+        });
+
+      const endTime = Date.now();
+      const duration = endTime - startTime;
+
+      expect(response.body).toBeDefined();
+      expect(duration).toBeLessThan(10000); // Less than 10 seconds
+
+      console.log(
+        `Large dataset processed in ${duration}ms (${(duration / 1000).toFixed(2)}s) - Status: ${response.status}`,
+      );
+    });
+  });
+
   describe('Health check', () => {
     it('should return health status', async () => {
       const response = await request(SERVER_URL).get('/health').expect(200);
