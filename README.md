@@ -118,6 +118,7 @@ npm run lint              # Lint the code
 npm run format            # Format the code
 npm run test:performance  # Performance tests
 npm run benchmark         # Performance benchmarks
+npm run benchmark:gc      # Performance benchmarks with garbage collector
 npm run generate:diagrams # Generate Mermaid diagram images
 npm run generate:api-docs # Generate OpenAPI documentation
 ```
