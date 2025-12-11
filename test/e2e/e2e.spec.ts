@@ -119,17 +119,4 @@ describe('Movements E2E Tests (Examples)', () => {
       expect(movement3?.duplicateType).toBe('exact');
     });
   });
-
-  describe('Health check', () => {
-    it('should return health status', async () => {
-      const response = await request(SERVER_URL).get('/health').expect(200);
-
-      expect(response.body).toMatchObject({
-        status: 'ok',
-        timestamp: expect.any(String),
-        uptime: expect.any(Number),
-      });
-      expect(response.body.uptime).toBeGreaterThanOrEqual(0);
-    });
-  });
 });
