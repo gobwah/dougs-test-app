@@ -37,7 +37,161 @@ export class MovementController {
     description: 'Validation data containing movements and balances',
     examples: {
       valid: {
-        summary: 'Successful validation example',
+        summary: 'Request: Valid movements',
+        value: {
+          movements: [
+            {
+              id: 1,
+              date: '2024-01-05',
+              label: 'SALARY PAYMENT',
+              amount: 3000,
+            },
+            {
+              id: 2,
+              date: '2024-01-10',
+              label: 'RENT PAYMENT',
+              amount: -800,
+            },
+            {
+              id: 3,
+              date: '2024-01-15',
+              label: 'UTILITIES',
+              amount: -150,
+            },
+            {
+              id: 4,
+              date: '2024-01-20',
+              label: 'GROCERY STORE',
+              amount: -120.5,
+            },
+          ],
+          balances: [
+            {
+              date: '2024-01-31',
+              balance: 1929.5,
+            },
+          ],
+        },
+      },
+      withBalanceError: {
+        summary: 'Request: Balance mismatch error',
+        value: {
+          movements: [
+            {
+              id: 1,
+              date: '2024-01-05',
+              label: 'SALARY PAYMENT',
+              amount: 3000,
+            },
+            {
+              id: 2,
+              date: '2024-01-10',
+              label: 'RENT PAYMENT',
+              amount: -800,
+            },
+            {
+              id: 3,
+              date: '2024-01-15',
+              label: 'UTILITIES',
+              amount: -150,
+            },
+            {
+              id: 4,
+              date: '2024-01-20',
+              label: 'GROCERY STORE',
+              amount: -120.5,
+            },
+          ],
+          balances: [
+            {
+              date: '2024-01-31',
+              balance: 2000,
+            },
+          ],
+        },
+      },
+      withDuplicates: {
+        summary: 'Request: Duplicate transactions',
+        value: {
+          movements: [
+            {
+              id: 1,
+              date: '2024-01-05',
+              label: 'SALARY PAYMENT',
+              amount: 3000,
+            },
+            {
+              id: 2,
+              date: '2024-01-10',
+              label: 'RENT PAYMENT',
+              amount: -800,
+            },
+            {
+              id: 3,
+              date: '2024-01-10',
+              label: 'RENT PAYMENT',
+              amount: -800,
+            },
+            {
+              id: 4,
+              date: '2024-01-15',
+              label: 'UTILITIES',
+              amount: -150,
+            },
+          ],
+          balances: [
+            {
+              date: '2024-01-31',
+              balance: 1250,
+            },
+          ],
+        },
+      },
+      withMissingTransaction: {
+        summary: 'Request: Missing transaction',
+        value: {
+          movements: [
+            {
+              id: 1,
+              date: '2024-01-05',
+              label: 'SALARY PAYMENT',
+              amount: 3000,
+            },
+            {
+              id: 2,
+              date: '2024-01-10',
+              label: 'RENT PAYMENT',
+              amount: -800,
+            },
+            {
+              id: 3,
+              date: '2024-01-15',
+              label: 'UTILITIES',
+              amount: -150,
+            },
+            {
+              id: 4,
+              date: '2024-01-20',
+              label: 'GROCERY STORE',
+              amount: -120.5,
+            },
+            {
+              id: 5,
+              date: '2024-02-01',
+              label: 'OTHER PAYMENT',
+              amount: -500,
+            },
+          ],
+          balances: [
+            {
+              date: '2024-01-31',
+              balance: 1929.5,
+            },
+          ],
+        },
+      },
+      withInvalidDateOrder: {
+        summary: 'Request: Invalid date order',
         value: {
           movements: [
             {
@@ -56,26 +210,11 @@ export class MovementController {
           balances: [
             {
               date: '2024-01-31',
-              balance: 1929.5,
+              balance: 2200,
             },
-          ],
-        },
-      },
-      withError: {
-        summary: 'Example with balance error',
-        value: {
-          movements: [
             {
-              id: 1,
-              date: '2024-01-05',
-              label: 'SALARY PAYMENT',
-              amount: 3000,
-            },
-          ],
-          balances: [
-            {
-              date: '2024-01-31',
-              balance: 2000,
+              date: '2024-01-15',
+              balance: 2500,
             },
           ],
         },
@@ -87,9 +226,8 @@ export class MovementController {
     description: 'Validation successful - All movements are valid',
     type: ValidationSuccessResponse,
     examples: {
-      success: {
-        summary:
-          'Validation successful - Example response when all movements are valid',
+      valid: {
+        summary: 'Response: Validation successful',
         value: {
           message: 'Accepted',
         },
@@ -100,9 +238,8 @@ export class MovementController {
     description: 'Validation failed - One or more errors have been detected',
     type: ValidationFailureResponse,
     examples: {
-      balanceMismatch: {
-        summary:
-          'Balance mismatch error - The calculated balance does not match the control point balance',
+      withBalanceError: {
+        summary: 'Response: Balance mismatch error',
         value: {
           message: 'Validation failed',
           reasons: [
@@ -120,9 +257,8 @@ export class MovementController {
           ],
         },
       },
-      duplicateTransaction: {
-        summary:
-          'Duplicate transactions detected - Transactions with the same date, same amount, and similar labels have been detected',
+      withDuplicates: {
+        summary: 'Response: Duplicate transactions detected',
         value: {
           message: 'Validation failed',
           reasons: [
@@ -151,9 +287,8 @@ export class MovementController {
           ],
         },
       },
-      missingTransaction: {
-        summary:
-          'Transactions after the last control point - Movements exist after the last control point, possibly indicating missing transactions',
+      withMissingTransaction: {
+        summary: 'Response: Missing transaction detected',
         value: {
           message: 'Validation failed',
           reasons: [
@@ -170,9 +305,8 @@ export class MovementController {
           ],
         },
       },
-      invalidDateOrder: {
-        summary:
-          'Invalid chronological order - Control points are not in chronological order',
+      withInvalidDateOrder: {
+        summary: 'Response: Invalid date order detected',
         value: {
           message: 'Validation failed',
           reasons: [
@@ -181,41 +315,6 @@ export class MovementController {
               message: 'Balance control points must be in chronological order',
               details: {
                 balanceDate: '2024-01-15T00:00:00.000Z',
-              },
-            },
-          ],
-        },
-      },
-      multipleErrors: {
-        summary:
-          'Multiple errors detected - Example with multiple types of simultaneous errors',
-        value: {
-          message: 'Validation failed',
-          reasons: [
-            {
-              type: 'BALANCE_MISMATCH',
-              message:
-                'Balance mismatch at control point 2024-01-31T00:00:00.000Z',
-              details: {
-                balanceDate: '2024-01-31T00:00:00.000Z',
-                expectedBalance: 1929.5,
-                actualBalance: 2000,
-                difference: -70.5,
-              },
-            },
-            {
-              type: 'DUPLICATE_TRANSACTION',
-              message: 'Found 1 duplicate transaction(s)',
-              details: {
-                duplicateMovements: [
-                  {
-                    id: 2,
-                    date: '2024-01-10T00:00:00.000Z',
-                    label: 'RENT PAYMENT',
-                    amount: -800,
-                    duplicateType: 'exact',
-                  },
-                ],
               },
             },
           ],

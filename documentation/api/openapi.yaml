@@ -16,7 +16,103 @@ paths:
               $ref: '#/components/schemas/ValidationRequestDto'
             examples:
               valid:
-                summary: Successful validation example
+                summary: 'Request: Valid movements'
+                value:
+                  movements:
+                    - id: 1
+                      date: '2024-01-05'
+                      label: SALARY PAYMENT
+                      amount: 3000
+                    - id: 2
+                      date: '2024-01-10'
+                      label: RENT PAYMENT
+                      amount: -800
+                    - id: 3
+                      date: '2024-01-15'
+                      label: UTILITIES
+                      amount: -150
+                    - id: 4
+                      date: '2024-01-20'
+                      label: GROCERY STORE
+                      amount: -120.5
+                  balances:
+                    - date: '2024-01-31'
+                      balance: 1929.5
+              withBalanceError:
+                summary: 'Request: Balance mismatch error'
+                value:
+                  movements:
+                    - id: 1
+                      date: '2024-01-05'
+                      label: SALARY PAYMENT
+                      amount: 3000
+                    - id: 2
+                      date: '2024-01-10'
+                      label: RENT PAYMENT
+                      amount: -800
+                    - id: 3
+                      date: '2024-01-15'
+                      label: UTILITIES
+                      amount: -150
+                    - id: 4
+                      date: '2024-01-20'
+                      label: GROCERY STORE
+                      amount: -120.5
+                  balances:
+                    - date: '2024-01-31'
+                      balance: 2000
+              withDuplicates:
+                summary: 'Request: Duplicate transactions'
+                value:
+                  movements:
+                    - id: 1
+                      date: '2024-01-05'
+                      label: SALARY PAYMENT
+                      amount: 3000
+                    - id: 2
+                      date: '2024-01-10'
+                      label: RENT PAYMENT
+                      amount: -800
+                    - id: 3
+                      date: '2024-01-10'
+                      label: RENT PAYMENT
+                      amount: -800
+                    - id: 4
+                      date: '2024-01-15'
+                      label: UTILITIES
+                      amount: -150
+                  balances:
+                    - date: '2024-01-31'
+                      balance: 1250
+              withMissingTransaction:
+                summary: 'Request: Missing transaction'
+                value:
+                  movements:
+                    - id: 1
+                      date: '2024-01-05'
+                      label: SALARY PAYMENT
+                      amount: 3000
+                    - id: 2
+                      date: '2024-01-10'
+                      label: RENT PAYMENT
+                      amount: -800
+                    - id: 3
+                      date: '2024-01-15'
+                      label: UTILITIES
+                      amount: -150
+                    - id: 4
+                      date: '2024-01-20'
+                      label: GROCERY STORE
+                      amount: -120.5
+                    - id: 5
+                      date: '2024-02-01'
+                      label: OTHER PAYMENT
+                      amount: -500
+                  balances:
+                    - date: '2024-01-31'
+                      balance: 1929.5
+              withInvalidDateOrder:
+                summary: 'Request: Invalid date order'
                 value:
                   movements:
                     - id: 1
@@ -29,18 +125,9 @@ paths:
                       amount: -800
                   balances:
                     - date: '2024-01-31'
-                      balance: 1929.5
-              withError:
-                summary: Example with balance error
-                value:
-                  movements:
-                    - id: 1
-                      date: '2024-01-05'
-                      label: SALARY PAYMENT
-                      amount: 3000
-                  balances:
-                    - date: '2024-01-31'
-                      balance: 2000
+                      balance: 2200
+                    - date: '2024-01-15'
+                      balance: 2500
       responses:
         '200':
           description: Validation successful - All movements are valid
@@ -49,10 +136,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/ValidationSuccessResponse'
               examples:
-                success:
-                  summary: >-
-                    Validation successful - Example response when all movements
-                    are valid
+                valid:
+                  summary: 'Response: Validation successful'
                   value:
                     message: Accepted
         '400':
@@ -62,10 +147,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/ValidationFailureResponse'
               examples:
-                balanceMismatch:
-                  summary: >-
-                    Balance mismatch error - The calculated balance does not
-                    match the control point balance
+                withBalanceError:
+                  summary: 'Response: Balance mismatch error'
                   value:
                     message: Validation failed
                     reasons:
@@ -78,10 +161,8 @@ paths:
                           expectedBalance: 1929.5
                           actualBalance: 2000
                           difference: -70.5
-                duplicateTransaction:
-                  summary: >-
-                    Duplicate transactions detected - Transactions with the same
-                    date, same amount, and similar labels have been detected
+                withDuplicates:
+                  summary: 'Response: Duplicate transactions detected'
                   value:
                     message: Validation failed
                     reasons:
@@ -99,11 +180,8 @@ paths:
                               label: RENT PAYMENT
                               amount: -800
                               duplicateType: exact
-                missingTransaction:
-                  summary: >-
-                    Transactions after the last control point - Movements exist
-                    after the last control point, possibly indicating missing
-                    transactions
+                withMissingTransaction:
+                  summary: 'Response: Missing transaction detected'
                   value:
                     message: Validation failed
                     reasons:
@@ -116,10 +194,8 @@ paths:
                           periodStart: '2024-01-31T00:00:00.000Z'
                           periodEnd: '2024-02-01T00:00:00.000Z'
                           missingAmount: -500
-                invalidDateOrder:
-                  summary: >-
-                    Invalid chronological order - Control points are not in
-                    chronological order
+                withInvalidDateOrder:
+                  summary: 'Response: Invalid date order detected'
                   value:
                     message: Validation failed
                     reasons:
@@ -127,77 +203,6 @@ paths:
                         message: Balance control points must be in chronological order
                         details:
                           balanceDate: '2024-01-15T00:00:00.000Z'
-                multipleErrors:
-                  summary: >-
-                    Multiple errors detected - Example with multiple types of
-                    simultaneous errors
-                  value:
-                    message: Validation failed
-                    reasons:
-                      - type: BALANCE_MISMATCH
-                        message: >-
-                          Balance mismatch at control point
-                          2024-01-31T00:00:00.000Z
-                        details:
-                          balanceDate: '2024-01-31T00:00:00.000Z'
-                          expectedBalance: 1929.5
-                          actualBalance: 2000
-                          difference: -70.5
-                      - type: DUPLICATE_TRANSACTION
-                        message: Found 1 duplicate transaction(s)
-                        details:
-                          duplicateMovements:
-                            - id: 2
-                              date: '2024-01-10T00:00:00.000Z'
-                              label: RENT PAYMENT
-                              amount: -800
-                              duplicateType: exact
-        '429':
-          description: >-
-            Too many requests - Rate limiting limit reached. Please try again
-            later.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  statusCode:
-                    type: number
-                    example: 429
-                  message:
-                    type: string
-                    example: 'ThrottlerException: Too Many Requests'
-                  error:
-                    type: string
-                    example: Too Many Requests
-        '500':
-          description: Internal server error - An unexpected error occurred
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  statusCode:
-                    type: number
-                    example: 500
-                  message:
-                    type: array
-                    items:
-                      type: string
-                    example:
-                      - Internal Server Error
-                  error:
-                    type: string
-                    example: Internal Server Error
-                  timestamp:
-                    type: string
-                    format: date-time
-                  path:
-                    type: string
-                    example: /movements/validation
-                  method:
-                    type: string
-                    example: POST
       summary: Validate bank movements
       tags:
         - movements
@@ -324,6 +329,14 @@ components:
               date: '2024-01-10'
               label: RENT PAYMENT
               amount: -800
+            - id: 3
+              date: '2024-01-15'
+              label: UTILITIES
+              amount: -150
+            - id: 4
+              date: '2024-01-20'
+              label: GROCERY STORE
+              amount: -120.5
           type: array
           items:
             $ref: '#/components/schemas/MovementDto'

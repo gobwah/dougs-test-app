@@ -29,19 +29,7 @@ documentation/
 
 ### [analysis.md](./analysis.md) ⭐
 
-**Document principal** présentant l'approche méthodique du problème, étape par étape. Ce document est destiné au recruteur pour comprendre la démarche de réflexion et les choix techniques effectués.
-
-**Contenu** :
-
-- Compréhension du problème métier
-- Analyse technique et décomposition
-- Architecture et structure du code
-- Algorithme de validation détaillé avec **11 diagrammes Mermaid**
-- Décisions de design justifiées
-- Tests et validation
-- Itérations et améliorations
-- Résultats et conformité aux exigences
-- Analyse de complexité algorithmique
+**Document principal** présentant l'approche méthodique du problème, étape par étape. Contient l'algorithme de validation détaillé avec **11 diagrammes Mermaid**, les choix techniques et l'analyse de complexité algorithmique.
 
 **📊 Visualisation** : Ce document contient des diagrammes Mermaid. Consultez [install_mermaid.md](./install_mermaid.md) pour savoir comment les visualiser.
 
@@ -52,6 +40,10 @@ Guide pour installer et visualiser les diagrammes Mermaid dans différents outil
 ### [api_index.md](./api_index.md)
 
 Documentation de l'API OpenAPI avec instructions d'utilisation, génération de clients, etc.
+
+### [deployment.md](./deployment.md)
+
+Guide complet de déploiement avec Docker et déploiement manuel.
 
 ---
 

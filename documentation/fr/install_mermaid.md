@@ -16,7 +16,7 @@ Cursor/VS Code devrait vous proposer automatiquement d'installer les extensions 
 
 ### Vérification
 
-Une fois installé, ouvrez `documentation/analyse.md` et utilisez la prévisualisation Markdown (`Cmd+Shift+V` ou `Ctrl+Shift+V`). Les diagrammes Mermaid devraient s'afficher correctement.
+Une fois installé, ouvrez `documentation/fr/analysis.md` et utilisez la prévisualisation Markdown (`Cmd+Shift+V` ou `Ctrl+Shift+V`). Les diagrammes Mermaid devraient s'afficher correctement.
 
 ## 🌐 Pour GitHub / GitLab
 
@@ -33,7 +33,7 @@ Si vous avez besoin de générer des images PNG/SVG des diagrammes :
 npm install -g @mermaid-js/mermaid-cli
 
 # Générer les images (depuis la racine du projet)
-mmdc -i documentation/analyse.md -o documentation/images/
+mmdc -i documentation/fr/analysis.md -o documentation/images/
 ```
 
 ### Option 2 : Mermaid Live Editor

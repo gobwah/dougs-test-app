@@ -6,11 +6,19 @@ This folder contains all documentation for the Dougs bank validation project.
 
 ```
 documentation/
-├── index.md                     # This file (documentation index)
-├── analysis.md                  # ⭐ Main analysis document
-├── install_mermaid.md          # Guide for visualizing diagrams
-├── api/                         # OpenAPI API documentation
+├── fr/                          # Documentation en français
 │   ├── index.md
+│   ├── analysis.md
+│   ├── deployment.md
+│   ├── install_mermaid.md
+│   └── api_index.md
+├── en/                          # Documentation in English
+│   ├── index.md
+│   ├── analysis.md
+│   ├── deployment.md
+│   ├── install_mermaid.md
+│   └── api_index.md
+├── api/                         # OpenAPI API documentation
 │   ├── openapi.json
 │   ├── openapi.yaml
 │   └── api-documentation.html
@@ -21,19 +29,7 @@ documentation/
 
 ### [analysis.md](./analysis.md) ⭐
 
-**Main document** presenting the methodical approach to the problem, step by step. This document is intended for the recruiter to understand the thought process and technical choices made.
-
-**Content**:
-
-- Business problem understanding
-- Technical analysis and decomposition
-- Architecture and code structure
-- Detailed validation algorithm with **11 Mermaid diagrams**
-- Justified design decisions
-- Tests and validation
-- Iterations and improvements
-- Results and compliance with requirements
-- Algorithmic complexity analysis
+**Main document** presenting the methodical approach to the problem, step by step. Contains detailed validation algorithm with **11 Mermaid diagrams**, technical choices, and algorithmic complexity analysis.
 
 **📊 Visualization**: This document contains Mermaid diagrams. See [install_mermaid.md](./install_mermaid.md) to learn how to visualize them.
 

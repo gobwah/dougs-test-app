@@ -18,7 +18,7 @@ const { execSync } = require('child_process');
 
 const PROJECT_ROOT = path.resolve(__dirname, '..');
 const DOC_DIR = path.join(PROJECT_ROOT, 'documentation');
-const MARKDOWN_FILE = path.join(DOC_DIR, 'analyse.md');
+const MARKDOWN_FILE = path.join(DOC_DIR, 'fr', 'analysis.md');
 const IMAGES_DIR = path.join(DOC_DIR, 'images');
 
 // Vérifier si mmdc est disponible

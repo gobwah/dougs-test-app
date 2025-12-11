@@ -90,6 +90,18 @@ export class ValidationRequestDto {
         label: 'RENT PAYMENT',
         amount: -800,
       },
+      {
+        id: 3,
+        date: '2024-01-15',
+        label: 'UTILITIES',
+        amount: -150,
+      },
+      {
+        id: 4,
+        date: '2024-01-20',
+        label: 'GROCERY STORE',
+        amount: -120.5,
+      },
     ],
   })
   @IsArray()

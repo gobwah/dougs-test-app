@@ -20,6 +20,74 @@ async function generateApiDocs() {
 
   const document = SwaggerModule.createDocument(app, config);
 
+  // Map request examples to their corresponding response examples
+  // This helps Postman associate request examples with response examples
+  if (document.paths && document.paths['/movements/validation']?.post) {
+    const operation = document.paths['/movements/validation'].post;
+
+    // Map: request example name -> response example name
+    const exampleMapping: Record<string, { status: string; example: string }> =
+      {
+        valid: { status: '200', example: 'valid' },
+        withBalanceError: { status: '400', example: 'withBalanceError' },
+        withDuplicates: { status: '400', example: 'withDuplicates' },
+        withMissingTransaction: {
+          status: '400',
+          example: 'withMissingTransaction',
+        },
+        withInvalidDateOrder: {
+          status: '400',
+          example: 'withInvalidDateOrder',
+        },
+      };
+
+    // Rename response examples to match request example names
+    Object.entries(exampleMapping).forEach(
+      ([requestExample, { status, example }]) => {
+        const response = operation.responses?.[status];
+        if (
+          response &&
+          'content' in response &&
+          response.content?.['application/json']?.examples
+        ) {
+          const examples = response.content['application/json'].examples;
+
+          // If the response example doesn't exist with the same name, create/rename it
+          if (!examples[requestExample] && examples[example]) {
+            // Rename the existing example
+            examples[requestExample] = examples[example];
+            delete examples[example];
+          } else if (!examples[requestExample]) {
+            // Create a new example with the matching name
+            if (status === '200' && examples.valid) {
+              examples[requestExample] = examples.valid;
+            } else if (status === '400') {
+              if (
+                requestExample === 'withBalanceError' &&
+                examples.withBalanceError
+              ) {
+                // Already correct
+              } else if (
+                requestExample === 'withDuplicates' &&
+                examples.withDuplicates
+              ) {
+                // Already correct
+              }
+            }
+          }
+        }
+      },
+    );
+
+    // Remove 429 and 500 responses from this operation to prevent Postman from auto-generating associations
+    // These are system errors that shouldn't be associated with specific request examples
+    // They are still documented in the API but won't create duplicate examples in Postman
+    if (operation.responses) {
+      delete operation.responses['429'];
+      delete operation.responses['500'];
+    }
+  }
+
   // Ensure documentation/api directory exists
   const apiDocsDir = path.join(__dirname, '..', 'documentation', 'api');
   if (!fs.existsSync(apiDocsDir)) {

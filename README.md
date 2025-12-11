@@ -93,8 +93,16 @@ test/
 
 documentation/
 ├── index.md                # Documentation index
-├── analyse.md               # Detailed analysis (main document)
-├── installation_mermaid.md  # Mermaid guide
+├── en/                      # English documentation
+│   ├── analysis.md
+│   ├── deployment.md
+│   ├── install_mermaid.md
+│   └── api_index.md
+├── fr/                      # French documentation
+│   ├── analysis.md
+│   ├── deployment.md
+│   ├── install_mermaid.md
+│   └── api_index.md
 ├── api/                     # OpenAPI API documentation
 └── images/                  # Mermaid diagram images
 ```
@@ -137,7 +145,7 @@ docker build -t dougs-bank-validation:latest .
 
 ### Manual Deployment
 
-See the [Deployment Guide](./documentation/deployment.md) for detailed instructions.
+See the [Deployment Guide](./documentation/en/deployment.md) (English) or [Guide de déploiement](./documentation/fr/deployment.md) (Français) for detailed instructions.
 
 ## 📖 For More Information
 
