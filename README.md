@@ -1,12 +1,10 @@
-# Dougs Bank Validation System
+# Dougs Bank Validation System - Minimal Version
 
-[![CI](https://github.com/gobwah/dougs-test-app/workflows/CI/badge.svg)](https://github.com/YOUR_USERNAME/YOUR_REPO_NAME/actions)
-[![codecov](https://codecov.io/gh/gobwah/dougs-test-app/branch/main/graph/badge.svg)](https://codecov.io/gh/gobwah/dougs-test-app)
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D20.x-brightgreen)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.1-blue)](https://www.typescriptlang.org/)
 [![NestJS](https://img.shields.io/badge/NestJS-11.0-red)](https://nestjs.com/)
 
-Bank transaction validation system for Dougs, accounting firm.
+Version minimale du système de validation de transactions bancaires pour Dougs, cabinet comptable. Cette version se concentre sur l'algorithme de validation et fournit une structure de base (contrôleur et service) pour permettre au recruteur de se focaliser sur l'implémentation de l'algorithme.
 
 ## 🚀 Quick Start
 
@@ -18,17 +16,7 @@ npm install
 npm run start:dev
 
 # The application will be accessible at http://localhost:3000
-# Swagger UI available at http://localhost:3000/api
 ```
-
-## 📚 Documentation
-
-All documentation is available in the [`documentation/`](./documentation/) folder:
-
-- **[📖 Documentation Index](./documentation/index.md)** : Choose your language (FR/EN)
-- **[🇫🇷 French Documentation](./documentation/fr/)** : Documentation en français
-- **[🇬🇧 English Documentation](./documentation/en/)** : Documentation in English
-- **[📡 API Documentation](./documentation/api/)** : OpenAPI documentation (JSON, YAML, HTML)
 
 ## 🎯 Features
 
@@ -39,23 +27,36 @@ All documentation is available in the [`documentation/`](./documentation/) folde
 
 ## 🔌 API
 
-### Main Endpoints
+### Main Endpoint
 
-- **GET /health** : Application health check
 - **POST /movements/validation** : Validate bank transactions against control points
 
-### Interactive Documentation
+Request body:
 
-- **Swagger UI** : `http://localhost:3000/api` (when the application is running)
+```json
+{
+  "movements": [
+    {
+      "id": 1,
+      "date": "2024-01-05",
+      "label": "SALARY PAYMENT",
+      "amount": 3000
+    }
+  ],
+  "balances": [
+    {
+      "date": "2024-01-31",
+      "balance": 1929.5
+    }
+  ]
+}
+```
 
 ## 🧪 Tests
 
 ```bash
-# Unit tests (default)
+# Unit tests
 npm test
-
-# Tests with coverage (minimum threshold: 80%)
-npm run test:cov
 
 # Integration tests
 npm run test:integration
@@ -63,8 +64,14 @@ npm run test:integration
 # E2E tests (real server)
 npm run test:e2e
 
+# Performance tests
+npm run test:performance
+
 # All tests
 npm run test:all
+
+# Performance benchmarks
+npm run benchmark
 ```
 
 ### Test Types
@@ -72,29 +79,27 @@ npm run test:all
 - **Unit tests** : Fast tests of isolated components (`test/unit/`)
 - **Integration tests** : In-memory API tests (`test/integration/`)
 - **E2E tests** : Tests with real HTTP server (`test/e2e/`)
+- **Performance tests** : Performance validation tests (`test/performance/`)
+- **Benchmarks** : Performance benchmarks (`scripts/benchmark.ts`)
 
 ## 📁 Project Structure
 
 ```
 src/
 ├── models/
-│   ├── movements/          # Movement management
-│   ├── balances/            # Balance management
-│   └── duplicates/          # Duplicate detection
-├── health/                  # Health check
-└── main.ts                  # Entry point
+│   ├── movements/          # Movement management (controller + service)
+│   ├── balances/           # Balance management (service)
+│   └── duplicates/         # Duplicate detection (service)
+└── main.ts                 # Entry point
 
 test/
-├── unit/                    # Unit tests
-├── integration/             # Integration tests
-└── e2e/                    # End-to-end tests
+├── unit/                   # Unit tests
+├── integration/            # Integration tests
+├── e2e/                    # End-to-end tests
+└── performance/            # Performance tests
 
-documentation/
-├── index.md                # Documentation index
-├── analyse.md               # Detailed analysis (main document)
-├── installation_mermaid.md  # Mermaid guide
-├── api/                     # OpenAPI API documentation
-└── images/                  # Mermaid diagram images
+scripts/
+└── benchmark.ts            # Performance benchmarks
 ```
 
 ## 📝 Examples
@@ -111,34 +116,19 @@ Request examples are available in the [`examples/`](./examples/) folder:
 ```bash
 npm run build              # Build the project
 npm run start:dev          # Start in development mode
-npm run start:prod        # Start in production mode
-npm run lint              # Lint the code
-npm run format            # Format the code
-npm run test:performance  # Performance tests
-npm run benchmark         # Performance benchmarks
-npm run generate:diagrams # Generate Mermaid diagram images
-npm run generate:api-docs # Generate OpenAPI documentation
+npm run start:prod         # Start in production mode
+npm test                   # Run unit tests
+npm run test:integration    # Run integration tests
+npm run test:e2e           # Run E2E tests
+npm run test:performance   # Run performance tests
+npm run test:all           # Run all tests
+npm run benchmark          # Run performance benchmarks
 ```
 
-## 🐳 Deployment
+## 📖 Documentation
 
-### With Docker
+All documentation is available in the [`documentation/`](./documentation/) folder:
 
-```bash
-# Quick start
-docker-compose up -d
-
-# Build the image
-docker build -t dougs-bank-validation:latest .
-```
-
-### Manual Deployment
-
-See the [Deployment Guide](./documentation/deployment.md) for detailed instructions.
-
-## 📖 For More Information
-
-- **Detailed Analysis** : [documentation/en/analysis.md](./documentation/en/analysis.md) or [documentation/fr/analysis.md](./documentation/fr/analysis.md)
-- **API Documentation** : [documentation/en/api_index.md](./documentation/en/api_index.md) or [documentation/fr/api_index.md](./documentation/fr/api_index.md)
-- **Deployment Guide** : [documentation/en/deployment.md](./documentation/en/deployment.md) or [documentation/fr/deployment.md](./documentation/fr/deployment.md)
-- **Mermaid Guide** : [documentation/en/install_mermaid.md](./documentation/en/install_mermaid.md) or [documentation/fr/install_mermaid.md](./documentation/fr/install_mermaid.md)
+- **[📖 Documentation Index](./documentation/index.md)** : Index de la documentation
+- **[📊 Analysis](./documentation/analysis.md)** : Analyse détaillée de l'approche et de l'algorithme (en français)
+- **[📡 API Documentation](./documentation/api/)** : Documentation OpenAPI (JSON, YAML)
