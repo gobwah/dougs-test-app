@@ -1,0 +1,434 @@
+openapi: 3.0.0
+paths:
+  /movements/validation:
+    post:
+      description: >-
+        Validates a list of bank movements by comparing them with control points
+        (balances). Detects inconsistencies, duplicates, and anomalies.
+      operationId: MovementController_validateMovements
+      parameters: []
+      requestBody:
+        required: true
+        description: Validation data containing movements and balances
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ValidationRequestDto'
+            examples:
+              valid:
+                summary: Successful validation example
+                value:
+                  movements:
+                    - id: 1
+                      date: '2024-01-05'
+                      label: SALARY PAYMENT
+                      amount: 3000
+                    - id: 2
+                      date: '2024-01-10'
+                      label: RENT PAYMENT
+                      amount: -800
+                  balances:
+                    - date: '2024-01-31'
+                      balance: 1929.5
+              withError:
+                summary: Example with balance error
+                value:
+                  movements:
+                    - id: 1
+                      date: '2024-01-05'
+                      label: SALARY PAYMENT
+                      amount: 3000
+                  balances:
+                    - date: '2024-01-31'
+                      balance: 2000
+      responses:
+        '200':
+          description: Validation successful - All movements are valid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationSuccessResponse'
+              examples:
+                success:
+                  summary: >-
+                    Validation successful - Example response when all movements
+                    are valid
+                  value:
+                    message: Accepted
+        '400':
+          description: Validation failed - One or more errors have been detected
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationFailureResponse'
+              examples:
+                balanceMismatch:
+                  summary: >-
+                    Balance mismatch error - The calculated balance does not
+                    match the control point balance
+                  value:
+                    message: Validation failed
+                    reasons:
+                      - type: BALANCE_MISMATCH
+                        message: >-
+                          Balance mismatch at control point
+                          2024-01-31T00:00:00.000Z
+                        details:
+                          balanceDate: '2024-01-31T00:00:00.000Z'
+                          expectedBalance: 1929.5
+                          actualBalance: 2000
+                          difference: -70.5
+                duplicateTransaction:
+                  summary: >-
+                    Duplicate transactions detected - Transactions with the same
+                    date, same amount, and similar labels have been detected
+                  value:
+                    message: Validation failed
+                    reasons:
+                      - type: DUPLICATE_TRANSACTION
+                        message: Found 2 duplicate transaction(s)
+                        details:
+                          duplicateMovements:
+                            - id: 2
+                              date: '2024-01-10T00:00:00.000Z'
+                              label: RENT PAYMENT
+                              amount: -800
+                              duplicateType: exact
+                            - id: 3
+                              date: '2024-01-10T00:00:00.000Z'
+                              label: RENT PAYMENT
+                              amount: -800
+                              duplicateType: exact
+                missingTransaction:
+                  summary: >-
+                    Transactions after the last control point - Movements exist
+                    after the last control point, possibly indicating missing
+                    transactions
+                  value:
+                    message: Validation failed
+                    reasons:
+                      - type: MISSING_TRANSACTION
+                        message: >-
+                          There are 1 movement(s) after the last balance control
+                          point. This may indicate missing balance control
+                          points or missing transactions.
+                        details:
+                          periodStart: '2024-01-31T00:00:00.000Z'
+                          periodEnd: '2024-02-01T00:00:00.000Z'
+                          missingAmount: -500
+                invalidDateOrder:
+                  summary: >-
+                    Invalid chronological order - Control points are not in
+                    chronological order
+                  value:
+                    message: Validation failed
+                    reasons:
+                      - type: INVALID_DATE_ORDER
+                        message: Balance control points must be in chronological order
+                        details:
+                          balanceDate: '2024-01-15T00:00:00.000Z'
+                multipleErrors:
+                  summary: >-
+                    Multiple errors detected - Example with multiple types of
+                    simultaneous errors
+                  value:
+                    message: Validation failed
+                    reasons:
+                      - type: BALANCE_MISMATCH
+                        message: >-
+                          Balance mismatch at control point
+                          2024-01-31T00:00:00.000Z
+                        details:
+                          balanceDate: '2024-01-31T00:00:00.000Z'
+                          expectedBalance: 1929.5
+                          actualBalance: 2000
+                          difference: -70.5
+                      - type: DUPLICATE_TRANSACTION
+                        message: Found 1 duplicate transaction(s)
+                        details:
+                          duplicateMovements:
+                            - id: 2
+                              date: '2024-01-10T00:00:00.000Z'
+                              label: RENT PAYMENT
+                              amount: -800
+                              duplicateType: exact
+        '429':
+          description: >-
+            Too many requests - Rate limiting limit reached. Please try again
+            later.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 429
+                  message:
+                    type: string
+                    example: 'ThrottlerException: Too Many Requests'
+                  error:
+                    type: string
+                    example: Too Many Requests
+        '500':
+          description: Internal server error - An unexpected error occurred
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 500
+                  message:
+                    type: array
+                    items:
+                      type: string
+                    example:
+                      - Internal Server Error
+                  error:
+                    type: string
+                    example: Internal Server Error
+                  timestamp:
+                    type: string
+                    format: date-time
+                  path:
+                    type: string
+                    example: /movements/validation
+                  method:
+                    type: string
+                    example: POST
+      summary: Validate bank movements
+      tags:
+        - movements
+  /health:
+    get:
+      description: Returns the application health status with its uptime.
+      operationId: HealthController_check
+      parameters: []
+      responses:
+        '200':
+          description: Application is running
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                    description: Application health status
+                  timestamp:
+                    type: string
+                    format: date-time
+                    example: '2024-01-15T10:30:00.000Z'
+                    description: Response timestamp
+                  uptime:
+                    type: number
+                    description: Uptime in seconds
+                    example: 123.456
+                required:
+                  - status
+                  - timestamp
+                  - uptime
+              examples:
+                healthy:
+                  summary: Healthy application - The application is working correctly
+                  value:
+                    status: ok
+                    timestamp: '2024-01-15T10:30:00.000Z'
+                    uptime: 123.456
+        '503':
+          description: >-
+            Service unavailable - The application is not available (future case
+            with advanced health checks)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: error
+                  message:
+                    type: string
+                    example: Service temporarily unavailable
+      summary: Check application status
+      tags:
+        - health
+info:
+  title: Dougs Bank Validation API
+  description: >-
+    Bank transaction validation API for Dougs, accounting firm. Allows
+    validation of bank synchronization integrity by comparing transactions with
+    control points (balances).
+  version: '1.0'
+  contact: {}
+tags:
+  - name: movements
+    description: Bank movement validation
+  - name: health
+    description: Application status check
+servers: []
+components:
+  schemas:
+    MovementDto:
+      type: object
+      properties:
+        id:
+          type: number
+          description: Identifiant unique du mouvement
+          example: 1
+        date:
+          type: string
+          description: Date du mouvement au format ISO (YYYY-MM-DD)
+          example: '2024-01-15'
+        label:
+          type: string
+          description: Libellé du mouvement
+          example: SALARY PAYMENT
+        amount:
+          type: number
+          description: Montant du mouvement (positif pour crédit, négatif pour débit)
+          example: 3000
+      required:
+        - id
+        - date
+        - label
+        - amount
+    BalanceDto:
+      type: object
+      properties:
+        date:
+          type: string
+          description: Date du point de contrôle au format ISO (YYYY-MM-DD)
+          example: '2024-01-31'
+        balance:
+          type: number
+          description: Solde au point de contrôle
+          example: 1929.5
+      required:
+        - date
+        - balance
+    ValidationRequestDto:
+      type: object
+      properties:
+        movements:
+          description: Liste des mouvements bancaires à valider
+          example:
+            - id: 1
+              date: '2024-01-05'
+              label: SALARY PAYMENT
+              amount: 3000
+            - id: 2
+              date: '2024-01-10'
+              label: RENT PAYMENT
+              amount: -800
+          type: array
+          items:
+            $ref: '#/components/schemas/MovementDto'
+        balances:
+          description: Liste des points de contrôle (soldes)
+          example:
+            - date: '2024-01-31'
+              balance: 1929.5
+          type: array
+          items:
+            $ref: '#/components/schemas/BalanceDto'
+      required:
+        - movements
+        - balances
+    ValidationSuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Message de succès
+          example: Accepted
+      required:
+        - message
+    ValidationReasonDetailsDto:
+      type: object
+      properties:
+        balanceDate:
+          type: string
+          description: Date du point de contrôle concerné
+        expectedBalance:
+          type: number
+          description: Solde attendu
+        actualBalance:
+          type: number
+          description: Solde réel
+        difference:
+          type: number
+          description: Différence entre solde attendu et réel
+        duplicateMovements:
+          type: array
+          description: Mouvements dupliqués détectés
+          items:
+            type: object
+            properties:
+              id:
+                type: number
+              date:
+                type: string
+              amount:
+                type: number
+              label:
+                type: string
+              duplicateType:
+                type: string
+                enum:
+                  - exact
+                  - similar
+                description: >-
+                  Type de doublon: 'exact' pour labels identiques, 'similar'
+                  pour labels similaires
+        missingAmount:
+          type: number
+          description: Montant manquant
+        periodStart:
+          type: string
+          description: Début de la période concernée
+        periodEnd:
+          type: string
+          description: Fin de la période concernée
+    ValidationReasonDto:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - BALANCE_MISMATCH
+            - DUPLICATE_TRANSACTION
+            - MISSING_TRANSACTION
+            - INVALID_DATE_ORDER
+          description: Type de raison de validation
+          example: BALANCE_MISMATCH
+        message:
+          type: string
+          description: Message descriptif de la raison
+          example: Balance mismatch at control point 2024-01-31T00:00:00.000Z
+        details:
+          description: Détails spécifiques à la raison
+          allOf:
+            - $ref: '#/components/schemas/ValidationReasonDetailsDto'
+      required:
+        - type
+        - message
+        - details
+    ValidationFailureResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Message d'échec
+          example: Validation failed
+        reasons:
+          description: Liste des raisons de l'échec de validation
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationReasonDto'
+      required:
+        - message
+        - reasons

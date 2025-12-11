@@ -1,286 +1,144 @@
 # Dougs Bank Validation System
 
-[![CI](https://github.com/YOUR_USERNAME/YOUR_REPO_NAME/workflows/CI/badge.svg)](https://github.com/YOUR_USERNAME/YOUR_REPO_NAME/actions)
+[![CI](https://github.com/gobwah/dougs-test-app/workflows/CI/badge.svg)](https://github.com/YOUR_USERNAME/YOUR_REPO_NAME/actions)
+[![codecov](https://codecov.io/gh/gobwah/dougs-test-app/branch/main/graph/badge.svg)](https://codecov.io/gh/gobwah/dougs-test-app)
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D20.x-brightgreen)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.1-blue)](https://www.typescriptlang.org/)
-[![NestJS](https://img.shields.io/badge/NestJS-10.0-red)](https://nestjs.com/)
+[![NestJS](https://img.shields.io/badge/NestJS-11.0-red)](https://nestjs.com/)
 
-Système de validation des opérations bancaires pour Dougs, cabinet d'expertise-comptable.
+Bank transaction validation system for Dougs, accounting firm.
 
-## Description
-
-Cette application NestJS permet de valider l'intégrité des synchronisations bancaires en comparant les opérations bancaires remontées par les prestataires externes avec les points de contrôle (soldes) fournis par les clients via leurs relevés bancaires.
-
-## Fonctionnalités
-
-- **Validation des soldes** : Vérifie que les soldes aux points de contrôle correspondent aux sommes calculées à partir des opérations
-- **Détection de doublons** : Identifie les transactions dupliquées (même date, même montant, libellés similaires)
-- **Détection d'opérations manquantes** : Signale les incohérences qui pourraient indiquer des transactions manquantes
-- **Validation de l'ordre chronologique** : Vérifie que les points de contrôle sont dans l'ordre chronologique
-
-## Installation
+## 🚀 Quick Start
 
 ```bash
+# Installation
 npm install
-```
 
-## Démarrage
-
-```bash
-# Mode développement
+# Start in development mode
 npm run start:dev
 
-# Mode production
-npm run build
-npm run start:prod
+# The application will be accessible at http://localhost:3000
+# Swagger UI available at http://localhost:3000/api
 ```
 
-L'application sera accessible sur `http://localhost:3000`
+## 📚 Documentation
 
-## Documentation API
+All documentation is available in the [`documentation/`](./documentation/) folder:
 
-### Documentation interactive (Swagger UI)
+- **[📖 Documentation Index](./documentation/index.md)** : Choose your language (FR/EN)
+- **[🇫🇷 French Documentation](./documentation/fr/)** : Documentation en français
+- **[🇬🇧 English Documentation](./documentation/en/)** : Documentation in English
+- **[📡 API Documentation](./documentation/api/)** : OpenAPI documentation (JSON, YAML, HTML)
 
-La documentation interactive de l'API est disponible via Swagger UI à l'adresse :
+## 🎯 Features
 
-- **Swagger UI** : `http://localhost:3000/api`
+- ✅ **Balance validation** : Verifies that balances at control points match calculated sums
+- ✅ **Duplicate detection** : Identifies duplicate transactions (same date, same amount, similar labels)
+- ✅ **Missing transaction detection** : Reports potential inconsistencies
+- ✅ **Chronological order validation** : Verifies that control points are in order
 
-Vous pouvez tester les endpoints directement depuis l'interface Swagger.
+## 🔌 API
 
-### Documentation OpenAPI
+### Main Endpoints
 
-La documentation OpenAPI est générée automatiquement et disponible dans le dossier `documentation/` :
+- **GET /health** : Application health check
+- **POST /movements/validation** : Validate bank transactions against control points
 
-- **`documentation/openapi.json`** : Format JSON
-- **`documentation/openapi.yaml`** : Format YAML
-- **`documentation/api-documentation.html`** : Documentation statique HTML (Redoc)
+### Interactive Documentation
 
-#### Génération automatique
+- **Swagger UI** : `http://localhost:3000/api` (when the application is running)
 
-La documentation est générée automatiquement **avant chaque commit** via un hook Git pre-commit (Husky) si des fichiers API ont été modifiés. Les fichiers générés sont automatiquement ajoutés au commit.
-
-**Fichiers déclencheurs** :
-
-- `src/**/*.ts` (fichiers TypeScript)
-- `src/**/*.dto.ts` (DTOs)
-- `src/**/*.controller.ts` (controllers)
-- `src/**/*.service.ts` (services)
-- `src/**/*.module.ts` (modules)
-- `package.json` (dépendances)
-
-Un workflow GitHub Actions est également configuré comme backup pour les cas où des commits sont faits directement sur GitHub.
-
-#### Génération manuelle
-
-Pour générer la documentation manuellement :
+## 🧪 Tests
 
 ```bash
-npm run generate:api-docs
-```
-
-#### Visualiser la documentation statique
-
-La documentation HTML statique peut être ouverte directement dans votre navigateur :
-
-```bash
-# Sur macOS
-open documentation/api-documentation.html
-
-# Sur Linux
-xdg-open documentation/api-documentation.html
-
-# Sur Windows
-start documentation/api-documentation.html
-```
-
-Ou simplement double-cliquez sur le fichier `documentation/api-documentation.html` dans votre explorateur de fichiers.
-
-## API
-
-### GET /health
-
-Endpoint de santé pour vérifier que l'application est en cours d'exécution.
-
-#### Response (200)
-
-```json
-{
-  "status": "ok",
-  "timestamp": "2024-01-15T10:30:00.000Z",
-  "uptime": 123.456
-}
-```
-
-### POST /movements/validation
-
-Valide une liste d'opérations bancaires contre des points de contrôle.
-
-#### Request Body
-
-```json
-{
-  "movements": [
-    {
-      "id": 1,
-      "date": "2024-01-15",
-      "label": "PAYMENT REF 12345",
-      "amount": 100.5
-    },
-    {
-      "id": 2,
-      "date": "2024-01-20",
-      "label": "WITHDRAWAL",
-      "amount": -50.0
-    }
-  ],
-  "balances": [
-    {
-      "date": "2024-01-31",
-      "balance": 50.5
-    }
-  ]
-}
-```
-
-#### Response Success (200)
-
-```json
-{
-  "message": "Accepted"
-}
-```
-
-#### Response Error (400)
-
-```json
-{
-  "message": "Validation failed",
-  "reasons": [
-    {
-      "type": "BALANCE_MISMATCH",
-      "message": "Balance mismatch at control point 2024-01-31T00:00:00.000Z",
-      "details": {
-        "balanceDate": "2024-01-31T00:00:00.000Z",
-        "expectedBalance": 50.5,
-        "actualBalance": 100.5,
-        "difference": 50.0
-      }
-    },
-    {
-      "type": "DUPLICATE_TRANSACTION",
-      "message": "Found 2 duplicate transaction(s)",
-      "details": {
-        "duplicateMovements": [
-          {
-            "id": 1,
-            "date": "2024-01-15T00:00:00.000Z",
-            "amount": 100.5,
-            "label": "PAYMENT REF 12345"
-          },
-          {
-            "id": 3,
-            "date": "2024-01-15T00:00:00.000Z",
-            "amount": 100.5,
-            "label": "PAYMENT REF 12345"
-          }
-        ]
-      }
-    }
-  ]
-}
-```
-
-### Types de raisons de validation
-
-- **BALANCE_MISMATCH** : Le solde calculé ne correspond pas au solde du point de contrôle
-- **DUPLICATE_TRANSACTION** : Transactions dupliquées détectées
-- **MISSING_TRANSACTION** : Opérations après le dernier point de contrôle ou incohérences suggérant des transactions manquantes
-- **INVALID_DATE_ORDER** : Les points de contrôle ne sont pas dans l'ordre chronologique
-
-## Algorithme de validation
-
-1. **Tri chronologique** : Les opérations et points de contrôle sont triés par date
-2. **Inférence du solde initial** : Le solde initial est inféré à partir du premier point de contrôle
-3. **Validation des soldes** : Pour chaque point de contrôle, le solde est calculé et comparé avec le solde attendu
-4. **Détection de doublons** : Les transactions avec la même date, le même montant et des libellés similaires sont identifiées comme doublons potentiels
-5. **Vérification des périodes** : Les opérations avant le premier point de contrôle et après le dernier sont signalées
-
-## Tests
-
-```bash
-# Exécuter les tests unitaires (par défaut)
+# Unit tests (default)
 npm test
-# ou
-npm run test:unit
 
-# Tests avec couverture (seuil minimum: 80%)
+# Tests with coverage (minimum threshold: 80%)
 npm run test:cov
 
-# Tests d'intégration uniquement
+# Integration tests
 npm run test:integration
 
-# Tests e2e (serveur réel)
+# E2E tests (real server)
 npm run test:e2e
 
-# Tous les tests (unitaires + intégration)
+# All tests
 npm run test:all
-
-# Tests en mode watch (uniquement unitaires)
-npm run test:watch
 ```
 
-### Types de tests
+### Test Types
 
-- **Tests unitaires** : Tests rapides des composants isolés
-- **Tests d'intégration** : Tests de l'API en mémoire (utilisent les fichiers JSON d'exemples)
-- **Tests e2e** : Tests avec serveur HTTP réel (vérifient le build complet)
+- **Unit tests** : Fast tests of isolated components (`test/unit/`)
+- **Integration tests** : In-memory API tests (`test/integration/`)
+- **E2E tests** : Tests with real HTTP server (`test/e2e/`)
 
-## Structure du projet
+## 📁 Project Structure
 
 ```
 src/
-├── main.ts                    # Point d'entrée de l'application
-├── app.module.ts             # Module principal
-├── health/
-│   └── health.controller.ts   # Contrôleur health check
-└── movements/
-    ├── movements.controller.ts    # Contrôleur API
-    ├── movements.service.ts        # Service de validation
-    └── dto/
-        ├── validation-request.dto.ts   # DTO de requête
-        └── validation-response.dto.ts  # DTO de réponse
+├── models/
+│   ├── movements/          # Movement management
+│   ├── balances/            # Balance management
+│   └── duplicates/          # Duplicate detection
+├── health/                  # Health check
+└── main.ts                  # Entry point
 
 test/
-├── unit/                          # Tests unitaires (composants isolés)
-│   ├── controllers/
-│   │   ├── health.controller.spec.ts
-│   │   └── movements.controller.spec.ts
-│   └── services/
-│       └── movements.service.spec.ts
-├── integration/                   # Tests d'intégration (API en mémoire)
-│   └── movements.integration.spec.ts
-└── e2e/                           # Tests end-to-end (serveur réel)
-    ├── movements.e2e-spec.ts
-    ├── jest-e2e.json
-    ├── jest-e2e.global-setup.ts
-    ├── jest-e2e.setup.ts
-    └── jest-e2e.teardown.ts
+├── unit/                    # Unit tests
+├── integration/             # Integration tests
+└── e2e/                    # End-to-end tests
+
+documentation/
+├── index.md                # Documentation index
+├── analyse.md               # Detailed analysis (main document)
+├── installation_mermaid.md  # Mermaid guide
+├── api/                     # OpenAPI API documentation
+└── images/                  # Mermaid diagram images
 ```
 
-## Technologies utilisées
+## 📝 Examples
 
-- **NestJS** : Framework Node.js pour applications serveur
-- **TypeScript** : Langage de programmation
-- **class-validator** : Validation des données
-- **Jest** : Framework de tests
+Request examples are available in the [`examples/`](./examples/) folder:
 
-## Notes d'implémentation
+- `example-valid.json` : Valid case
+- `example-balance-mismatch.json` : Case with balance mismatch
+- `example-with-duplicates.json` : Case with duplicates
+- `example-multiple-balances.json` : Case with multiple control points
 
-- La détection de doublons utilise une comparaison de similarité des libellés basée sur la distance de Levenshtein (seuil de 80%)
-- Une tolérance de 0.01 est appliquée pour les comparaisons de soldes afin de gérer les erreurs d'arrondi en virgule flottante
-- Les dates sont comparées avec une précision au jour pour la détection de doublons
-- L'algorithme infère le solde initial à partir du premier point de contrôle
+## 🔧 Available Scripts
 
-## Exemples d'utilisation
+```bash
+npm run build              # Build the project
+npm run start:dev          # Start in development mode
+npm run start:prod        # Start in production mode
+npm run lint              # Lint the code
+npm run format            # Format the code
+npm run test:performance  # Performance tests
+npm run benchmark         # Performance benchmarks
+npm run generate:diagrams # Generate Mermaid diagram images
+npm run generate:api-docs # Generate OpenAPI documentation
+```
 
-Voir le fichier `examples/` pour des exemples de requêtes.
+## 🐳 Deployment
+
+### With Docker
+
+```bash
+# Quick start
+docker-compose up -d
+
+# Build the image
+docker build -t dougs-bank-validation:latest .
+```
+
+### Manual Deployment
+
+See the [Deployment Guide](./documentation/deployment.md) for detailed instructions.
+
+## 📖 For More Information
+
+- **Detailed Analysis** : [documentation/en/analysis.md](./documentation/en/analysis.md) or [documentation/fr/analysis.md](./documentation/fr/analysis.md)
+- **API Documentation** : [documentation/en/api_index.md](./documentation/en/api_index.md) or [documentation/fr/api_index.md](./documentation/fr/api_index.md)
+- **Deployment Guide** : [documentation/en/deployment.md](./documentation/en/deployment.md) or [documentation/fr/deployment.md](./documentation/fr/deployment.md)
+- **Mermaid Guide** : [documentation/en/install_mermaid.md](./documentation/en/install_mermaid.md) or [documentation/fr/install_mermaid.md](./documentation/fr/install_mermaid.md)
