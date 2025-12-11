@@ -16,8 +16,7 @@
     "test:e2e": "jest --config ./test/e2e/jest-e2e.json",
     "test:all": "jest",
     "test:performance": "jest --testPathPatterns=test/performance --testRegex=test/performance/.*\\.spec\\.ts$",
-    "benchmark": "ts-node scripts/benchmark.ts",
-    "benchmark:gc": "node --expose-gc -r ts-node/register scripts/benchmark.ts"
+    "benchmark": "ts-node scripts/benchmark.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.9",
