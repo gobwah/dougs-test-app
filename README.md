@@ -8,6 +8,8 @@
 
 Bank transaction validation system for Dougs, accounting firm.
 
+> **ℹ️ Note:** A `minimal` branch is available for this project. This branch provides a simplified version of the codebase that focuses exclusively on the core validation algorithm and essential structure (controller and service). It is designed for recruiters and evaluators who want to focus on algorithm implementation without the additional complexity of the full project (documentation, deployment configurations, health checks, etc.). The `main` branch contains the complete project with all features, comprehensive documentation, and deployment configurations.
+
 ## 🚀 Quick Start
 
 ```bash
