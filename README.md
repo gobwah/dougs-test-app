@@ -4,7 +4,9 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.1-blue)](https://www.typescriptlang.org/)
 [![NestJS](https://img.shields.io/badge/NestJS-11.0-red)](https://nestjs.com/)
 
-Version minimale du système de validation de transactions bancaires pour Dougs, cabinet comptable. Cette version se concentre sur l'algorithme de validation et fournit une structure de base (contrôleur et service) pour permettre au recruteur de se focaliser sur l'implémentation de l'algorithme.
+> **ℹ️ Note:** This branch is a 'light' version of the project. The `main` branch contains more information and detailed documentation.
+
+Minimal version of the bank transaction validation system for Dougs. This version focuses on the validation algorithm and provides a basic structure (controller and service) to allow the recruiter to focus on algorithm implementation.
 
 ## 🚀 Quick Start
 
@@ -129,6 +131,4 @@ npm run benchmark          # Run performance benchmarks
 
 All documentation is available in the [`documentation/`](./documentation/) folder:
 
-- **[📖 Documentation Index](./documentation/index.md)** : Index de la documentation
-- **[📊 Analysis](./documentation/analysis.md)** : Analyse détaillée de l'approche et de l'algorithme (en français)
 - **[📡 API Documentation](./documentation/api/)** : Documentation OpenAPI (JSON, YAML)
