@@ -127,6 +127,7 @@ paths:
                         message: Balance control points must be in chronological order
                         details:
                           balanceDate: '2024-01-15T00:00:00.000Z'
+                          balanceIndex: 1
                 multipleErrors:
                   summary: >-
                     Multiple errors detected - Example with multiple types of
@@ -353,6 +354,9 @@ components:
         balanceDate:
           type: string
           description: Date du point de contrôle concerné
+        balanceIndex:
+          type: number
+          description: Index du point de contrôle posant problème (0-based)
         expectedBalance:
           type: number
           description: Solde attendu

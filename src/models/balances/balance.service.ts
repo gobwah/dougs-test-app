@@ -31,13 +31,14 @@ export class BalanceService {
     for (let i = 1; i < balances.length; i++) {
       if (balances[i].date <= balances[i - 1].date) {
         this.logger.warn(
-          `Invalid date order detected: balance at ${balances[i].date.toISOString()} is not after ${balances[i - 1].date.toISOString()}`,
+          `Invalid date order detected: balance at index ${i} (${balances[i].date.toISOString()}) is not after balance at index ${i - 1} (${balances[i - 1].date.toISOString()})`,
         );
         reasons.push({
           type: ValidationReasonType.INVALID_DATE_ORDER,
           message: 'Balance control points must be in chronological order',
           details: {
             balanceDate: balances[i].date.toISOString(),
+            balanceIndex: i,
           },
         });
       }

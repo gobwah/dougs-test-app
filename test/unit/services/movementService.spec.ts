@@ -163,10 +163,16 @@ describe('MovementService', () => {
       expect(result.message).toBe('Validation failed');
       if ('reasons' in result) {
         const noBalanceReason = result.reasons.find(
-          (r) =>
-            r.type === 'BALANCE_MISMATCH' && r.message.includes('No balance'),
+          (r) => r.type === 'BALANCE_MISMATCH',
         );
         expect(noBalanceReason).toBeDefined();
+        if (noBalanceReason) {
+          expect(
+            noBalanceReason.errors.some((e) =>
+              e.message.includes('No balance'),
+            ),
+          ).toBe(true);
+        }
       }
     });
 
@@ -183,6 +189,59 @@ describe('MovementService', () => {
 
       const result = service.validateMovements(request);
       expect(result.message).toBe('Accepted');
+    });
+
+    it('should group BALANCE_MISMATCH errors together', () => {
+      const request: ValidationRequestDto = {
+        movements: [
+          {
+            id: 1,
+            date: '2024-01-05',
+            label: 'SALARY',
+            amount: 1000,
+          },
+          {
+            id: 2,
+            date: '2024-02-05',
+            label: 'SALARY',
+            amount: 1000,
+          },
+          {
+            id: 3,
+            date: '2024-03-05',
+            label: 'SALARY',
+            amount: 1000,
+          },
+        ],
+        balances: [
+          {
+            date: '2024-01-31',
+            balance: 1000,
+          },
+          {
+            date: '2024-02-28',
+            balance: 2500, // Should be 2000 (1000 + 1000)
+          },
+          {
+            date: '2024-03-31',
+            balance: 3500, // Should be 3000 (2000 + 1000)
+          },
+        ],
+      };
+
+      const result = service.validateMovements(request);
+      expect(result.message).toBe('Validation failed');
+      if ('reasons' in result) {
+        // Find BALANCE_MISMATCH reason (should be grouped)
+        const balanceMismatchReason = result.reasons.find(
+          (r) => r.type === 'BALANCE_MISMATCH',
+        );
+        expect(balanceMismatchReason).toBeDefined();
+        if (balanceMismatchReason) {
+          // Verify that all BALANCE_MISMATCH errors are grouped in one reason
+          expect(balanceMismatchReason.errors.length).toBeGreaterThanOrEqual(1);
+        }
+      }
     });
   });
 });

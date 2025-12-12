@@ -46,8 +46,11 @@ describe('Movements E2E Tests (Examples)', () => {
         (reason: any) => reason.type === ValidationReasonType.BALANCE_MISMATCH,
       );
       expect(balanceMismatchReason).toBeDefined();
-      expect(balanceMismatchReason.details.expectedBalance).toBe(1929.5);
-      expect(balanceMismatchReason.details.actualBalance).toBe(2000);
+      expect(balanceMismatchReason.errors.length).toBeGreaterThan(0);
+      expect(balanceMismatchReason.errors[0].details.expectedBalance).toBe(
+        1929.5,
+      );
+      expect(balanceMismatchReason.errors[0].details.actualBalance).toBe(2000);
     });
   });
 
@@ -84,35 +87,41 @@ describe('Movements E2E Tests (Examples)', () => {
           reason.type === ValidationReasonType.DUPLICATE_TRANSACTION,
       );
       expect(duplicateReason).toBeDefined();
-      expect(duplicateReason.details.duplicateMovements).toBeDefined();
-      expect(duplicateReason.details.duplicateMovements.length).toBeGreaterThan(
-        0,
-      );
+      expect(duplicateReason.errors.length).toBeGreaterThan(0);
+      expect(
+        duplicateReason.errors[0].details.duplicateMovements,
+      ).toBeDefined();
+      expect(
+        duplicateReason.errors[0].details.duplicateMovements.length,
+      ).toBeGreaterThan(0);
 
       // Verify that the duplicate movements are correctly identified
-      const duplicateIds = duplicateReason.details.duplicateMovements.map(
-        (m: any) => m.id,
-      );
+      const duplicateIds =
+        duplicateReason.errors[0].details.duplicateMovements.map(
+          (m: any) => m.id,
+        );
       expect(duplicateIds).toContain(2);
       expect(duplicateIds).toContain(3);
 
       // Verify that duplicateType is present and valid for all duplicate movements
-      expect(duplicateReason.details.duplicateMovements.length).toBeGreaterThan(
-        0,
-      );
-      duplicateReason.details.duplicateMovements.forEach((m: any) => {
+      expect(
+        duplicateReason.errors[0].details.duplicateMovements.length,
+      ).toBeGreaterThan(0);
+      duplicateReason.errors[0].details.duplicateMovements.forEach((m: any) => {
         expect(m).toHaveProperty('duplicateType');
         expect(m.duplicateType).toBeDefined();
         expect(['exact', 'similar']).toContain(m.duplicateType);
       });
 
       // In this example, movements 2 and 3 have identical labels, so they should be 'exact'
-      const movement2 = duplicateReason.details.duplicateMovements.find(
-        (m: any) => m.id === 2,
-      );
-      const movement3 = duplicateReason.details.duplicateMovements.find(
-        (m: any) => m.id === 3,
-      );
+      const movement2 =
+        duplicateReason.errors[0].details.duplicateMovements.find(
+          (m: any) => m.id === 2,
+        );
+      const movement3 =
+        duplicateReason.errors[0].details.duplicateMovements.find(
+          (m: any) => m.id === 3,
+        );
       expect(movement2).toBeDefined();
       expect(movement3).toBeDefined();
       expect(movement2?.duplicateType).toBe('exact');

@@ -61,6 +61,7 @@ describe('BalanceService', () => {
       expect(reasons[0].details.balanceDate).toBe(
         new Date('2024-01-31').toISOString(),
       );
+      expect(reasons[0].details.balanceIndex).toBe(1);
     });
 
     it('should add reasons for equal dates', () => {
@@ -80,6 +81,7 @@ describe('BalanceService', () => {
 
       expect(reasons).toHaveLength(1);
       expect(reasons[0].type).toBe(ValidationReasonType.INVALID_DATE_ORDER);
+      expect(reasons[0].details.balanceIndex).toBe(1);
     });
 
     it('should handle empty array', () => {
@@ -124,7 +126,9 @@ describe('BalanceService', () => {
 
       expect(reasons).toHaveLength(2);
       expect(reasons[0].type).toBe(ValidationReasonType.INVALID_DATE_ORDER);
+      expect(reasons[0].details.balanceIndex).toBe(1);
       expect(reasons[1].type).toBe(ValidationReasonType.INVALID_DATE_ORDER);
+      expect(reasons[1].details.balanceIndex).toBe(2);
     });
   });
 

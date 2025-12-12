@@ -7,6 +7,7 @@ export enum ValidationReasonType {
 
 export class ValidationReasonDetailsDto {
   balanceDate?: string;
+  balanceIndex?: number;
   expectedBalance?: number;
   actualBalance?: number;
   difference?: number;
@@ -22,10 +23,14 @@ export class ValidationReasonDetailsDto {
   periodEnd?: string;
 }
 
-export class ValidationReasonDto {
-  type: ValidationReasonType;
+export class ValidationErrorDto {
   message: string;
   details: ValidationReasonDetailsDto;
+}
+
+export class ValidationReasonDto {
+  type: ValidationReasonType;
+  errors: ValidationErrorDto[];
 }
 
 export class ValidationSuccessResponse {

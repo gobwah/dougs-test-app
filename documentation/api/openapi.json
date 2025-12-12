@@ -164,7 +164,8 @@
                           "type": "INVALID_DATE_ORDER",
                           "message": "Balance control points must be in chronological order",
                           "details": {
-                            "balanceDate": "2024-01-15T00:00:00.000Z"
+                            "balanceDate": "2024-01-15T00:00:00.000Z",
+                            "balanceIndex": 1
                           }
                         }
                       ]
@@ -247,9 +248,7 @@
                       "items": {
                         "type": "string"
                       },
-                      "example": [
-                        "Internal Server Error"
-                      ]
+                      "example": ["Internal Server Error"]
                     },
                     "error": {
                       "type": "string",
@@ -274,9 +273,7 @@
           }
         },
         "summary": "Validate bank movements",
-        "tags": [
-          "movements"
-        ]
+        "tags": ["movements"]
       }
     },
     "/health": {
@@ -309,11 +306,7 @@
                       "example": 123.456
                     }
                   },
-                  "required": [
-                    "status",
-                    "timestamp",
-                    "uptime"
-                  ]
+                  "required": ["status", "timestamp", "uptime"]
                 },
                 "examples": {
                   "healthy": {
@@ -350,9 +343,7 @@
           }
         },
         "summary": "Check application status",
-        "tags": [
-          "health"
-        ]
+        "tags": ["health"]
       }
     }
   },
@@ -399,12 +390,7 @@
             "example": 3000
           }
         },
-        "required": [
-          "id",
-          "date",
-          "label",
-          "amount"
-        ]
+        "required": ["id", "date", "label", "amount"]
       },
       "BalanceDto": {
         "type": "object",
@@ -420,10 +406,7 @@
             "example": 1929.5
           }
         },
-        "required": [
-          "date",
-          "balance"
-        ]
+        "required": ["date", "balance"]
       },
       "ValidationRequestDto": {
         "type": "object",
@@ -463,10 +446,7 @@
             }
           }
         },
-        "required": [
-          "movements",
-          "balances"
-        ]
+        "required": ["movements", "balances"]
       },
       "ValidationSuccessResponse": {
         "type": "object",
@@ -477,9 +457,7 @@
             "example": "Accepted"
           }
         },
-        "required": [
-          "message"
-        ]
+        "required": ["message"]
       },
       "ValidationReasonDetailsDto": {
         "type": "object",
@@ -487,6 +465,10 @@
           "balanceDate": {
             "type": "string",
             "description": "Date du point de contrôle concerné"
+          },
+          "balanceIndex": {
+            "type": "number",
+            "description": "Index du point de contrôle posant problème (0-based)"
           },
           "expectedBalance": {
             "type": "number",
@@ -520,10 +502,7 @@
                 },
                 "duplicateType": {
                   "type": "string",
-                  "enum": [
-                    "exact",
-                    "similar"
-                  ],
+                  "enum": ["exact", "similar"],
                   "description": "Type de doublon: 'exact' pour labels identiques, 'similar' pour labels similaires"
                 }
               }
@@ -571,11 +550,7 @@
             ]
           }
         },
-        "required": [
-          "type",
-          "message",
-          "details"
-        ]
+        "required": ["type", "message", "details"]
       },
       "ValidationFailureResponse": {
         "type": "object",
@@ -593,10 +568,7 @@
             }
           }
         },
-        "required": [
-          "message",
-          "reasons"
-        ]
+        "required": ["message", "reasons"]
       }
     }
   }
