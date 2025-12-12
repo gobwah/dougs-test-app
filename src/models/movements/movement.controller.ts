@@ -245,14 +245,18 @@ export class MovementController {
           reasons: [
             {
               type: 'BALANCE_MISMATCH',
-              message:
-                'Balance mismatch at control point 2024-01-31T00:00:00.000Z',
-              details: {
-                balanceDate: '2024-01-31T00:00:00.000Z',
-                expectedBalance: 1929.5,
-                actualBalance: 2000,
-                difference: -70.5,
-              },
+              errors: [
+                {
+                  message:
+                    'Balance mismatch at control point 2024-01-31T00:00:00.000Z',
+                  details: {
+                    balanceDate: '2024-01-31T00:00:00.000Z',
+                    expectedBalance: 1929.5,
+                    actualBalance: 2000,
+                    difference: -70.5,
+                  },
+                },
+              ],
             },
           ],
         },
@@ -264,25 +268,29 @@ export class MovementController {
           reasons: [
             {
               type: 'DUPLICATE_TRANSACTION',
-              message: 'Found 2 duplicate transaction(s)',
-              details: {
-                duplicateMovements: [
-                  {
-                    id: 2,
-                    date: '2024-01-10T00:00:00.000Z',
-                    label: 'RENT PAYMENT',
-                    amount: -800,
-                    duplicateType: 'exact',
+              errors: [
+                {
+                  message: 'Found 2 duplicate transaction(s)',
+                  details: {
+                    duplicateMovements: [
+                      {
+                        id: 2,
+                        date: '2024-01-10T00:00:00.000Z',
+                        label: 'RENT PAYMENT',
+                        amount: -800,
+                        duplicateType: 'exact',
+                      },
+                      {
+                        id: 3,
+                        date: '2024-01-10T00:00:00.000Z',
+                        label: 'RENT PAYMENT',
+                        amount: -800,
+                        duplicateType: 'exact',
+                      },
+                    ],
                   },
-                  {
-                    id: 3,
-                    date: '2024-01-10T00:00:00.000Z',
-                    label: 'RENT PAYMENT',
-                    amount: -800,
-                    duplicateType: 'exact',
-                  },
-                ],
-              },
+                },
+              ],
             },
           ],
         },
@@ -294,13 +302,17 @@ export class MovementController {
           reasons: [
             {
               type: 'MISSING_TRANSACTION',
-              message:
-                'There are 1 movement(s) after the last balance control point. This may indicate missing balance control points or missing transactions.',
-              details: {
-                periodStart: '2024-01-31T00:00:00.000Z',
-                periodEnd: '2024-02-01T00:00:00.000Z',
-                missingAmount: -500,
-              },
+              errors: [
+                {
+                  message:
+                    'There are 1 movement(s) after the last balance control point. This may indicate missing balance control points or missing transactions.',
+                  details: {
+                    periodStart: '2024-01-31T00:00:00.000Z',
+                    periodEnd: '2024-02-01T00:00:00.000Z',
+                    missingAmount: -500,
+                  },
+                },
+              ],
             },
           ],
         },
@@ -312,10 +324,16 @@ export class MovementController {
           reasons: [
             {
               type: 'INVALID_DATE_ORDER',
-              message: 'Balance control points must be in chronological order',
-              details: {
-                balanceDate: '2024-01-15T00:00:00.000Z',
-              },
+              errors: [
+                {
+                  message:
+                    'Balance control points must be in chronological order',
+                  details: {
+                    balanceDate: '2024-01-15T00:00:00.000Z',
+                    balanceIndex: 1,
+                  },
+                },
+              ],
             },
           ],
         },

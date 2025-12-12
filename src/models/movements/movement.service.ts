@@ -3,6 +3,7 @@ import { ValidationRequestDto } from './dto/request.dto';
 import {
   ValidationFailureResponse,
   ValidationReason,
+  ValidationReasonDto,
   ValidationSuccessResponse,
 } from './dto/response.dto';
 import {
@@ -38,11 +39,18 @@ export class MovementService {
 
     const reasons: ValidationReason[] = [];
 
+    // Validate date order BEFORE sorting to preserve original indices
+    this.logger.debug('Validating date order of balance points');
+    this.balanceService.validateDateOrder(
+      request.balances.map((b) => ({
+        date: new Date(b.date),
+        balance: b.balance,
+      })),
+      reasons,
+    );
+
     const movements = parseAndSortMovements(request.movements);
     const balances = parseAndSortBalances(request.balances);
-
-    this.logger.debug('Validating date order of balance points');
-    this.balanceService.validateDateOrder(balances, reasons);
 
     this.logger.debug('Detecting duplicate transactions');
     this.duplicateService.detectAndReportDuplicates(movements, reasons);
@@ -55,9 +63,13 @@ export class MovementService {
         `Validation failed with ${reasons.length} error(s)`,
         JSON.stringify(reasons.map((r) => r.type)),
       );
+
+      // Group errors by type
+      const groupedReasons = this.groupReasonsByType(reasons);
+
       return {
         message: 'Validation failed',
-        reasons,
+        reasons: groupedReasons,
       };
     }
 
@@ -65,5 +77,33 @@ export class MovementService {
     return {
       message: 'Accepted',
     };
+  }
+
+  /**
+   * Group validation reasons by type
+   * Time complexity: O(n) where n is the number of reasons
+   * Space complexity: O(n) for the grouped map and result array
+   */
+  private groupReasonsByType(
+    reasons: ValidationReason[],
+  ): ValidationReasonDto[] {
+    const grouped = new Map<
+      ValidationReason['type'],
+      Array<{ message: string; details: ValidationReason['details'] }>
+    >();
+
+    for (const reason of reasons) {
+      const existing = grouped.get(reason.type) || [];
+      existing.push({
+        message: reason.message,
+        details: reason.details,
+      });
+      grouped.set(reason.type, existing);
+    }
+
+    return Array.from(grouped.entries()).map(([type, errors]) => ({
+      type,
+      errors,
+    }));
   }
 }

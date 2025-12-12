@@ -14,6 +14,12 @@ export class ValidationReasonDetailsDto {
   })
   balanceDate?: string;
 
+  @ApiProperty({
+    required: false,
+    description: 'Index du point de contrôle posant problème (0-based)',
+  })
+  balanceIndex?: number;
+
   @ApiProperty({ required: false, description: 'Solde attendu' })
   expectedBalance?: number;
 
@@ -67,6 +73,20 @@ export class ValidationReasonDetailsDto {
   periodEnd?: string;
 }
 
+export class ValidationErrorDto {
+  @ApiProperty({
+    description: "Message descriptif de l'erreur",
+    example: 'Balance mismatch at control point 2024-01-31T00:00:00.000Z',
+  })
+  message: string;
+
+  @ApiProperty({
+    description: "Détails spécifiques à l'erreur",
+    type: ValidationReasonDetailsDto,
+  })
+  details: ValidationReasonDetailsDto;
+}
+
 export class ValidationReasonDto {
   @ApiProperty({
     enum: ValidationReasonType,
@@ -76,16 +96,10 @@ export class ValidationReasonDto {
   type: ValidationReasonType;
 
   @ApiProperty({
-    description: 'Message descriptif de la raison',
-    example: 'Balance mismatch at control point 2024-01-31T00:00:00.000Z',
+    description: 'Liste des erreurs de ce type',
+    type: [ValidationErrorDto],
   })
-  message: string;
-
-  @ApiProperty({
-    description: 'Détails spécifiques à la raison',
-    type: ValidationReasonDetailsDto,
-  })
-  details: ValidationReasonDetailsDto;
+  errors: ValidationErrorDto[];
 }
 
 export class ValidationSuccessResponse {

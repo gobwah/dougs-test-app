@@ -44,7 +44,7 @@ Cette spec n'est là qu'à but indicatif, tu es libre de proposer ta propre solu
 **Responses :**
 
 - Code 2XX : `{ "message": "Accepted" }`
-- Code 4XX : `{ "message": "Validation failed", "reasons": [{ … }] }`
+- Code 4XX : `{ "message": "Validation failed", "reasons": [{ "type": "...", "errors": [{ "message": "...", "details": { … } }] }] }`
 
 A toi de définir l'interface des "reasons" avec tous les détails que tu juges nécessaire.
 
@@ -520,8 +520,10 @@ graph TB
   message: "Validation failed" | "Accepted",
   reasons?: [{
     type: "BALANCE_MISMATCH" | "DUPLICATE_TRANSACTION" | ...,
-    message: string,
-    details: { ... }
+    errors: [{
+      message: string,
+      details: { ... }
+    }]
   }]
 }
 ```
@@ -529,6 +531,7 @@ graph TB
 **Justification** :
 
 - **Message clair** : Le comptable sait immédiatement si c'est valide ou non
+- **Groupement par type** : Toutes les erreurs du même type sont regroupées, facilitant l'analyse
 - **Raisons structurées** : Chaque type d'erreur a ses propres détails
 - **Détails actionnables** : Informations suffisantes pour corriger le problème
 
@@ -541,14 +544,14 @@ graph TB
 L'algorithme suit un ordre logique pour détecter tous les types d'anomalies :
 
 ```
-1. Préparation des données (tri chronologique via parsing.util)
-2. Validation de l'ordre des points de contrôle (BalanceService)
+1. Validation de l'ordre des points de contrôle (BalanceService) - AVANT le tri pour préserver les indices originaux
+2. Préparation des données (tri chronologique via parsing.util)
 3. Détection de doublons (DuplicateService)
 4. Validation des soldes (BalanceService)
    - Validation du premier point de contrôle
    - Validation des points suivants
    - Détection de mouvements après le dernier point
-5. Collecte et retour des erreurs
+5. Collecte des erreurs, groupement par type, et retour
 ```
 
 **Services utilisés** :
@@ -591,9 +594,9 @@ flowchart TD
 
 #### Phase 1 : Préparation
 
-- Tri chronologique des mouvements et des balances
+- Validation de l'ordre chronologique des points de contrôle (AVANT le tri pour préserver les indices originaux)
 - Parsing des dates en objets Date pour comparaisons fiables
-- Validation de l'ordre chronologique des points de contrôle
+- Tri chronologique des mouvements et des balances
 
 #### Phase 2 : Détection de Doublons
 
@@ -764,15 +767,32 @@ graph TD
 
 **Design choisi** :
 
-- `expectedBalance` : Solde calculé (ce qu'on attend)
-- `actualBalance` : Solde du relevé (ce qu'on a reçu)
-- `difference` : Différence entre les deux
+Chaque type d'erreur a des détails spécifiques :
+
+- **BALANCE_MISMATCH** :
+  - `balanceDate` : Date du point de contrôle
+  - `expectedBalance` : Solde calculé (ce qu'on attend)
+  - `actualBalance` : Solde du relevé (ce qu'on a reçu)
+  - `difference` : Différence entre les deux
+
+- **DUPLICATE_TRANSACTION** :
+  - `duplicateMovements` : Tableau des mouvements dupliqués avec leur `id`, `date`, `amount`, `label`, et `duplicateType` ('exact' ou 'similar')
+
+- **MISSING_TRANSACTION** :
+  - `periodStart` : Début de la période concernée
+  - `periodEnd` : Fin de la période concernée
+  - `missingAmount` : Montant manquant détecté
+
+- **INVALID_DATE_ORDER** :
+  - `balanceDate` : Date du point de contrôle posant problème
+  - `balanceIndex` : Index du point de contrôle posant problème dans la requête originale (0-based)
 
 **Justification** :
 
 - Noms clairs et explicites
 - Permet au comptable de comprendre rapidement le problème
 - Facilite le calcul manuel de correction
+- `balanceIndex` préserve la position originale dans le tableau d'entrée (la validation se fait avant le tri)
 
 ---
 
@@ -856,30 +876,34 @@ Cette section détaille la complexité temporelle et spatiale de chaque grande �
 
 L'algorithme principal `validateMovements` a une complexité globale de :
 
-- **Complexité temporelle** : O(n log n + m log m + n² × l + b × n)
+- **Complexité temporelle** : O(n log n + m log m + n × m + Σ(k'² × m) + b × n)
+  - Note : L'étape `groupReasonsByType` ajoute O(r) où r est le nombre de raisons, mais r << n typiquement, donc c'est négligeable
 - **Complexité spatiale** : O(n + m)
 
 #### Décomposition par Phase
 
 ```mermaid
 graph TD
-    A[validateMovements]:::rootStyle --> B["Parse & Sort Movements O(n log n)"]:::parseStyle
+    A[validateMovements]:::rootStyle --> D["Validate Date Order O(m)<br/>(avant le tri)"]:::validateStyle
+    A --> B["Parse & Sort Movements O(n log n)"]:::parseStyle
     A --> C["Parse & Sort Balances O(m log m)"]:::parseStyle
-    A --> D["Validate Date Order O(m)"]:::validateStyle
-    A --> E["Detect Duplicates O(n² × l)"]:::duplicateStyle
+    A --> E["Detect Duplicates O(n × m + k'² × m)"]:::duplicateStyle
     A --> F["Validate Balances O(b × n)"]:::balanceStyle
+    A --> H["Group Errors by Type O(r)"]:::groupStyle
 
-    B --> G["Total: O(n log n + m log m + n² × l + b × n)"]:::totalStyle
+    D --> G["Total: O(n log n + m log m + n × m + Σ(k'² × m) + b × n)"]:::totalStyle
+    B --> G
     C --> G
-    D --> G
     E --> G
     F --> G
+    H --> G
 
     classDef rootStyle fill:#1e40af,stroke:#1e3a8a,stroke-width:3px,color:#ffffff,font-weight:bold
     classDef parseStyle fill:#3b82f6,stroke:#2563eb,stroke-width:2px,color:#ffffff
     classDef validateStyle fill:#15803d,stroke:#166534,stroke-width:2px,color:#ffffff
     classDef duplicateStyle fill:#dc2626,stroke:#991b1b,stroke-width:2px,color:#ffffff
     classDef balanceStyle fill:#ea580c,stroke:#9a3412,stroke-width:2px,color:#ffffff
+    classDef groupStyle fill:#9333ea,stroke:#7e22ce,stroke-width:2px,color:#ffffff
     classDef totalStyle fill:#7c3aed,stroke:#6b21a8,stroke-width:3px,color:#ffffff,font-weight:bold
 ```
 
@@ -889,17 +913,17 @@ graph TD
 
 **Fonctions** : `parseAndSortMovements`, `parseAndSortBalances`
 
-| Fonction                   | Complexité Temporelle | Complexité Spatiale | Justification                  |
-| -------------------------- | --------------------- | ------------------- | ------------------------------ |
-| `parseAndSortMovements`    | O(n log n)            | O(n)                | Parsing O(n) + Tri O(n log n)  |
-| `parseAndSortBalances`     | O(m log m)            | O(m)                | Parsing O(m) + Tri O(m log m)  |
-| `validateBalanceDateOrder` | O(m)                  | O(1)                | Parcours linéaire des balances |
+| Fonction                   | Complexité Temporelle | Complexité Spatiale | Justification                                                                 |
+| -------------------------- | --------------------- | ------------------- | ----------------------------------------------------------------------------- |
+| `validateBalanceDateOrder` | O(m)                  | O(1)                | Parcours linéaire (exécuté avant le tri pour préserver les indices originaux) |
+| `parseAndSortMovements`    | O(n log n)            | O(n)                | Parsing O(n) + Tri O(n log n)                                                 |
+| `parseAndSortBalances`     | O(m log m)            | O(m)                | Parsing O(m) + Tri O(m log m)                                                 |
 
 **Détails** :
 
+- La validation de l'ordre chronologique est exécutée AVANT le tri pour préserver les indices originaux dans les messages d'erreur : O(m)
 - Le parsing nécessite de créer un nouvel objet pour chaque mouvement/balance : O(n) ou O(m)
 - Le tri utilise l'algorithme natif de JavaScript (Timsort) : O(n log n) ou O(m log m)
-- La validation de l'ordre chronologique est un simple parcours linéaire
 
 #### 9.3.2 Détection de Doublons
 
@@ -1030,16 +1054,17 @@ graph TD
 
 #### Tableau Récapitulatif
 
-| Fonction                         | Complexité Temporelle                                 | Complexité Spatiale | Dominateur                         |
-| -------------------------------- | ----------------------------------------------------- | ------------------- | ---------------------------------- |
-| `parseAndSortMovements`          | O(n log n)                                            | O(n)                | Tri                                |
-| `parseAndSortBalances`           | O(m log m)                                            | O(m)                | Tri                                |
-| `validateBalanceDateOrder`       | O(m)                                                  | O(1)                | Parcours                           |
-| `detectDuplicates`               | O(n × m + Σ(k'² × m)) à O(n² × m)                     | O(n) à O(n²)        | Optimisé avec cache et groupement  |
-| `validateFirstBalance`           | O(n)                                                  | O(k)                | Filtrage                           |
-| `validateSubsequentBalances`     | O(b × n)                                              | O(n)                | Filtrage itératif                  |
-| `checkMovementsAfterLastBalance` | O(n)                                                  | O(k)                | Filtrage                           |
-| **`validateMovements` (total)**  | **O(n log n + m log m + n × m + Σ(k'² × m) + b × n)** | **O(n + m)**        | **Détection doublons (optimisée)** |
+| Fonction                         | Complexité Temporelle                                 | Complexité Spatiale | Dominateur                                    |
+| -------------------------------- | ----------------------------------------------------- | ------------------- | --------------------------------------------- |
+| `validateBalanceDateOrder`       | O(m)                                                  | O(1)                | Parcours (exécuté avant le tri)               |
+| `parseAndSortMovements`          | O(n log n)                                            | O(n)                | Tri                                           |
+| `parseAndSortBalances`           | O(m log m)                                            | O(m)                | Tri                                           |
+| `detectDuplicates`               | O(n × m + Σ(k'² × m)) à O(n² × m)                     | O(n) à O(n²)        | Optimisé avec cache et groupement             |
+| `validateFirstBalance`           | O(n)                                                  | O(k)                | Filtrage                                      |
+| `validateSubsequentBalances`     | O(b × n)                                              | O(n)                | Filtrage itératif                             |
+| `checkMovementsAfterLastBalance` | O(n)                                                  | O(k)                | Filtrage                                      |
+| `groupReasonsByType`             | O(r) où r << n                                        | O(r)                | Groupement des erreurs par type (négligeable) |
+| **`validateMovements` (total)**  | **O(n log n + m log m + n × m + Σ(k'² × m) + b × n)** | **O(n + m)**        | **Détection doublons (optimisée)**            |
 
 #### Diagramme de Complexité Dominante
 

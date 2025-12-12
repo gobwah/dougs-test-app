@@ -163,10 +163,16 @@ describe('MovementService', () => {
       expect(result.message).toBe('Validation failed');
       if ('reasons' in result) {
         const noBalanceReason = result.reasons.find(
-          (r) =>
-            r.type === 'BALANCE_MISMATCH' && r.message.includes('No balance'),
+          (r) => r.type === 'BALANCE_MISMATCH',
         );
         expect(noBalanceReason).toBeDefined();
+        if (noBalanceReason) {
+          expect(
+            noBalanceReason.errors.some((e) =>
+              e.message.includes('No balance'),
+            ),
+          ).toBe(true);
+        }
       }
     });
 
